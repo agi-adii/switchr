@@ -21,6 +21,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Switchr - Universal File Converter",
   description: "A premium, lightning-fast file converter right in your browser. 100% free with zero limits.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Switchr",
+  },
+};
+
+export const viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

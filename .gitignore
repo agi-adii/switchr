@@ -19,6 +19,11 @@ out/
 build/
 dist/
 
+# PWA files
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+
 # Turbo cache
 .turbo/
 
