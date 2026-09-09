@@ -1,141 +1,135 @@
-# Switchr ⚡ — Universal Client-Side File Converter
+# Switchr
 
-<p align="center">
-  <img src="apps/web/public/logo.jpg" alt="Switchr Logo" width="120" style="border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" />
-</p>
+**Universal Client-Side File Conversion & Processing Platform**
 
-<p align="center">
-  <b>Fast, Private, In-Browser File Conversion & Compression Tool suite</b><br />
-  Convert Images, Audio, Video, Documents, and Data files entirely on your device with WebAssembly.
-</p>
-
-<p align="center">
-  <a href="#features">Features</a> •
-  <a href="#supported-formats">Supported Formats</a> •
-  <a href="#tech-stack">Tech Stack</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#deployment">Deployment</a> •
-  <a href="#privacy">Privacy</a>
-</p>
+Switchr is a high-performance, entirely browser-based file conversion suite. It leverages WebAssembly (WASM) to process media and documents locally on the client device, ensuring zero-latency execution, complete data privacy, and a seamless user experience.
 
 ---
 
-## ✨ Features
+## Architecture Overview
 
-- 🔒 **100% Private & Local**: Files are processed directly in your browser using WebAssembly (FFmpeg WASM, Canvas API, jsPDF, JSZip). Your files are never uploaded to any external server.
-- ⚡ **Lightning Fast**: Powered by Turbopack, Next.js 16, and Web Workers for zero-latency conversion.
-- 🎨 **Modern Sleek UI**: Built with Tailwind CSS v4, Framer Motion animations, dark/light theme toggling, and clean responsive design.
-- 📁 **Batch Conversion & ZIP Download**: Convert multiple files in parallel and download them individually or bundled into a single ZIP archive.
-- 🗜️ **Smart Compression**: Compress images and documents with granular quality controls and real-time size reduction metrics.
-- 📱 **Mobile & Desktop Responsive**: Seamless experience across smartphones, tablets, and wide monitors.
+Switchr fundamentally shifts file processing from server-side infrastructure to the client edge. Files never leave the user's local network, eliminating bandwidth bottlenecks and security risks associated with third-party server uploads.
 
----
+```mermaid
+graph TD
+    User[User Device] -->|Selects File| Blob[Local Browser Memory]
+    Blob --> Router{Engine Router}
+    
+    Router -->|Media Processing| FFmpeg[FFmpeg WebAssembly]
+    Router -->|Document Generation| Canvas[Canvas / jsPDF API]
+    Router -->|Data Structuring| Parser[Data Transformation Logic]
+    Router -->|Compression| Zlib[JSZip / Compression Engine]
 
-## 📂 Supported Formats
+    FFmpeg --> Output[Processed Memory Blob]
+    Canvas --> Output
+    Parser --> Output
+    Zlib --> Output
 
-Switchr supports **60+ file formats** across multiple categories:
-
-| Category | Formats |
-|---|---|
-| **Images** | JPG, PNG, WEBP, SVG, BMP, GIF, ICO, TIFF, AVIF |
-| **Documents** | PDF, DOCX, TXT, MD, HTML, RTF |
-| **Audio** | MP3, WAV, AAC, OGG, FLAC, M4A, OPUS, WMA |
-| **Video** | MP4, WEBM, MKV, AVI, MOV, FLV, WMV |
-| **Data & Code** | JSON, CSV, XML, YAML, TSV |
-| **Archives** | ZIP, TAR, GZ |
-
----
-
-## 🛠️ Tech Stack
-
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
-- **Monorepo**: [Turborepo](https://turbo.build/)
-- **UI & Styling**: [Tailwind CSS v4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/), [Lucide React](https://lucide.dev/)
-- **Engine / Core**:
-  - `@ffmpeg/ffmpeg` & `@ffmpeg/core` (Client-side audio/video encoding via WebAssembly)
-  - `jspdf` (Client-side PDF generation)
-  - `jszip` (Client-side ZIP packing and extraction)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **Notifications**: [Sonner](https://sonner.emilkowal.ski/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
+    Output -->|Direct Download| User
+    
+    classDef memory fill:#f5f5f5,stroke:#333,stroke-width:1px;
+    classDef engine fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    class User,Blob,Output memory;
+    class Router,FFmpeg,Canvas,Parser,Zlib engine;
+```
 
 ---
 
-## 🚀 Getting Started
+## Core Capabilities
+
+*   **Absolute Privacy:** Files are never transmitted over the network. Processing occurs within the browser's sandboxed environment.
+*   **WebAssembly Acceleration:** Integrates `@ffmpeg/core` via WASM to deliver native-grade media encoding capabilities within the browser.
+*   **Dynamic CDN Fallback:** Intelligently manages large binary payloads (like the 32MB FFmpeg WASM core) by attempting local resolution before seamlessly falling back to an edge-delivered CDN. This ensures repository sizes remain minimal while maintaining high availability.
+*   **Monorepo Architecture:** Built on Turborepo to enforce strict module boundaries and optimize build cache utilization.
+
+---
+
+## Supported Format Matrix
+
+Switchr currently supports over 60 different file extensions across various domains. 
+
+| Domain | Supported Input Formats | Primary Output Capabilities |
+| :--- | :--- | :--- |
+| **Media (Video)** | `MP4`, `WEBM`, `MKV`, `AVI`, `MOV`, `FLV`, `WMV` | Transcoding, Compression, Resolution Scaling |
+| **Media (Audio)** | `MP3`, `WAV`, `AAC`, `OGG`, `FLAC`, `M4A`, `OPUS` | Format Shifting, Bitrate Adjustment |
+| **Media (Image)** | `JPG`, `PNG`, `WEBP`, `SVG`, `BMP`, `GIF`, `TIFF` | Compression, Format Conversion, Resizing |
+| **Documents** | `PDF`, `DOCX`, `TXT`, `MD`, `HTML`, `RTF` | Client-Side PDF Generation, Text Extraction |
+| **Structured Data**| `JSON`, `CSV`, `XML`, `YAML`, `TSV` | Cross-Format Parsing and Serialization |
+| **Archives** | `ZIP`, `TAR`, `GZ` | Client-side packing and extraction |
+
+---
+
+## Technical Specifications
+
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 16 | App Router, React Server Components |
+| **Build System** | Turborepo | Task orchestration and remote caching |
+| **Language** | TypeScript | Strict type-checking and interface definitions |
+| **Styling** | Tailwind CSS v4 | Utility-first CSS framework |
+| **Animation** | Framer Motion | Hardware-accelerated transitions |
+| **State Management**| Zustand | Unidirectional state flow for conversion queues |
+| **Media Engine** | FFmpeg.wasm | WebAssembly port of the FFmpeg multimedia framework |
+
+---
+
+## Development Environment Setup
 
 ### Prerequisites
 
-- **Node.js**: `v20.x` or higher
-- **npm**: `v10.x` or higher (or pnpm / yarn)
+Ensure the following runtimes are installed in your environment:
+*   Node.js (v20.x or higher recommended)
+*   npm (v10.x or higher)
 
-### Installation
+### Initialization
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/Switchr.git
-   cd Switchr
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-organization/Switchr.git
+    cd Switchr
+    ```
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+2.  **Resolve dependencies:**
+    ```bash
+    npm install
+    ```
 
-3. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Open in browser**:
-   Navigate to [http://localhost:3000](http://localhost:3000).
+3.  **Execute the development server:**
+    ```bash
+    npm run dev
+    ```
+    The application will be accessible at `http://localhost:3000`.
 
 ---
 
-## 🏗️ Production Build
+## Deployment Configuration (Vercel)
 
-To test and compile the production build:
+The application is highly optimized for deployment on Vercel. 
 
-```bash
-npm run build
+### Cross-Origin Isolation Requirements
+
+Due to the utilization of `SharedArrayBuffer` for multi-threaded FFmpeg execution, the application requires strict Cross-Origin Isolation headers. These are pre-configured in `apps/web/next.config.ts`:
+
+```typescript
+// Required for WebAssembly SharedArrayBuffer
+headers: [
+  { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+]
 ```
 
-To start the production server locally:
+### Vercel Integration Steps
 
-```bash
-npm --workspace=web run start
-```
-
----
-
-## 🌐 Deployment
-
-### Deploy to Vercel (Recommended)
-
-Switchr is optimized for one-click deployment on [Vercel](https://vercel.com/):
-
-1. Push your repository to **GitHub**.
-2. Go to [Vercel](https://vercel.com/new) and click **Import Project**.
-3. Select your `Switchr` repository.
-4. Set the **Root Directory** to:
-   ```text
-   apps/web
-   ```
-5. Click **Deploy**.
-
-> **Note on WebAssembly & Headers**:
-> `apps/web/next.config.ts` includes the required `Cross-Origin-Embedder-Policy: require-corp` and `Cross-Origin-Opener-Policy: same-origin` headers. These headers enable `SharedArrayBuffer` support in modern browsers, ensuring FFmpeg WebAssembly runs properly in production.
+1.  Import the repository into the Vercel Dashboard.
+2.  In the Project Configuration panel, locate the **Root Directory** setting.
+3.  Set the **Root Directory** to `apps/web`.
+4.  Vercel will automatically detect the Turborepo configuration and Next.js framework.
+5.  Initiate the deployment. 
 
 ---
 
-## 🛡️ Privacy & Security
+## License
 
-Switchr was designed with security and confidentiality first:
-- **No file upload**: Your files stay inside your device's memory.
-- **No tracking of file contents**: All encoding and compression occurs client-side.
-- **No account required**: Zero barriers, zero data collection.
+Copyright (c) 2026 Switchr Contributors.
 
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
+Licensed under the MIT License. See the `LICENSE` file for full documentation.
