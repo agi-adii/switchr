@@ -23,6 +23,17 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Switchr - Universal File Converter",
   description: "A premium, lightning-fast file converter right in your browser. 100% free with zero limits.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "/logo.jpg", type: "image/jpeg", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
