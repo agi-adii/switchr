@@ -98,10 +98,10 @@ export default function ImageConverterPage() {
   return (
     <ConverterTemplate
       title="Image Converter"
-      description="Convert images to JPG, PNG, WEBP and other supported formats with precision quality controls."
+      description="Convert JPG, PNG, WEBP, and Apple HEIC photos directly to PDF, JPG, or modern web formats."
       breadcrumbs={[{ label: "Convert", href: "/convert" }, { label: "Images" }]}
-      accept="image/*"
-      recommendedFormats={["webp", "png", "jpg", "pdf"]}
+      accept="image/*,.heic,.heif"
+      recommendedFormats={["pdf", "webp", "png", "jpg"]}
       moreFormats={["bmp", "gif"]}
       defaultTarget="webp"
       category="image"

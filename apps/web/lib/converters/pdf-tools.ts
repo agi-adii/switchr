@@ -29,6 +29,27 @@ export async function imagesToPdf(
     const file = files[i];
     if (i > 0) pdf.addPage();
 
+    const rawExt = file.name.split(".").pop()?.toLowerCase() || "";
+    const isHeic = rawExt === "heic" || rawExt === "heif" || file.type === "image/heic" || file.type === "image/heif";
+
+    let imageBlob: Blob = file;
+    if (isHeic) {
+      if (onProgress) onProgress((i + 0.3) / files.length);
+      try {
+        const heic2anyModule = await import("heic2any");
+        const heic2any = heic2anyModule.default || heic2anyModule;
+        const converted = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: options.quality ?? 0.92,
+        });
+        imageBlob = Array.isArray(converted) ? converted[0] : converted;
+      } catch (heicErr) {
+        console.error("HEIC decoding error:", heicErr);
+        throw new Error(`Failed to decode HEIC file "${file.name}". Please ensure it is a valid HEIC/HEIF photo.`);
+      }
+    }
+
     await new Promise<void>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -52,7 +73,7 @@ export async function imagesToPdf(
           const x = margin + (availWidth - renderWidth) / 2;
           const y = margin + (availHeight - renderHeight) / 2;
 
-          const ext = file.name.split(".").pop()?.toUpperCase() || "JPEG";
+          const ext = isHeic ? "JPEG" : (file.name.split(".").pop()?.toUpperCase() || "JPEG");
           const format = ext === "PNG" ? "PNG" : ext === "WEBP" ? "WEBP" : "JPEG";
 
           pdf.addImage(img, format, x, y, renderWidth, renderHeight);
@@ -65,11 +86,19 @@ export async function imagesToPdf(
       };
 
       reader.onerror = () => reject(new Error(`Failed to read file: ${file.name}`));
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(imageBlob);
     });
   }
 
   return pdf.output("blob");
+}
+
+export async function heicToPdf(
+  file: File,
+  options: ImagesToPdfOptions = {},
+  onProgress?: (p: number) => void
+): Promise<Blob> {
+  return imagesToPdf([file], options, onProgress);
 }
 
 export async function textToPdf(text: string, title = "Document"): Promise<Blob> {

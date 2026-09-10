@@ -204,9 +204,14 @@ export default function PdfToolsPage() {
         <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
             <div>
-              <h3 className="font-bold text-sm text-foreground">Multi-Image PDF Builder</h3>
-              <p className="text-xs text-muted-foreground">
-                Upload photos, arrange page sequence, and export as a unified A4 PDF document.
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-sm text-foreground">Multi-Image &amp; HEIC to PDF Builder</h3>
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-extrabold border border-blue-500/20">
+                  HEIC / HEIF
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Upload iPhone/Apple photos (.HEIC), JPG, PNG, or WEBP, arrange page sequence, and export as a unified A4 PDF document.
               </p>
             </div>
 
@@ -226,11 +231,11 @@ export default function PdfToolsPage() {
 
               <label className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl cursor-pointer hover:bg-primary/90 transition-colors shadow-sm">
                 <FilePlus2 className="w-4 h-4" />
-                Add Images
+                Add Photos / HEIC
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,.heic,.heif"
                   onChange={handleAddImages}
                   className="hidden"
                 />
@@ -241,20 +246,27 @@ export default function PdfToolsPage() {
           {images.length > 0 ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {images.map((imgFile, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/30 text-xs"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center shrink-0">
-                        {idx + 1}
-                      </span>
-                      <span className="font-medium truncate text-foreground">{imgFile.name}</span>
-                      <span className="text-muted-foreground font-mono shrink-0">
-                        ({formatFileSize(imgFile.size)})
-                      </span>
-                    </div>
+                {images.map((imgFile, idx) => {
+                  const isHeic = imgFile.name.toLowerCase().endsWith(".heic") || imgFile.name.toLowerCase().endsWith(".heif");
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/30 text-xs"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center shrink-0">
+                          {idx + 1}
+                        </span>
+                        <span className="font-medium truncate text-foreground">{imgFile.name}</span>
+                        {isHeic && (
+                          <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-blue-500 text-[9px] font-extrabold border border-blue-500/20 shrink-0">
+                            Apple HEIC
+                          </span>
+                        )}
+                        <span className="text-muted-foreground font-mono shrink-0">
+                          ({formatFileSize(imgFile.size)})
+                        </span>
+                      </div>
 
                     <div className="flex items-center gap-1 shrink-0 ml-2">
                       <button
@@ -274,8 +286,9 @@ export default function PdfToolsPage() {
                       </button>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })}
+            </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button

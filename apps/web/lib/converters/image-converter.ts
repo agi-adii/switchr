@@ -14,9 +14,33 @@ export interface ImageMetadata {
 }
 
 export async function getImageMetadata(file: File): Promise<ImageMetadata> {
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  const isHeic = ext === "heic" || ext === "heif" || file.type === "image/heic" || file.type === "image/heif";
+
+  let sourceBlob: Blob = file;
+  if (isHeic) {
+    try {
+      const heic2anyModule = await import("heic2any");
+      const heic2any = heic2anyModule.default || heic2anyModule;
+      const converted = await heic2any({
+        blob: file,
+        toType: "image/jpeg",
+        quality: 0.1,
+      });
+      sourceBlob = Array.isArray(converted) ? converted[0] : converted;
+    } catch {
+      return {
+        width: 0,
+        height: 0,
+        format: "HEIC",
+        size: file.size,
+      };
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const img = new Image();
-    const url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(sourceBlob);
 
     img.onload = () => {
       URL.revokeObjectURL(url);
@@ -42,11 +66,32 @@ export async function convertImage(
   options: ImageConvertOptions,
   onProgress?: (p: number) => void
 ): Promise<{ blob: Blob; url: string; newSize: number; width: number; height: number }> {
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  const isHeic = ext === "heic" || ext === "heif" || file.type === "image/heic" || file.type === "image/heif";
+
+  let sourceBlob: Blob = file;
+  if (isHeic) {
+    if (onProgress) onProgress(0.15);
+    try {
+      const heic2anyModule = await import("heic2any");
+      const heic2any = heic2anyModule.default || heic2anyModule;
+      const converted = await heic2any({
+        blob: file,
+        toType: options.toFormat.toLowerCase() === "png" ? "image/png" : "image/jpeg",
+        quality: options.quality ?? 0.92,
+      });
+      sourceBlob = Array.isArray(converted) ? converted[0] : converted;
+    } catch (heicErr) {
+      console.error("HEIC decoding error:", heicErr);
+      throw new Error(`Failed to decode HEIC file "${file.name}". Please ensure it is a valid HEIC/HEIF photo.`);
+    }
+  }
+
   return new Promise((resolve, reject) => {
-    if (onProgress) onProgress(0.2);
+    if (onProgress) onProgress(0.3);
 
     const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(sourceBlob);
 
     img.onload = () => {
       try {

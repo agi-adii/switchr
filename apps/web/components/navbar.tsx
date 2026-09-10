@@ -32,6 +32,9 @@ export function Navbar() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65 transition-colors duration-200"
       >
+        {/* Moving Neon Accent Line */}
+        <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-moving-gradient pointer-events-none" />
+
         <div className="container flex h-16 items-center justify-between mx-auto px-4 md:px-8 max-w-6xl">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">

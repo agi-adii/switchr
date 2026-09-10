@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { GlobalAmbientMotion } from "@/components/global-ambient-motion";
+import { PageMotionWrapper } from "@/components/page-motion-wrapper";
 import Link from "next/link";
 import { Home, Repeat, Wrench, History } from "lucide-react";
 
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
@@ -44,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased flex flex-col pb-16 md:pb-0`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased flex flex-col pb-16 md:pb-0 relative overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
@@ -52,8 +54,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Continuous Moving Background Motion on every page */}
+          <GlobalAmbientMotion />
+
           <Navbar />
-          <main className="flex-1">{children}</main>
+
+          {/* Smooth fluid page transition motion on every route */}
+          <PageMotionWrapper>
+            <main className="flex-1 relative z-10">{children}</main>
+          </PageMotionWrapper>
+
           <Footer />
 
           {/* Mobile Bottom Navigation (Section 23 of prompt: Home | Convert | Tools | History) */}

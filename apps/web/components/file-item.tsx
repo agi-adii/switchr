@@ -31,6 +31,22 @@ interface Props {
   item: FileItem;
 }
 
+function getCategoryIcon(category?: string) {
+  switch (category) {
+    case "video":
+      return FileVideo;
+    case "audio":
+      return FileAudio;
+    case "data":
+      return FileCode;
+    case "document":
+      return FileText;
+    case "image":
+    default:
+      return FileImage;
+  }
+}
+
 export function FileItemCard({ item }: Props) {
   const updateFile = useConversionStore((state) => state.updateFile);
   const removeFile = useConversionStore((state) => state.removeFile);
@@ -40,24 +56,7 @@ export function FileItemCard({ item }: Props) {
 
   const metadata = getFormatMetadata(item.fromFormat);
   const availableFormats = getAvailableTargets(item.fromFormat);
-
-  const getCategoryIcon = () => {
-    switch (metadata?.category) {
-      case "video":
-        return FileVideo;
-      case "audio":
-        return FileAudio;
-      case "data":
-        return FileCode;
-      case "document":
-        return FileText;
-      case "image":
-      default:
-        return FileImage;
-    }
-  };
-
-  const Icon = getCategoryIcon();
+  const Icon = getCategoryIcon(metadata?.category);
 
   const handleApplySmartAction = (action: SmartAction) => {
     updateFile(item.id, { toFormat: action.toFormat });

@@ -20,9 +20,13 @@ build/
 dist/
 
 # PWA files
-public/sw.js
-public/sw.js.map
-public/workbox-*.js
+**/public/sw.js
+**/public/sw.js.map
+**/public/workbox-*.js
+
+# Duplicate subpackage AI agent files
+apps/*/AGENTS.md
+apps/*/CLAUDE.md
 
 # Turbo cache
 .turbo/

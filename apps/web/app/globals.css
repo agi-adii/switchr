@@ -524,3 +524,74 @@ button, a {
 .dark .cta-banner {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 14%, transparent) inset, 0 24px 56px rgba(0,0,0,0.2);
 }
+
+/* ── Rich Graphic Highlights & Specular Effects ── */
+.graphic-glow {
+  position: relative;
+}
+.graphic-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 40%, rgba(99, 102, 241, 0.2));
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* ── Global Ambient Aurora & Motion Drift ── */
+@keyframes aurora-drift-1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(5vw, 6vh, 0) scale(1.15); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes aurora-drift-2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-6vw, -5vh, 0) scale(1.12); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes aurora-drift-3 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6vw, -7vh, 0) scale(1.18); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.animate-aurora-drift-1 {
+  animation: aurora-drift-1 20s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-aurora-drift-2 {
+  animation: aurora-drift-2 24s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-aurora-drift-3 {
+  animation: aurora-drift-3 28s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Moving Accent Lines ── */
+@keyframes moving-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-moving-gradient {
+  background-size: 200% 200%;
+  animation: moving-gradient 6s ease infinite;
+}
+
+

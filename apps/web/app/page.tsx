@@ -30,9 +30,12 @@ import {
   RefreshCw,
   Cpu,
 } from "lucide-react";
+import Image from "next/image";
 import { getFileExtension, getFormatMetadata } from "@/lib/registry";
 import { toast } from "sonner";
-import { FileOrbit } from "@/components/file-orbit";
+import { HeroGraphicShowcase } from "@/components/hero-graphic-showcase";
+import { FormatTransformationShowcase } from "@/components/format-transformation-showcase";
+import { PrivacyArchitectureGraphic } from "@/components/privacy-architecture-graphic";
 
 const smoothEase = [0.16, 1, 0.3, 1] as const;
 
@@ -113,7 +116,7 @@ export default function HomePage() {
   };
 
   const CONVERT_CATEGORIES = [
-    { title: "Images", desc: "JPG, PNG, WEBP, SVG", href: "/convert/images", icon: FileImage, color: "text-blue-500 bg-blue-500/10" },
+    { title: "Images", desc: "JPG, PNG, WEBP, HEIC", href: "/convert/images", icon: FileImage, color: "text-blue-500 bg-blue-500/10" },
     { title: "Documents", desc: "DOCX, TXT, HTML", href: "/convert/documents", icon: FileText, color: "text-amber-500 bg-amber-500/10" },
     { title: "PDF", desc: "Convert & Compile", href: "/pdf-tools", icon: FileText, color: "text-red-500 bg-red-500/10" },
     { title: "Audio", desc: "MP3, WAV, AAC", href: "/convert/audio", icon: Music, color: "text-emerald-500 bg-emerald-500/10" },
@@ -124,9 +127,9 @@ export default function HomePage() {
 
   const QUICK_TOOLS = [
     { title: "Compress", desc: "Reduce file size", href: "/compress", icon: Minimize2, color: "text-emerald-500 bg-emerald-500/10" },
+    { title: "HEIC to PDF", desc: "Apple photo to PDF", href: "/pdf-tools", icon: FileText, color: "text-blue-500 bg-blue-500/10" },
     { title: "Merge PDF", desc: "Combine pages", href: "/pdf-tools", icon: Layers, color: "text-red-500 bg-red-500/10" },
-    { title: "Split PDF", desc: "Extract pages", href: "/pdf-tools", icon: Scissors, color: "text-purple-500 bg-purple-500/10" },
-    { title: "Resize Image", desc: "Scale dimensions", href: "/convert/images", icon: Maximize2, color: "text-blue-500 bg-blue-500/10" },
+    { title: "Resize Image", desc: "Scale dimensions", href: "/convert/images", icon: Maximize2, color: "text-purple-500 bg-purple-500/10" },
   ];
 
   return (
@@ -198,7 +201,7 @@ export default function HomePage() {
           transition={{ duration: 0.75, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
           className="relative flex min-h-[330px] items-center justify-center lg:min-h-[460px]"
         >
-          <FileOrbit />
+          <HeroGraphicShowcase />
         </motion.div>
       </section>
 
@@ -335,6 +338,16 @@ export default function HomePage() {
         </div>
       </motion.div>
 
+      {/* ── Interactive Format Transformation & Quality Comparison ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6, ease: smoothEase }}
+      >
+        <FormatTransformationShowcase />
+      </motion.section>
+
       {/* Major Categories: Convert */}
       <motion.div
         className="content-section content-section-formats space-y-5"
@@ -415,12 +428,12 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {([
-            { title: "100% Private",   desc: "Files never leave your device. Everything runs client-side in your browser.",  icon: Lock,         gradient: "from-emerald-500 to-teal-500",  bg: "bg-emerald-500/8", border: "border-emerald-500/15" },
-            { title: "No Size Limits", desc: "No file-size caps, no daily quotas, no paywalls. Ever.",                       icon: Zap,          gradient: "from-amber-500 to-orange-500",  bg: "bg-amber-500/8",   border: "border-amber-500/15"   },
-            { title: "Lightning Fast", desc: "Powered by WebAssembly & native browser APIs for instant results.",            icon: Cpu,          gradient: "from-blue-500 to-indigo-500",   bg: "bg-blue-500/8",    border: "border-blue-500/15"    },
-            { title: "Works Offline",  desc: "No internet required after first load. Your files stay yours.",                icon: Globe,        gradient: "from-violet-500 to-purple-500", bg: "bg-violet-500/8",  border: "border-violet-500/15"  },
-            { title: "Zero Account",   desc: "No sign-up. No credit card. Just free tools for everyone.",                   icon: CheckCircle2, gradient: "from-pink-500 to-rose-500",     bg: "bg-pink-500/8",    border: "border-pink-500/15"    },
-            { title: "Instant Results",desc: "Real-time conversion with zero queue time or server delay.",                  icon: RefreshCw,    gradient: "from-cyan-500 to-sky-500",      bg: "bg-cyan-500/8",    border: "border-cyan-500/15"    },
+            { title: "100% Private",   desc: "Files never leave your device. Everything runs client-side in your browser.",  icon: Lock,         gradient: "from-emerald-500 to-teal-500",  bg: "bg-emerald-500/8", border: "border-emerald-500/20", graphic: "/graphics/graphic-vault.jpg" },
+            { title: "No Size Limits", desc: "No file-size caps, no daily quotas, no paywalls. Ever.",                       icon: Zap,          gradient: "from-amber-500 to-orange-500",  bg: "bg-amber-500/8",   border: "border-amber-500/20", graphic: "/graphics/graphic-unlimited.jpg" },
+            { title: "Lightning Fast", desc: "Powered by WebAssembly & native browser APIs for instant results.",            icon: Cpu,          gradient: "from-blue-500 to-indigo-500",   bg: "bg-blue-500/8",    border: "border-blue-500/20", graphic: "/graphics/graphic-speed.jpg" },
+            { title: "Works Offline",  desc: "No internet required after first load. Your files stay yours.",                icon: Globe,        gradient: "from-violet-500 to-purple-500", bg: "bg-violet-500/8",  border: "border-violet-500/15" },
+            { title: "Zero Account",   desc: "No sign-up. No credit card. Just free tools for everyone.",                   icon: CheckCircle2, gradient: "from-pink-500 to-rose-500",     bg: "bg-pink-500/8",    border: "border-pink-500/15" },
+            { title: "Instant Results",desc: "Real-time conversion with zero queue time or server delay.",                  icon: RefreshCw,    gradient: "from-cyan-500 to-sky-500",      bg: "bg-cyan-500/8",    border: "border-cyan-500/15" },
           ] as const).map((feat, i) => {
             const Icon = feat.icon;
             return (
@@ -429,19 +442,43 @@ export default function HomePage() {
                 variants={itemVariants}
                 custom={i}
                 whileHover={{ y: -5, scale: 1.01, transition: { type: "spring", stiffness: 350 } }}
-                className={`feature-card relative p-5 rounded-2xl border ${feat.border} ${feat.bg} backdrop-blur-sm overflow-hidden group`}
+                className={`feature-card relative p-5 rounded-2xl border ${feat.border} ${feat.bg} backdrop-blur-sm overflow-hidden group flex flex-col justify-between`}
               >
                 <div className="feature-card-shimmer" />
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-3 shadow-lg`}>
-                  <Icon className="w-5 h-5 text-white" />
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center shadow-lg`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    {"graphic" in feat && feat.graphic && (
+                      <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-white/20 shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <Image
+                          src={feat.graphic}
+                          alt={feat.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="font-extrabold text-foreground text-sm mb-1">{feat.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
                 </div>
-                <h3 className="font-extrabold text-foreground text-sm mb-1">{feat.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
               </motion.div>
             );
           })}
         </div>
       </motion.div>
+
+      {/* ── Privacy Architecture Infographic ── */}
+      <motion.section
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6, ease: smoothEase }}
+      >
+        <PrivacyArchitectureGraphic />
+      </motion.section>
 
       {/* ── Scrolling Format Marquee ── */}
       <motion.div
@@ -538,37 +575,6 @@ export default function HomePage() {
               </motion.div>
             );
           })}
-        </div>
-      </motion.div>
-
-      {/* ── CTA Banner ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 0.6, ease: smoothEase }}
-        className="cta-banner relative overflow-hidden rounded-[2rem] p-8 sm:p-12 text-center"
-      >
-        <div className="cta-banner-glow" />
-        <div className="relative z-10 space-y-4">
-          <motion.div
-            animate={{ rotate: [0, 15, -15, 0] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 4 }}
-            className="inline-flex"
-          >
-            <Sparkles className="w-8 h-8 text-primary mx-auto" />
-          </motion.div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Ready to convert?</h2>
-          <p className="text-sm text-muted-foreground max-w-sm mx-auto">No signup. No limits. Just drop a file and go.</p>
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90 mt-2"
-          >
-            <UploadCloud className="w-4 h-4" />
-            Drop a file to start
-          </motion.button>
         </div>
       </motion.div>
 

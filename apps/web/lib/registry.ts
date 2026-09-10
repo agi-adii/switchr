@@ -138,6 +138,39 @@ export const CONVERSION_REGISTRY: Record<string, FormatMetadata> = {
       { target: "pdf", engine: "jspdf", description: "PDF Document" },
     ],
   },
+  heic: {
+    extension: "heic",
+    name: "Apple High Efficiency Image (HEIC)",
+    category: "image",
+    mimeType: "image/heic",
+    conversions: [
+      { target: "pdf", engine: "jspdf", description: "Convert Apple HEIC directly to PDF document", recommended: true },
+      { target: "jpg", engine: "canvas", description: "Universal standard JPEG image", recommended: true },
+      { target: "png", engine: "canvas", description: "Lossless transparent PNG", recommended: true },
+      { target: "webp", engine: "canvas", description: "Ultra-compact modern WebP" },
+    ],
+    smartActions: [
+      { id: "heic-pdf", label: "Convert to PDF", toFormat: "pdf", badge: "Direct", description: "Turn Apple HEIC photo into printable PDF document", engine: "jspdf" },
+      { id: "to-jpg", label: "Convert to JPG", toFormat: "jpg", badge: "Universal", description: "Compatible with Windows and Android devices", engine: "canvas" },
+      { id: "to-png", label: "Lossless PNG", toFormat: "png", badge: "Quality", description: "Lossless uncompressed image", engine: "canvas" },
+    ],
+  },
+  heif: {
+    extension: "heif",
+    name: "High Efficiency Image File (HEIF)",
+    category: "image",
+    mimeType: "image/heif",
+    conversions: [
+      { target: "pdf", engine: "jspdf", description: "Convert HEIF photo directly to PDF document", recommended: true },
+      { target: "jpg", engine: "canvas", description: "Universal standard JPEG image", recommended: true },
+      { target: "png", engine: "canvas", description: "Lossless transparent PNG" },
+      { target: "webp", engine: "canvas", description: "Ultra-compact modern WebP" },
+    ],
+    smartActions: [
+      { id: "heif-pdf", label: "Convert to PDF", toFormat: "pdf", badge: "Direct", description: "Turn HEIF photo into printable PDF document", engine: "jspdf" },
+      { id: "to-jpg", label: "Convert to JPG", toFormat: "jpg", badge: "Universal", description: "Compatible with all viewers", engine: "canvas" },
+    ],
+  },
 
   // AUDIO
   mp3: {

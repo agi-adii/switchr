@@ -4,7 +4,9 @@ import { ShieldCheck, Heart } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-muted/20 text-xs text-muted-foreground mt-auto">
+    <footer className="relative border-t border-border/80 bg-card/40 backdrop-blur-md text-xs text-muted-foreground mt-auto overflow-hidden">
+      {/* Moving Accent Border Line */}
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent animate-moving-gradient pointer-events-none" />
       <div className="container mx-auto px-4 md:px-8 py-12 max-w-6xl">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           {/* Brand Info */}
@@ -68,7 +70,7 @@ export function Footer() {
         <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
           <p>© {new Date().getFullYear()} Switchr. A free public utility platform.</p>
           <div className="flex items-center gap-1 text-muted-foreground">
-            <span>Built with care for universal accessibility</span>
+            <span>Made by agi-adii</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />
           </div>
         </div>
