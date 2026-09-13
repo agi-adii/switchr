@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Free PDF Tools - Merge, Split, Compress & Convert PDF Online",
   description:
-    "Full suite of free in-browser PDF tools. Merge PDFs, split pages, compress file sizes, and convert PDF to images with 100% privacy and zero file size limits.",
+    "Free in-browser PDF tools. Merge PDFs, split pages, compress files, and convert PDF to images with 100% privacy and zero file size limits.",
   keywords: [
     "pdf tools",
     "merge pdf",

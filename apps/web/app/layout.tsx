@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s | Switchr",
   },
   description:
-    "Free, lightning-fast in-browser file converter. Convert images, videos, audio, documents, and PDFs 100% locally with WebAssembly. No upload limits, zero tracking, total privacy.",
+    "Free, lightning-fast in-browser file converter. Convert images, video, audio, PDFs, and docs locally with WebAssembly. Zero uploads and total privacy.",
   keywords: [
     "file converter",
     "free file converter",
