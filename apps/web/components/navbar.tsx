@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { SearchPalette } from "@/components/search-palette";
 import { Search, Menu, X, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +16,7 @@ export function Navbar() {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Convert", href: "/convert" },
+    { label: "AI Enhancer", href: "/tools/enhance" },
     { label: "PDF Tools", href: "/pdf-tools" },
     { label: "Compress", href: "/compress" },
     { label: "Tools", href: "/tools" },
@@ -30,10 +30,10 @@ export function Navbar() {
         initial={{ y: -64, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65 transition-colors duration-200"
+        className="sticky top-0 z-40 w-full border-b border-white/10 bg-white/8 backdrop-blur-xl supports-[backdrop-filter]:bg-blue-950/40 transition-colors duration-200"
       >
         {/* Moving Neon Accent Line */}
-        <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-moving-gradient pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400/60 to-transparent animate-moving-gradient pointer-events-none" />
 
         <div className="container flex h-16 items-center justify-between mx-auto px-4 md:px-8 max-w-6xl">
           {/* Logo */}
@@ -47,14 +47,14 @@ export function Navbar() {
               <Image src="/logo.jpg" alt="Switchr Logo" width={32} height={32} className="w-full h-full object-cover" />
             </motion.div>
             <div className="flex items-center gap-1.5">
-              <span className="text-lg font-extrabold tracking-tight text-foreground">
+              <span className="text-lg font-extrabold tracking-tight text-white">
                 Switchr
               </span>
               <motion.span
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4, duration: 0.3 }}
-                className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20 hidden sm:inline"
+                className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded-full bg-blue-400/20 text-blue-200 border border-blue-400/30 hidden sm:inline"
               >
                 Free
               </motion.span>
@@ -79,15 +79,15 @@ export function Navbar() {
                     href={link.href}
                     className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       isActive
-                        ? "text-primary bg-primary/10 font-bold"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                        ? "text-white bg-white/20 font-bold"
+                        : "text-white/60 hover:text-white hover:bg-white/10"
                     }`}
                   >
                     {link.label}
                     {isActive && (
                       <motion.span
                         layoutId="nav-underline"
-                        className="absolute inset-0 rounded-lg bg-primary/10"
+                        className="absolute inset-0 rounded-lg bg-white/15"
                         style={{ zIndex: -1 }}
                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       />
@@ -107,26 +107,25 @@ export function Navbar() {
           >
             {/* Search Trigger */}
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border text-xs font-medium transition-colors"
+              className="icon-btn gap-2 px-3 w-auto text-white/70 hover:text-white border-white/10 bg-white/5 hover:bg-white/15"
               title="Search tools (Ctrl+K)"
             >
-              <Search className="w-3.5 h-3.5" />
+              <Search className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline text-[11px]">Search...</span>
-              <kbd className="hidden sm:inline text-[9px] px-1.5 py-0.2 rounded bg-background border border-border font-mono font-medium">
+              <kbd className="hidden sm:inline text-[9px] px-1.5 py-0.5 rounded bg-blue-400/10 border border-blue-300/20 font-mono font-medium text-blue-200">
                 Ctrl K
               </kbd>
             </motion.button>
 
-            <ThemeToggle />
 
             {/* Account / Dashboard */}
             <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/account"
-                className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border hidden sm:flex items-center justify-center"
+                className="icon-btn hidden sm:inline-flex text-white/70 hover:text-white border-white/10 bg-white/5 hover:bg-white/15"
                 title="My Account"
               >
                 <User className="w-4 h-4" />
@@ -138,7 +137,7 @@ export function Navbar() {
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.93 }}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border"
+              className="icon-btn md:hidden text-white/70 hover:text-white border-white/10 bg-white/5 hover:bg-white/15"
               aria-label="Toggle Menu"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -179,7 +178,7 @@ export function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              className="md:hidden border-b border-border bg-card/95 backdrop-blur-lg px-4 overflow-hidden"
+              className="md:hidden border-b border-white/10 bg-blue-950/60 backdrop-blur-lg px-4 overflow-hidden"
             >
               <motion.div
                 initial="hidden"
@@ -209,8 +208,8 @@ export function Navbar() {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`block px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${
                           isActive
-                            ? "bg-primary text-primary-foreground font-bold"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            ? "bg-white/20 text-white font-bold"
+                            : "text-white/60 hover:bg-white/10 hover:text-white"
                         }`}
                       >
                         {link.label}
@@ -227,7 +226,7 @@ export function Navbar() {
                   <Link
                     href="/account"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-3 py-2 rounded-xl text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground"
+                    className="block px-3 py-2 rounded-xl text-sm font-semibold text-white/60 hover:bg-white/10 hover:text-white"
                   >
                     Account &amp; History
                   </Link>

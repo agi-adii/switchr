@@ -5,6 +5,7 @@ import { imagesToPdf, textToPdf } from "@/lib/converters/pdf-tools";
 import { FileText, Image as ImageIcon, Download, Trash2, ArrowUpDown, FilePlus2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatFileSize } from "@/lib/registry";
+import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 
 export function PdfToolsSection() {
   const [activeTab, setActiveTab] = useState<"images" | "text">("images");
@@ -97,36 +98,28 @@ export function PdfToolsSection() {
             Combine images into high-resolution documents, convert text files to clean PDFs, and export instantly.
           </p>
 
-          {/* Tab Switcher */}
-          <div className="inline-flex p-1 bg-muted rounded-2xl border border-border mt-6">
-            <button
-              onClick={() => {
-                setActiveTab("images");
+          {/* Glassmorphic Pill Tab Switcher */}
+          <div className="mt-6 flex justify-center">
+            <GlassPillTabs
+              activeTab={activeTab}
+              onChange={(tabId) => {
+                setActiveTab(tabId);
                 setGeneratedPdfUrl(null);
               }}
-              className={`flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl transition-all ${
-                activeTab === "images"
-                  ? "bg-card text-foreground shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <ImageIcon className="w-3.5 h-3.5" />
-              Images to PDF ({images.length})
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab("text");
-                setGeneratedPdfUrl(null);
-              }}
-              className={`flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl transition-all ${
-                activeTab === "text"
-                  ? "bg-card text-foreground shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <FileText className="w-3.5 h-3.5" />
-              Text to PDF
-            </button>
+              layoutId="homePdfToolsTab"
+              tabs={[
+                {
+                  id: "images",
+                  label: `Images to PDF (${images.length})`,
+                  icon: <ImageIcon className="w-4 h-4 text-blue-500" />,
+                },
+                {
+                  id: "text",
+                  label: "Text to PDF",
+                  icon: <FileText className="w-4 h-4 text-purple-500" />,
+                },
+              ]}
+            />
           </div>
         </div>
 

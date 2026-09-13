@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="600" height="800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="50%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <radialGradient id="skin" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#fbcfe8"/>
+      <stop offset="60%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </radialGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c1917"/>
+      <stop offset="100%" stop-color="#0c0a09"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <!-- Ambient background glow -->
+  <circle cx="300" cy="350" r="220" fill="#6366f1" opacity="0.25"/>
+  <!-- Shoulders / Jacket -->
+  <path d="M 120 800 C 140 620, 200 560, 300 560 C 400 560, 460 620, 480 800 Z" fill="#18181b"/>
+  <!-- Neck -->
+  <rect x="260" y="440" width="80" height="130" rx="10" fill="#fda4af"/>
+  <!-- Face oval -->
+  <ellipse cx="300" cy="360" rx="125" ry="165" fill="#fecdd3"/>
+  <!-- Hair top -->
+  <path d="M 170 330 C 150 200, 220 160, 300 160 C 380 160, 450 200, 430 330 C 410 220, 380 195, 300 195 C 220 195, 190 220, 170 330 Z" fill="url(#hair)"/>
+  <!-- Eyes -->
+  <ellipse cx="245" cy="350" rx="18" ry="10" fill="#ffffff"/>
+  <circle cx="245" cy="350" r="7" fill="#0284c7"/>
+  <circle cx="247" cy="348" r="2.5" fill="#ffffff"/>
+  <ellipse cx="355" cy="350" rx="18" ry="10" fill="#ffffff"/>
+  <circle cx="355" cy="350" r="7" fill="#0284c7"/>
+  <circle cx="357" cy="348" r="2.5" fill="#ffffff"/>
+  <!-- Eyebrows -->
+  <path d="M 225 330 Q 245 320 265 330" stroke="#27272a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M 335 330 Q 355 320 375 330" stroke="#27272a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Lips -->
+  <path d="M 270 435 Q 300 450 330 435 Q 300 465 270 435 Z" fill="#e11d48"/>
+</svg>

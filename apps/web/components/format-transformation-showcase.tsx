@@ -2,6 +2,7 @@
 
 import { useState, useRef, type MouseEvent, type TouchEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   SlidersHorizontal,
@@ -12,6 +13,8 @@ import {
   Layers,
   Eye,
   Maximize2,
+  ArrowRight,
+  ArrowUpRight,
 } from "lucide-react";
 
 interface FormatPreset {
@@ -246,6 +249,29 @@ export function FormatTransformationShowcase() {
               <span className="text-xl font-black text-cyan-500">0 Bytes</span>
               <span className="text-[10px] text-muted-foreground font-semibold">(100% Private)</span>
             </div>
+          </div>
+        </div>
+
+        {/* Action Bar */}
+        <div className="mt-4 pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">
+            Processed instantly on your device via client-side WebAssembly.
+          </p>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/convert/images"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
+            >
+              <span>Convert Images</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/tools/enhance"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-card border border-border hover:border-primary/40 text-foreground text-xs font-bold hover:bg-muted/60 transition-colors shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <span>AI Photo Enhancer</span>
+            </Link>
           </div>
         </div>
       </div>

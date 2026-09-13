@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 import { createZip, extractZip, ZipEntry } from "@/lib/converters/archive-tools";
 import { Archive, Download, FilePlus2, Trash2, FolderOpen, FileCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -86,30 +87,25 @@ export default function ArchiveToolsPage() {
           Package multiple files into a compressed ZIP or inspect and extract archive contents.
         </p>
 
-        {/* Tab Switcher */}
-        <div className="inline-flex p-1 bg-muted rounded-2xl border border-border mt-4">
-          <button
-            onClick={() => setActiveTab("create")}
-            className={`flex items-center gap-1.5 px-5 py-1.5 text-xs font-bold rounded-xl transition-all ${
-              activeTab === "create"
-                ? "bg-card text-foreground shadow-sm border border-border"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Archive className="w-3.5 h-3.5" />
-            Create ZIP ({zipFiles.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("extract")}
-            className={`flex items-center gap-1.5 px-5 py-1.5 text-xs font-bold rounded-xl transition-all ${
-              activeTab === "extract"
-                ? "bg-card text-foreground shadow-sm border border-border"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <FolderOpen className="w-3.5 h-3.5" />
-            Extract ZIP ({extractedEntries.length})
-          </button>
+        {/* Glassmorphic Pill Tab Switcher */}
+        <div className="mt-6 flex justify-center">
+          <GlassPillTabs
+            activeTab={activeTab}
+            onChange={(tabId) => setActiveTab(tabId)}
+            layoutId="archiveToolsTab"
+            tabs={[
+              {
+                id: "create",
+                label: `Create ZIP (${zipFiles.length})`,
+                icon: <Archive className="w-4 h-4 text-blue-500" />,
+              },
+              {
+                id: "extract",
+                label: `Extract ZIP (${extractedEntries.length})`,
+                icon: <FolderOpen className="w-4 h-4 text-indigo-500" />,
+              },
+            ]}
+          />
         </div>
       </div>
 

@@ -52,47 +52,47 @@
 
 @layer base {
   :root {
-    --background: #fafafa;
-    --foreground: #09090b;
-    --card: #ffffff;
-    --card-foreground: #09090b;
-    --popover: #ffffff;
-    --popover-foreground: #09090b;
-    --primary: #4f46e5;
+    --background: #04040a;
+    --foreground: #f4f4f5;
+    --card: #0d0d14;
+    --card-foreground: #f4f4f5;
+    --popover: #0d0d14;
+    --popover-foreground: #f4f4f5;
+    --primary: #d946ef;
     --primary-foreground: #ffffff;
-    --secondary: #f4f4f5;
-    --secondary-foreground: #18181b;
-    --muted: #f4f4f5;
-    --muted-foreground: #71717a;
-    --accent: #f4f4f5;
-    --accent-foreground: #18181b;
+    --secondary: #13131e;
+    --secondary-foreground: #f4f4f5;
+    --muted: #111118;
+    --muted-foreground: #a1a1aa;
+    --accent: #13131e;
+    --accent-foreground: #f4f4f5;
     --destructive: #ef4444;
     --destructive-foreground: #fafafa;
-    --border: #e4e4e7;
-    --input: #e4e4e7;
-    --ring: #4f46e5;
+    --border: #1f1f2e;
+    --input: #1f1f2e;
+    --ring: #d946ef;
     --radius: 1rem;
   }
   .dark {
-    --background: #09090b;
-    --foreground: #fafafa;
-    --card: #141417;
-    --card-foreground: #fafafa;
-    --popover: #141417;
-    --popover-foreground: #fafafa;
-    --primary: #6366f1;
+    --background: #04040a;
+    --foreground: #f4f4f5;
+    --card: #0d0d14;
+    --card-foreground: #f4f4f5;
+    --popover: #0d0d14;
+    --popover-foreground: #f4f4f5;
+    --primary: #d946ef;
     --primary-foreground: #ffffff;
-    --secondary: #202024;
-    --secondary-foreground: #fafafa;
-    --muted: #1e1e22;
+    --secondary: #13131e;
+    --secondary-foreground: #f4f4f5;
+    --muted: #111118;
     --muted-foreground: #a1a1aa;
-    --accent: #202024;
-    --accent-foreground: #fafafa;
-    --destructive: #7f1d1d;
+    --accent: #13131e;
+    --accent-foreground: #f4f4f5;
+    --destructive: #ef4444;
     --destructive-foreground: #fafafa;
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #6366f1;
+    --border: #1f1f2e;
+    --input: #1f1f2e;
+    --ring: #d946ef;
   }
 }
 
@@ -108,11 +108,6 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-color: var(--background);
-    background-image:
-      radial-gradient(ellipse 80% 45% at 50% -16%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 72%),
-      radial-gradient(circle at 6% 38%, color-mix(in srgb, #38bdf8 7%, transparent), transparent 24%),
-      radial-gradient(circle at 94% 58%, color-mix(in srgb, #8b5cf6 8%, transparent), transparent 27%);
-    background-attachment: fixed;
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
   }
@@ -155,6 +150,60 @@
 
 .smooth-card:hover {
   transform: translateY(-2px);
+}
+
+/* ── Navy Square-Pill Icon Button ── */
+/* Matches the dark navy icon style from the reference (like social platform icons) */
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.6rem;
+  background: linear-gradient(145deg, #0e0e1c, #141428);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  color: #a1a1b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  background: linear-gradient(145deg, #13132a, #1b1b3a);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #e4e4f0;
+  box-shadow:
+    0 4px 14px rgba(99, 102, 241, 0.18),
+    0 0 0 1px rgba(0, 0, 0, 0.3) inset,
+    0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+/* When used as a wider pill (e.g. Search bar) — auto-width override */
+.icon-btn.w-auto {
+  width: auto;
+  padding-left: 0.65rem;
+  padding-right: 0.65rem;
+  gap: 0.4rem;
 }
 
 /* ── Page-level entry animations ── */
@@ -483,17 +532,6 @@ button, a {
 /* ── Scrolling Format Marquee ── */
 .marquee-container { width: 100%; }
 
-.marquee-fade-left,
-.marquee-fade-right {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 5rem;
-  z-index: 2;
-  pointer-events: none;
-}
-.marquee-fade-left  { left:  0; background: linear-gradient(to right, var(--background), transparent); }
-.marquee-fade-right { right: 0; background: linear-gradient(to left,  var(--background), transparent); }
 
 .marquee-track {
   display: flex;
@@ -593,5 +631,3 @@ button, a {
   background-size: 200% 200%;
   animation: moving-gradient 6s ease infinite;
 }
-
-

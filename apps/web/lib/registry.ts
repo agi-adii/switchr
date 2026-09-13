@@ -349,6 +349,25 @@ export const CONVERSION_REGISTRY: Record<string, FormatMetadata> = {
       { target: "txt", engine: "data", description: "Extract plain text content" },
     ],
   },
+  pdf: {
+    extension: "pdf",
+    name: "PDF Document",
+    category: "document",
+    mimeType: "application/pdf",
+    conversions: [
+      { target: "png", engine: "canvas", description: "Convert PDF pages to lossless PNG images", recommended: true },
+      { target: "jpg", engine: "canvas", description: "Convert PDF pages to standard JPG photos", recommended: true },
+      { target: "webp", engine: "canvas", description: "Convert PDF pages to compressed WebP images" },
+      { target: "txt", engine: "data", description: "Extract plain text content" },
+    ],
+    smartActions: [
+      { id: "to-png", label: "PDF to PNG", toFormat: "png", badge: "High Quality", description: "Convert pages to crisp PNG", engine: "canvas" },
+      { id: "to-jpg", label: "PDF to JPG", toFormat: "jpg", badge: "Standard", description: "Extract pages to JPG photos", engine: "canvas" },
+      { id: "to-webp", label: "PDF to WebP", toFormat: "webp", badge: "Web Ready", description: "Convert pages to lightweight WebP", engine: "canvas" },
+      { id: "protect-pdf", label: "Protect PDF", toFormat: "pdf", badge: "Security", description: "Password protect & encrypt PDF", engine: "jspdf" },
+      { id: "unlock-pdf", label: "Unlock PDF", toFormat: "pdf", badge: "Unlock", description: "Remove PDF password protection", engine: "jspdf" },
+    ],
+  },
 };
 
 export const SUPPORTED_EXTENSIONS = Object.keys(CONVERSION_REGISTRY);

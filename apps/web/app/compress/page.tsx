@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 import { convertImage } from "@/lib/converters/image-converter";
 import { formatFileSize } from "@/lib/registry";
 import {
@@ -102,34 +103,23 @@ export default function CompressPage() {
           Compress images, PDFs, videos, and audio without sacrificing essential quality.
         </p>
 
-        {/* Media Tabs */}
-        <div className="inline-flex p-1 bg-muted rounded-2xl border border-border mt-4">
-          {[
-            { id: "image", label: "Image", icon: ImageIcon },
-            { id: "pdf", label: "PDF", icon: FileText },
-            { id: "video", label: "Video", icon: Video },
-            { id: "audio", label: "Audio", icon: Music },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveType(tab.id as any);
-                  setFile(null);
-                  setResult(null);
-                }}
-                className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-xl transition-all ${
-                  activeType === tab.id
-                    ? "bg-card text-foreground shadow-sm border border-border"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+        {/* Glassmorphic Pill Tab Switcher */}
+        <div className="mt-6 flex justify-center">
+          <GlassPillTabs
+            activeTab={activeType}
+            onChange={(tabId) => {
+              setActiveType(tabId as any);
+              setFile(null);
+              setResult(null);
+            }}
+            layoutId="compressPageTab"
+            tabs={[
+              { id: "image", label: "Image", icon: <ImageIcon className="w-4 h-4 text-blue-500" /> },
+              { id: "pdf", label: "PDF Document", icon: <FileText className="w-4 h-4 text-red-500" /> },
+              { id: "video", label: "Video Clip", icon: <Video className="w-4 h-4 text-purple-500" /> },
+              { id: "audio", label: "Audio Track", icon: <Music className="w-4 h-4 text-emerald-500" /> },
+            ]}
+          />
         </div>
       </div>
 

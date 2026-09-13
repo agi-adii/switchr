@@ -20,6 +20,7 @@ const TOOL_GROUPS = [
   {
     category: "Image Tools",
     tools: [
+      { name: "AI Photo Enhancer", desc: "Restore detail, expand dynamic range & upscale to 4K", href: "/tools/enhance", icon: Sparkles },
       { name: "Image Converter", desc: "Convert JPG, PNG, WEBP, SVG, and BMP", href: "/convert/images", icon: FileImage },
       { name: "Image Compressor", desc: "Reduce photo file sizes without quality loss", href: "/compress", icon: FileImage },
       { name: "Image to PDF", desc: "Compile single or multiple photos into PDF", href: "/pdf-tools", icon: FileText },
@@ -28,7 +29,8 @@ const TOOL_GROUPS = [
   {
     category: "PDF Tools",
     tools: [
-      { name: "PDF Converter", desc: "Extract and convert PDF files", href: "/pdf-tools", icon: FileText },
+      { name: "PDF to Image", desc: "Extract high-resolution PNG, JPG, or WebP images", href: "/pdf-tools?tab=pdf-to-image", icon: FileImage },
+      { name: "Image to PDF", desc: "Compile single or multiple photos into PDF", href: "/pdf-tools", icon: FileText },
       { name: "Merge & Organize PDF", desc: "Combine multiple pages or reorder sequence", href: "/pdf-tools", icon: FileText },
       { name: "Text to PDF", desc: "Create clean PDF documents from plain text", href: "/pdf-tools", icon: FileText },
       { name: "Compress PDF", desc: "Reduce PDF document filesize", href: "/compress", icon: FileText },

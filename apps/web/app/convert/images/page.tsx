@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ConverterTemplate } from "@/components/converter-template";
 import { convertImage } from "@/lib/converters/image-converter";
 import { imagesToPdf } from "@/lib/converters/pdf-tools";
-import { Sliders } from "lucide-react";
+import { Sliders, Sparkles } from "lucide-react";
 
 export default function ImageConverterPage() {
   const [quality, setQuality] = useState(85);
@@ -91,6 +91,17 @@ export default function ImageConverterPage() {
             className="w-full px-3 py-1.5 rounded-lg bg-background border border-border text-xs font-mono"
           />
         </div>
+      </div>
+
+      <div className="pt-2 border-t border-border flex flex-wrap items-center justify-between gap-1 text-[11px]">
+        <span className="text-muted-foreground">Looking to fix blurry, dark, or dull photos?</span>
+        <a
+          href="/tools/enhance"
+          className="text-violet-500 font-bold hover:underline flex items-center gap-1"
+        >
+          <Sparkles className="w-3 h-3" />
+          AI Photo Enhancer &rarr;
+        </a>
       </div>
     </div>
   );

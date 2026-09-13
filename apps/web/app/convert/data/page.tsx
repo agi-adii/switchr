@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 import { jsonToCsv, csvToJson, jsonToXml, xmlToJson } from "@/lib/converters/data-converter";
 import { FileCode, Download, Eye, UploadCloud, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
@@ -94,26 +95,23 @@ export default function DataConverterPage() {
           Convert between JSON, CSV, and XML with instant validation and table preview.
         </p>
 
-        {/* Source Tabs */}
-        <div className="inline-flex p-1 bg-muted rounded-2xl border border-border mt-4">
-          {(["json", "csv", "xml"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => {
-                setActiveTab(t);
-                setTargetFormat(t === "json" ? "csv" : "json");
-                setOutputText("");
-                setPreviewRows([]);
-              }}
-              className={`px-5 py-1.5 text-xs font-bold uppercase rounded-xl transition-all ${
-                activeTab === t
-                  ? "bg-card text-foreground shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              From {t}
-            </button>
-          ))}
+        {/* Glassmorphic Pill Tab Switcher */}
+        <div className="mt-6 flex justify-center">
+          <GlassPillTabs
+            activeTab={activeTab}
+            onChange={(tabId) => {
+              setActiveTab(tabId as "json" | "csv" | "xml");
+              setTargetFormat(tabId === "json" ? "csv" : "json");
+              setOutputText("");
+              setPreviewRows([]);
+            }}
+            layoutId="convertDataTab"
+            tabs={[
+              { id: "json", label: "JSON Data" },
+              { id: "csv", label: "CSV Spreadsheet" },
+              { id: "xml", label: "XML Markup" },
+            ]}
+          />
         </div>
       </div>
 

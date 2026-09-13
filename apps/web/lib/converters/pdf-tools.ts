@@ -133,3 +133,358 @@ export async function textToPdf(text: string, title = "Document"): Promise<Blob>
 
   return pdf.output("blob");
 }
+
+export interface PdfToImageOptions {
+  format?: "png" | "jpeg" | "webp";
+  quality?: number; // 0.1 to 1.0 (applies to jpeg/webp)
+  scale?: number; // 1.0 = standard, 1.5 = HD, 2.0 = Ultra HD / 300 DPI
+  pageNumbers?: number[]; // Optional list of 1-indexed page numbers to convert
+}
+
+export interface ConvertedPdfPage {
+  pageNumber: number;
+  blob: Blob;
+  dataUrl: string;
+  width: number;
+  height: number;
+}
+
+export interface PdfMetadata {
+  pageCount: number;
+  firstPageWidth: number;
+  firstPageHeight: number;
+}
+
+export async function getPdfJs() {
+  if (typeof window === "undefined") {
+    throw new Error("PDF processing is only supported in browser environments.");
+  }
+  const pdfjs = await import("pdfjs-dist");
+  if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+    pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
+  }
+  return pdfjs;
+}
+
+export async function getPdfMetadata(file: File): Promise<PdfMetadata> {
+  const pdfjs = await getPdfJs();
+  const buffer = await file.arrayBuffer();
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
+  const doc = await loadingTask.promise;
+  const firstPage = await doc.getPage(1);
+  const viewport = firstPage.getViewport({ scale: 1.0 });
+
+  return {
+    pageCount: doc.numPages,
+    firstPageWidth: Math.round(viewport.width),
+    firstPageHeight: Math.round(viewport.height),
+  };
+}
+
+export async function pdfToImages(
+  file: File,
+  options: PdfToImageOptions = {},
+  onProgress?: (progress: number, currentPage: number, totalPages: number) => void
+): Promise<ConvertedPdfPage[]> {
+  const { format = "png", quality = 0.92, scale = 1.5, pageNumbers } = options;
+  const pdfjs = await getPdfJs();
+  const buffer = await file.arrayBuffer();
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
+  const pdfDoc = await loadingTask.promise;
+  const totalPages = pdfDoc.numPages;
+
+  const targetPages =
+    pageNumbers && pageNumbers.length > 0
+      ? pageNumbers.filter((p) => p >= 1 && p <= totalPages)
+      : Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  const results: ConvertedPdfPage[] = [];
+  const mimeType = format === "png" ? "image/png" : format === "webp" ? "image/webp" : "image/jpeg";
+
+  for (let i = 0; i < targetPages.length; i++) {
+    const pageNum = targetPages[i];
+    const page = await pdfDoc.getPage(pageNum);
+    const viewport = page.getViewport({ scale });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Could not initialize 2D canvas context for PDF rendering");
+
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+
+    // Render with white background so transparent PDFs don't look black in JPEG
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({
+      canvasContext: ctx,
+      viewport,
+    }).promise;
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (b) => {
+          if (b) resolve(b);
+          else reject(new Error(`Failed to convert page ${pageNum} to image blob`));
+        },
+        mimeType,
+        quality
+      );
+    });
+
+    const dataUrl = canvas.toDataURL(mimeType, quality);
+
+    results.push({
+      pageNumber: pageNum,
+      blob,
+      dataUrl,
+      width: canvas.width,
+      height: canvas.height,
+    });
+
+    if (onProgress) {
+      onProgress((i + 1) / targetPages.length, i + 1, targetPages.length);
+    }
+  }
+
+  return results;
+}
+
+export async function createImagesZip(
+  pages: ConvertedPdfPage[],
+  baseName = "document",
+  format: "png" | "jpeg" | "webp" = "png"
+): Promise<Blob> {
+  const JSZipModule = await import("jszip");
+  const JSZip = JSZipModule.default || JSZipModule;
+  const zip = new JSZip();
+  const ext = format === "jpeg" ? "jpg" : format;
+  const cleanName = baseName.replace(/\.[^/.]+$/, "");
+
+  pages.forEach((page) => {
+    const filename = `${cleanName}-page-${page.pageNumber}.${ext}`;
+    zip.file(filename, page.blob);
+  });
+
+  return await zip.generateAsync({ type: "blob" });
+}
+
+export interface ProtectPdfOptions {
+  userPassword: string;
+  ownerPassword?: string;
+  permissions?: {
+    print?: boolean;
+    copy?: boolean;
+    modify?: boolean;
+    annotForms?: boolean;
+  };
+}
+
+export interface PdfSecurityInfo {
+  isEncrypted: boolean;
+  requiresPassword: boolean;
+  numPages?: number;
+}
+
+export async function checkIsPdfEncrypted(file: File): Promise<PdfSecurityInfo> {
+  const buffer = await file.arrayBuffer();
+  const pdfjs = await getPdfJs();
+
+  try {
+    const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
+    const doc = await loadingTask.promise;
+    return {
+      isEncrypted: false,
+      requiresPassword: false,
+      numPages: doc.numPages,
+    };
+  } catch (err: any) {
+    if (
+      err?.name === "PasswordException" ||
+      err?.code === 1 ||
+      (err?.message && err.message.toLowerCase().includes("password"))
+    ) {
+      return {
+        isEncrypted: true,
+        requiresPassword: true,
+      };
+    }
+    // Try pdf-lib as fallback check
+    try {
+      const { PDFDocument } = await import("pdf-lib");
+      await PDFDocument.load(buffer);
+      return { isEncrypted: false, requiresPassword: false };
+    } catch (pdfLibErr: any) {
+      if (pdfLibErr?.message?.toLowerCase().includes("encrypted")) {
+        return { isEncrypted: true, requiresPassword: true };
+      }
+      throw err;
+    }
+  }
+}
+
+export async function protectPdf(
+  file: File,
+  options: ProtectPdfOptions,
+  onProgress?: (progress: number) => void
+): Promise<Blob> {
+  const userPassword = options.userPassword.trim();
+  if (!userPassword) {
+    throw new Error("Please enter a password to protect the PDF.");
+  }
+
+  const ownerPassword = options.ownerPassword?.trim() || userPassword;
+  const permissionsList: ("print" | "copy" | "modify" | "annot-forms")[] = [];
+  if (options.permissions?.print !== false) permissionsList.push("print");
+  if (options.permissions?.copy !== false) permissionsList.push("copy");
+  if (options.permissions?.modify) permissionsList.push("modify");
+  if (options.permissions?.annotForms) permissionsList.push("annot-forms");
+
+  if (onProgress) onProgress(0.1);
+
+  // Render pages using pdfjs-dist and rebuild encrypted PDF using jsPDF
+  const pdfjs = await getPdfJs();
+  const buffer = await file.arrayBuffer();
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
+  const pdfDoc = await loadingTask.promise;
+  const totalPages = pdfDoc.numPages;
+
+  if (onProgress) onProgress(0.2);
+
+  let pdf: jsPDF | null = null;
+
+  for (let i = 1; i <= totalPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const viewport = page.getViewport({ scale: 2.0 }); // High-DPI render (300 DPI)
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas context initialization failed");
+
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({
+      canvasContext: ctx,
+      viewport,
+    }).promise;
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+    const orientation: "l" | "p" = viewport.width > viewport.height ? "l" : "p";
+
+    if (i === 1) {
+      pdf = new jsPDF({
+        orientation,
+        unit: "px",
+        format: [viewport.width, viewport.height],
+        encryption: {
+          userPassword,
+          ownerPassword,
+          userPermissions: permissionsList,
+        },
+      });
+      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+    } else if (pdf) {
+      pdf.addPage([viewport.width, viewport.height], orientation);
+      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+    }
+
+    if (onProgress) onProgress(0.2 + (0.7 * i) / totalPages);
+  }
+
+  if (!pdf) throw new Error("Failed to process PDF pages for protection.");
+
+  if (onProgress) onProgress(1.0);
+  return pdf.output("blob");
+}
+
+export async function unlockPdf(
+  file: File,
+  password?: string,
+  onProgress?: (progress: number) => void
+): Promise<Blob> {
+  const buffer = await file.arrayBuffer();
+  if (onProgress) onProgress(0.2);
+
+  // Method 1: Try direct page copying with pdf-lib (preserves vector/text layer)
+  try {
+    const { PDFDocument } = await import("pdf-lib");
+    const loadedDoc = await PDFDocument.load(buffer, {
+      password: password || undefined,
+      ignoreEncryption: true,
+    } as any);
+
+    if (onProgress) onProgress(0.5);
+
+    const unlockedDoc = await PDFDocument.create();
+    const copiedPages = await unlockedDoc.copyPages(loadedDoc, loadedDoc.getPageIndices());
+    copiedPages.forEach((p) => unlockedDoc.addPage(p));
+
+    if (onProgress) onProgress(0.8);
+    const pdfBytes = await unlockedDoc.save();
+    if (onProgress) onProgress(1.0);
+
+    return new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+  } catch (pdfLibErr) {
+    console.warn("Direct pdf-lib unlock attempt failed, falling back to pdfjs render...", pdfLibErr);
+  }
+
+  // Method 2: Fallback to pdfjs rendering (for complex encrypted streams)
+  const pdfjs = await getPdfJs();
+  const loadingTask = pdfjs.getDocument({
+    data: new Uint8Array(buffer),
+    password: password || "",
+  });
+
+  const pdfDoc = await loadingTask.promise;
+  const totalPages = pdfDoc.numPages;
+  let pdf: jsPDF | null = null;
+
+  for (let i = 1; i <= totalPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const viewport = page.getViewport({ scale: 2.0 });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas context initialization failed");
+
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({
+      canvasContext: ctx,
+      viewport,
+    }).promise;
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+    const orientation: "l" | "p" = viewport.width > viewport.height ? "l" : "p";
+
+    if (i === 1) {
+      pdf = new jsPDF({
+        orientation,
+        unit: "px",
+        format: [viewport.width, viewport.height],
+      });
+      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+    } else if (pdf) {
+      pdf.addPage([viewport.width, viewport.height], orientation);
+      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+    }
+
+    if (onProgress) onProgress(0.2 + (0.8 * i) / totalPages);
+  }
+
+  if (!pdf) throw new Error("Could not unlock or render PDF pages.");
+
+  if (onProgress) onProgress(1.0);
+  return pdf.output("blob");
+}
+
+

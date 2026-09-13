@@ -1,181 +1,181 @@
 "use client";
 
-import { useState, type PointerEvent } from "react";
+import { motion } from "framer-motion";
+import { FileImage, Video, Music, FileText, Lock, Play } from "lucide-react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-import {
-  Sparkles,
-  Zap,
-  ShieldCheck,
-  FileImage,
-  Video,
-  Music,
-  FileText,
-  Layers,
-  ArrowRightLeft,
-} from "lucide-react";
+
+// Sizes for the SVG coordinate space
+const W = 640;
+const H = 340;
+const CX = W / 2;
+const CY = H / 2 - 8;
+const IS = 76; // icon box size in SVG units
+
+const ICONS = [
+  { id: "pdf",   x: 110, y: 56,  label: "PDF",   Icon: FileText,  color: "#ef4444", shadow: "rgba(239,68,68,0.55)",   bg: "from-red-700 to-red-500",          border: "rgba(248,113,113,0.6)", rotate: -8 },
+  { id: "audio", x: 76,  y: 240, label: "Audio", Icon: Music,     color: "#a855f7", shadow: "rgba(168,85,247,0.55)",  bg: "from-purple-700 to-purple-500",     border: "rgba(192,132,252,0.6)", rotate:  5 },
+  { id: "image", x: 456, y: 52,  label: "Image", Icon: FileImage, color: "#10b981", shadow: "rgba(16,185,129,0.55)",  bg: "from-emerald-600 to-teal-500",      border: "rgba(52,211,153,0.6)", rotate:  8 },
+  { id: "video", x: 468, y: 244, label: "Video", Icon: Play,      color: "#3b82f6", shadow: "rgba(59,130,246,0.55)",  bg: "from-blue-700 to-blue-500",         border: "rgba(96,165,250,0.6)", rotate: -5 },
+];
 
 export function HeroGraphicShowcase() {
-  const reduceMotion = useReducedMotion();
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (reduceMotion) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({ x: x * 12, y: y * -10 });
-  };
-
-  const handlePointerLeave = () => {
-    setTilt({ x: 0, y: 0 });
-    setIsHovered(false);
-  };
-
   return (
-    <div
-      className="relative w-full max-w-[540px] mx-auto select-none"
-      onPointerMove={handlePointerMove}
-      onPointerEnter={() => setIsHovered(true)}
-      onPointerLeave={handlePointerLeave}
-    >
-      {/* Ambient background bloom */}
-      <div className="absolute -inset-4 bg-gradient-to-tr from-primary/30 via-sky-500/20 to-purple-600/30 rounded-[3rem] filter blur-3xl opacity-70 pointer-events-none transition-opacity duration-700 -z-10" />
+    <div className="relative w-full max-w-[780px] mx-auto select-none font-sans mb-10">
 
-      {/* Main 3D Card Container */}
-      <motion.div
-        style={{
-          transform: `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
-          transformStyle: "preserve-3d",
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="relative rounded-[2.5rem] border border-white/20 dark:border-white/10 bg-card/85 backdrop-blur-2xl p-4 sm:p-5 shadow-2xl shadow-primary/20 overflow-hidden"
-      >
-        {/* Top Header bar with status badge */}
-        <div className="flex items-center justify-between gap-3 mb-3 px-2">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2.5 w-2.5 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-            </span>
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
-              Local WASM Engine
-            </span>
-          </div>
+      {/* Left annotation */}
+      <div className="absolute -left-4 sm:-left-28 top-[44%] -translate-y-1/2 hidden md:flex flex-col items-end gap-0.5 rotate-[-5deg] pointer-events-none z-10">
+        <span className="font-serif italic text-[17px] text-white/75 leading-snug">Fast</span>
+        <span className="font-serif italic text-[17px] text-white/75 leading-snug">Secure</span>
+        <span className="font-serif italic text-[17px] text-white/75 leading-snug">Private</span>
+        <svg width="44" height="38" viewBox="0 0 44 38" fill="none" className="mt-0.5 opacity-50">
+          <path d="M4 4 Q 18 28 40 34" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+          <path d="M34 30 L40 34 L36 26" stroke="white" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
 
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold">
-            <Sparkles className="w-3 h-3" />
-            <span>Zero Server Lag</span>
-          </div>
-        </div>
+      {/* Right annotation */}
+      <div className="absolute -right-4 sm:-right-36 top-[18%] hidden md:flex flex-col items-start gap-0.5 rotate-[4deg] pointer-events-none z-10">
+        <span className="font-serif italic text-[17px] text-white/75 leading-snug">All tools</span>
+        <span className="font-serif italic text-[17px] text-white/75 leading-snug">in one place</span>
+        <svg width="50" height="42" viewBox="0 0 50 42" fill="none" className="mt-0.5 opacity-50 self-end">
+          <path d="M46 4 Q 28 26 6 36" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+          <path d="M12 32 L6 36 L10 28" stroke="white" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
 
-        {/* 3D Visual Artwork Canvas */}
-        <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-gradient-to-b from-indigo-950/60 to-black/80 border border-white/10 shadow-inner group">
-          <Image
-            src="/graphics/hero-conversion-engine.jpg"
-            alt="Switchr High-Speed 3D Conversion Engine"
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 500px"
-            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-          />
+      {/* macOS window */}
+      <div className="relative rounded-[1.4rem] border border-white/10 bg-[#080b18] overflow-hidden shadow-2xl shadow-blue-950/60 flex flex-col">
 
-          {/* Vignette Overlay for Depth */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-black/30 pointer-events-none" />
+        {/* Ambient radial glow */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_55%_50%_at_50%_46%,rgba(80,50,200,0.18),transparent)]" />
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_35%_35%_at_50%_50%,rgba(59,130,246,0.10),transparent)]" />
 
-          {/* Floating Live Interaction Format Tags */}
-          <motion.div
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card/90 backdrop-blur-md border border-white/20 text-foreground shadow-lg shadow-black/30 text-xs font-bold"
-          >
-            <div className="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
-              <FileImage className="w-3.5 h-3.5" />
-            </div>
-            <div className="text-left leading-none">
-              <span className="block text-[11px] font-black">WEBP</span>
-              <span className="text-[9px] text-emerald-400 font-semibold">-85% Size</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card/90 backdrop-blur-md border border-white/20 text-foreground shadow-lg shadow-black/30 text-xs font-bold"
-          >
-            <div className="w-6 h-6 rounded-lg bg-red-500/20 text-red-400 flex items-center justify-center">
-              <FileText className="w-3.5 h-3.5" />
-            </div>
-            <div className="text-left leading-none">
-              <span className="block text-[11px] font-black">PDF Suite</span>
-              <span className="text-[9px] text-muted-foreground font-medium">Vector Pure</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-16 left-4 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card/90 backdrop-blur-md border border-white/20 text-foreground shadow-lg shadow-black/30 text-xs font-bold"
-          >
-            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <Music className="w-3.5 h-3.5" />
-            </div>
-            <div className="text-left leading-none">
-              <span className="block text-[11px] font-black">MP3 320k</span>
-              <span className="text-[9px] text-cyan-400 font-medium">High Res</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-            className="absolute bottom-16 right-4 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card/90 backdrop-blur-md border border-white/20 text-foreground shadow-lg shadow-black/30 text-xs font-bold"
-          >
-            <div className="w-6 h-6 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center">
-              <Video className="w-3.5 h-3.5" />
-            </div>
-            <div className="text-left leading-none">
-              <span className="block text-[11px] font-black">MP4 / AV1</span>
-              <span className="text-[9px] text-purple-400 font-medium">GPU Accel</span>
-            </div>
-          </motion.div>
-
-          {/* Real-time conversion flow banner at bottom of image */}
-          <div className="absolute bottom-3 inset-x-3 rounded-xl bg-background/80 backdrop-blur-md border border-border/60 p-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
-                <ArrowRightLeft className="w-3.5 h-3.5" />
-              </div>
-              <div className="leading-tight">
-                <p className="text-[11px] font-extrabold text-foreground">HEIC → WEBP</p>
-                <p className="text-[9px] text-muted-foreground">Universal Cross-Platform</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-              <ShieldCheck className="w-3 h-3" />
-              <span>In-Browser 0.1s</span>
-            </div>
+        {/* Title bar */}
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-black/30 shrink-0">
+          <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="w-3 h-3 rounded-full bg-yellow-400" />
+          <div className="w-3 h-3 rounded-full bg-green-500" />
+          <div className="flex-1 flex justify-center items-center gap-1.5" style={{ marginLeft: "-3.5rem" }}>
+            <Image src="/logo.jpg" alt="Switchr" width={16} height={16} className="rounded" onError={() => {}} />
+            <span className="text-[12px] font-semibold text-white/75 tracking-wide">Switchr</span>
           </div>
         </div>
 
-        {/* Bottom Technical Spec Bar */}
-        <div className="mt-3.5 grid grid-cols-3 gap-2 text-center">
-          <div className="p-2 rounded-xl bg-muted/40 border border-border/40">
-            <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Privacy</p>
-            <p className="text-xs font-black text-foreground mt-0.5">100% Local</p>
-          </div>
-          <div className="p-2 rounded-xl bg-muted/40 border border-border/40">
-            <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Latency</p>
-            <p className="text-xs font-black text-emerald-500 mt-0.5">&lt; 250ms</p>
-          </div>
-          <div className="p-2 rounded-xl bg-muted/40 border border-border/40">
-            <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Daily Limit</p>
-            <p className="text-xs font-black text-primary mt-0.5">Unlimited</p>
-          </div>
+        {/* SVG canvas + icon overlays */}
+        <div className="relative w-full" style={{ aspectRatio: `${W} / ${H}` }}>
+
+          {/* SVG: connection lines + folder */}
+          <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="glow2" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="2.5" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="lineGlow2" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <radialGradient id="fglow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="rgba(99,102,241,0.5)"/>
+                <stop offset="100%" stopColor="transparent"/>
+              </radialGradient>
+              <linearGradient id="fback" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(139,92,246,0.55)"/>
+                <stop offset="100%" stopColor="rgba(80,40,180,0.30)"/>
+              </linearGradient>
+              <linearGradient id="fmid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(100,160,255,0.60)"/>
+                <stop offset="100%" stopColor="rgba(50,80,200,0.35)"/>
+              </linearGradient>
+              <linearGradient id="ffront" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(140,195,255,0.70)"/>
+                <stop offset="100%" stopColor="rgba(60,100,235,0.48)"/>
+              </linearGradient>
+            </defs>
+
+            {/* Connection lines */}
+            {ICONS.map((icon) => {
+              const x1 = icon.x + IS / 2;
+              const y1 = icon.y + IS / 2;
+              const pathD = `M ${x1} ${y1} L ${CX} ${CY}`;
+              const dur = icon.id === "pdf" ? 2.2 : icon.id === "audio" ? 2.9 : icon.id === "image" ? 2.5 : 2.7;
+              const del = icon.id === "pdf" ? 0   : icon.id === "audio" ? 1.1 : icon.id === "image" ? 0.5 : 1.5;
+              return (
+                <g key={icon.id} filter="url(#lineGlow2)">
+                  <line x1={x1} y1={y1} x2={CX} y2={CY}
+                    stroke="rgba(139,92,246,0.22)" strokeWidth="1.5" strokeDasharray="5,4" />
+                  {/* Traveling dot */}
+                  <circle r="4" fill={icon.color} filter="url(#glow2)">
+                    <animateMotion dur={`${dur}s`} repeatCount="indefinite" begin={`${del}s`} path={pathD} />
+                  </circle>
+                </g>
+              );
+            })}
+
+            {/* Folder glow blob */}
+            <ellipse cx={CX} cy={CY} rx="115" ry="95" fill="url(#fglow)" opacity="0.85" />
+
+            {/* Back folder panel */}
+            <rect x={CX - 88} y={CY - 78} width="158" height="114" rx="13"
+              fill="url(#fback)" stroke="rgba(139,92,246,0.45)" strokeWidth="1.2" />
+
+            {/* Middle folder panel */}
+            <rect x={CX - 90} y={CY - 60} width="178" height="120" rx="13"
+              fill="url(#fmid)" stroke="rgba(96,165,250,0.55)" strokeWidth="1.5" />
+
+            {/* Front folder panel */}
+            <rect x={CX - 86} y={CY - 42} width="170" height="128" rx="13"
+              fill="url(#ffront)" stroke="rgba(165,210,255,0.70)" strokeWidth="1.8" />
+
+            {/* Inner mini UI inside front panel */}
+            <rect x={CX - 32} y={CY - 12} width="62" height="58" rx="10"
+              fill="rgba(8,11,24,0.88)" stroke="rgba(255,255,255,0.10)" strokeWidth="1" />
+            <circle cx={CX - 18} cy={CY + 4} r="7" fill="rgba(239,68,68,0.88)" />
+            <rect x={CX - 6} y={CY - 2} width="26" height="10" rx="5" fill="rgba(96,165,250,0.88)" />
+            <rect x={CX - 26} y={CY + 18} width="50" height="10" rx="5" fill="rgba(139,92,246,0.88)" />
+          </svg>
+
+          {/* Icon overlays — absolutely positioned using percentage */}
+          {ICONS.map((icon, i) => {
+            const lp = (icon.x / W) * 100;
+            const tp = (icon.y / H) * 100;
+            const wp = (IS / W) * 100;
+            const hp = (IS / H) * 100;
+            const floatY = i % 2 === 0 ? [-5, 5, -5] : [5, -5, 5];
+            const dur = [4.0, 4.6, 3.8, 4.3][i];
+            const del = [0,   0.9, 0.4, 1.3][i];
+
+            return (
+              <motion.div
+                key={icon.id}
+                animate={{ y: floatY }}
+                transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay: del }}
+                style={{
+                  position: "absolute",
+                  left: `${lp}%`,
+                  top: `${tp}%`,
+                  width: `${wp}%`,
+                  paddingTop: `${hp}%`,
+                  transform: `rotate(${icon.rotate}deg)`,
+                }}
+                className="z-30"
+              >
+                <div
+                  className={`absolute inset-0 rounded-[22%] bg-gradient-to-br ${icon.bg} flex flex-col items-center justify-center gap-1`}
+                  style={{
+                    border: `1.5px solid ${icon.border}`,
+                    boxShadow: `0 0 28px 6px ${icon.shadow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
+                  }}
+                >
+                  <icon.Icon className="w-[38%] h-[38%] text-white drop-shadow-lg" />
+                  <span className="text-[10px] font-extrabold tracking-wide text-white/90">{icon.label}</span>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
+

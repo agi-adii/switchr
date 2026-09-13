@@ -140,7 +140,7 @@ export default function ConvertHubPage() {
               variants={cardVariants}
               whileHover={{ y: -5, transition: { type: "spring", stiffness: 320, damping: 18 } }}
               whileTap={{ scale: 0.98 }}
-              className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:border-primary/50 hover:shadow-md transition-colors duration-200"
+              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:border-white/40 hover:bg-white/15 hover:shadow-lg transition-all duration-200"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -155,7 +155,7 @@ export default function ConvertHubPage() {
                     {cat.formats.slice(0, 3).map((f) => (
                       <span
                         key={f}
-                        className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
+                        className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white/15 text-white/70"
                       >
                         {f}
                       </span>
@@ -164,17 +164,17 @@ export default function ConvertHubPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-base font-bold text-foreground">{cat.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                  <h3 className="text-base font-bold text-white">{cat.title}</h3>
+                  <p className="text-xs text-white/60 mt-1.5 leading-relaxed">
                     {cat.desc}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-6 mt-4 border-t border-border">
+              <div className="pt-6 mt-4 border-t border-white/15">
                 <Link
                   href={cat.href}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-muted hover:bg-primary hover:text-primary-foreground text-foreground rounded-xl text-xs font-bold transition-all group"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/15 hover:bg-primary hover:text-primary-foreground text-white rounded-xl text-xs font-bold transition-all group"
                 >
                   <span>{cat.buttonText}</span>
                   <motion.span

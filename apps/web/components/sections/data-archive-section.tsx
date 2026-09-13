@@ -6,6 +6,7 @@ import { createZip } from "@/lib/converters/archive-tools";
 import { FileCode, Archive, Download, Eye, FilePlus2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatFileSize } from "@/lib/registry";
+import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 
 export function DataArchiveSection() {
   const [activeTab, setActiveTab] = useState<"data" | "archive">("data");
@@ -101,30 +102,25 @@ export function DataArchiveSection() {
             Transform JSON, CSV, and XML with instant table validation, or bundle multiple files into compressed ZIP archives.
           </p>
 
-          {/* Tab buttons */}
-          <div className="inline-flex p-1 bg-muted rounded-2xl border border-border mt-6">
-            <button
-              onClick={() => setActiveTab("data")}
-              className={`flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl transition-all ${
-                activeTab === "data"
-                  ? "bg-card text-foreground shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <FileCode className="w-3.5 h-3.5" />
-              JSON / CSV / XML Converter
-            </button>
-            <button
-              onClick={() => setActiveTab("archive")}
-              className={`flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl transition-all ${
-                activeTab === "archive"
-                  ? "bg-card text-foreground shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Archive className="w-3.5 h-3.5" />
-              ZIP Archive Packager ({zipFiles.length})
-            </button>
+          {/* Glassmorphic Pill Tab Switcher */}
+          <div className="mt-6 flex justify-center">
+            <GlassPillTabs
+              activeTab={activeTab}
+              onChange={(tabId) => setActiveTab(tabId)}
+              layoutId="homeDataArchiveTab"
+              tabs={[
+                {
+                  id: "data",
+                  label: "JSON / CSV / XML Converter",
+                  icon: <FileCode className="w-4 h-4 text-emerald-500" />,
+                },
+                {
+                  id: "archive",
+                  label: `ZIP Archive Packager (${zipFiles.length})`,
+                  icon: <Archive className="w-4 h-4 text-blue-500" />,
+                },
+              ]}
+            />
           </div>
         </div>
 
