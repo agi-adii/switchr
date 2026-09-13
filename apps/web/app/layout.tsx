@@ -9,6 +9,8 @@ import { GlobalAmbientMotion } from "@/components/global-ambient-motion";
 import { PageMotionWrapper } from "@/components/page-motion-wrapper";
 import Link from "next/link";
 import { Home, Repeat, Wrench, History } from "lucide-react";
+import { PwaProvider } from "@/lib/pwa-context";
+import { PwaInstallBanner } from "@/components/pwa-install-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -154,55 +156,59 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Structured Data for Search Engine Rich Snippets */}
-          <JsonLd />
+          <PwaProvider>
+            {/* Structured Data for Search Engine Rich Snippets */}
+            <JsonLd />
 
-          {/* Continuous Moving Background Motion on every page */}
-          <GlobalAmbientMotion />
+            {/* Continuous Moving Background Motion on every page */}
+            <GlobalAmbientMotion />
 
-          <Navbar />
+            <Navbar />
 
-          {/* Smooth fluid page transition motion on every route */}
-          <PageMotionWrapper>
-            <main className="flex-1 relative z-10">{children}</main>
-          </PageMotionWrapper>
+            {/* Smooth fluid page transition motion on every route */}
+            <PageMotionWrapper>
+              <main className="flex-1 relative z-10">{children}</main>
+            </PageMotionWrapper>
 
-          <Footer />
+            <Footer />
 
-          {/* Mobile Bottom Navigation */}
-          <nav aria-label="Mobile Navigation" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#07071299]/95 backdrop-blur-xl border-t border-indigo-500/15 flex items-center justify-around py-3 px-2">
-            <Link
-              href="/"
-              className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-            >
-              <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Home className="w-3.5 h-3.5" /></span>
-              <span>Home</span>
-            </Link>
-            <Link
-              href="/convert"
-              className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-            >
-              <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Repeat className="w-3.5 h-3.5" /></span>
-              <span>Convert</span>
-            </Link>
-            <Link
-              href="/tools"
-              className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-            >
-              <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Wrench className="w-3.5 h-3.5" /></span>
-              <span>Tools</span>
-            </Link>
-            <Link
-              href="/history"
-              className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-            >
-              <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><History className="w-3.5 h-3.5" /></span>
-              <span>History</span>
-            </Link>
-          </nav>
+            {/* Mobile Bottom Navigation */}
+            <nav aria-label="Mobile Navigation" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#07071299]/95 backdrop-blur-xl border-t border-indigo-500/15 flex items-center justify-around py-3 px-2">
+              <Link
+                href="/"
+                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
+              >
+                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Home className="w-3.5 h-3.5" /></span>
+                <span>Home</span>
+              </Link>
+              <Link
+                href="/convert"
+                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
+              >
+                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Repeat className="w-3.5 h-3.5" /></span>
+                <span>Convert</span>
+              </Link>
+              <Link
+                href="/tools"
+                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
+              >
+                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Wrench className="w-3.5 h-3.5" /></span>
+                <span>Tools</span>
+              </Link>
+              <Link
+                href="/history"
+                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
+              >
+                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><History className="w-3.5 h-3.5" /></span>
+                <span>History</span>
+              </Link>
+            </nav>
 
+            {/* PWA Floating Install Banner and Offline Notice */}
+            <PwaInstallBanner />
 
-          <Toaster richColors position="top-center" />
+            <Toaster richColors position="top-center" />
+          </PwaProvider>
         </ThemeProvider>
       </body>
     </html>

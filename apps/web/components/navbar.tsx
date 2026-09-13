@@ -5,13 +5,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SearchPalette } from "@/components/search-palette";
-import { Search, Menu, X, User } from "lucide-react";
+import { Search, Menu, X, User, DownloadCloud } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePwa } from "@/lib/pwa-context";
 
 export function Navbar() {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isInstallable, isInstalled, promptInstall } = usePwa();
 
   const navLinks = [
     { label: "Home", href: "/" },
@@ -120,6 +122,22 @@ export function Navbar() {
               </kbd>
             </motion.button>
 
+
+            {/* PWA Install Button */}
+            {isInstallable && !isInstalled && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => promptInstall()}
+                className="icon-btn gap-1.5 px-2.5 sm:px-3 w-auto text-blue-200 border-blue-400/30 bg-blue-500/20 hover:bg-blue-500/35 text-xs font-bold shadow-xs cursor-pointer"
+                title="Install Switchr as app"
+              >
+                <DownloadCloud className="w-3.5 h-3.5 text-blue-300" />
+                <span className="text-[11px] font-bold">Install App</span>
+              </motion.button>
+            )}
 
             {/* Account / Dashboard */}
             <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.95 }}>
@@ -231,6 +249,27 @@ export function Navbar() {
                     Account &amp; History
                   </Link>
                 </motion.div>
+
+                {isInstallable && !isInstalled && (
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, x: -10 },
+                      show: { opacity: 1, x: 0, transition: { duration: 0.25 } },
+                    }}
+                    className="pt-2"
+                  >
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        promptInstall();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold text-blue-200 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 transition-all cursor-pointer"
+                    >
+                      <DownloadCloud className="w-4 h-4 text-blue-300" />
+                      Install Switchr App
+                    </button>
+                  </motion.div>
+                )}
               </motion.div>
             </motion.div>
           )}
