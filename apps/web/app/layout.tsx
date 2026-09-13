@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 
 import { JsonLd } from "@/components/seo/json-ld";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://switchr.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://switchrx.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -66,6 +66,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/",
+  },
+  verification: {
+    google: "tmqaM3yKYddbFFhrHWett8KIfDMxuujgomlHbUN5RL4",
   },
   openGraph: {
     type: "website",
@@ -139,6 +142,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="google-site-verification" content="tmqaM3yKYddbFFhrHWett8KIfDMxuujgomlHbUN5RL4" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased flex flex-col pb-16 md:pb-0 relative overflow-x-hidden`}
       >

@@ -5,7 +5,7 @@ interface JsonLdProps {
 }
 
 export function JsonLd({ type = "website" }: JsonLdProps) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://switchr.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://switchrx.vercel.app";
 
   const webAppSchema = {
     "@context": "https://schema.org",
