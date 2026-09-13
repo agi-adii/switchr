@@ -356,6 +356,11 @@ export async function protectPdf(
 
   for (let i = 1; i <= totalPages; i++) {
     const page = await pdfDoc.getPage(i);
+    const unscaledViewport = page.getViewport({ scale: 1.0 });
+    const ptWidth = unscaledViewport.width;
+    const ptHeight = unscaledViewport.height;
+    const orientation: "l" | "p" = ptWidth > ptHeight ? "l" : "p";
+
     const viewport = page.getViewport({ scale: 2.0 }); // High-DPI render (300 DPI)
 
     const canvas = document.createElement("canvas");
@@ -373,25 +378,28 @@ export async function protectPdf(
       viewport,
     }).promise;
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.95);
-    const orientation: "l" | "p" = viewport.width > viewport.height ? "l" : "p";
+    const imgData = canvas.toDataURL("image/jpeg", 0.92);
 
     if (i === 1) {
       pdf = new jsPDF({
         orientation,
-        unit: "px",
-        format: [viewport.width, viewport.height],
+        unit: "pt",
+        format: [ptWidth, ptHeight],
         encryption: {
           userPassword,
           ownerPassword,
           userPermissions: permissionsList,
         },
       });
-      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+      pdf.addImage(imgData, "JPEG", 0, 0, ptWidth, ptHeight);
     } else if (pdf) {
-      pdf.addPage([viewport.width, viewport.height], orientation);
-      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+      pdf.addPage([ptWidth, ptHeight], orientation);
+      pdf.addImage(imgData, "JPEG", 0, 0, ptWidth, ptHeight);
     }
+
+    // Release canvas memory
+    canvas.width = 0;
+    canvas.height = 0;
 
     if (onProgress) onProgress(0.2 + (0.7 * i) / totalPages);
   }
@@ -408,77 +416,108 @@ export async function unlockPdf(
   onProgress?: (progress: number) => void
 ): Promise<Blob> {
   const buffer = await file.arrayBuffer();
-  if (onProgress) onProgress(0.2);
+  if (onProgress) onProgress(0.1);
 
-  // Method 1: Try direct page copying with pdf-lib (preserves vector/text layer)
+  // Method 1: If the document is NOT encrypted, use lossless direct page copying with pdf-lib.
+  // (Note: pdf-lib does NOT decrypt encrypted streams. We must NEVER copy pages if isEncrypted is true!)
   try {
     const { PDFDocument } = await import("pdf-lib");
-    const loadedDoc = await PDFDocument.load(buffer, {
-      password: password || undefined,
-      ignoreEncryption: true,
-    } as any);
+    const loadedDoc = await PDFDocument.load(buffer);
 
-    if (onProgress) onProgress(0.5);
+    if (!loadedDoc.isEncrypted) {
+      if (onProgress) onProgress(0.5);
+      const unlockedDoc = await PDFDocument.create();
+      const copiedPages = await unlockedDoc.copyPages(loadedDoc, loadedDoc.getPageIndices());
+      copiedPages.forEach((p) => unlockedDoc.addPage(p));
 
-    const unlockedDoc = await PDFDocument.create();
-    const copiedPages = await unlockedDoc.copyPages(loadedDoc, loadedDoc.getPageIndices());
-    copiedPages.forEach((p) => unlockedDoc.addPage(p));
+      if (onProgress) onProgress(0.9);
+      const pdfBytes = await unlockedDoc.save();
+      if (onProgress) onProgress(1.0);
 
-    if (onProgress) onProgress(0.8);
-    const pdfBytes = await unlockedDoc.save();
-    if (onProgress) onProgress(1.0);
-
-    return new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
-  } catch (pdfLibErr) {
-    console.warn("Direct pdf-lib unlock attempt failed, falling back to pdfjs render...", pdfLibErr);
+      return new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+    }
+  } catch {
+    // Document is encrypted or restricted; fall through to pdfjs decryption engine
   }
 
-  // Method 2: Fallback to pdfjs rendering (for complex encrypted streams)
+  // Method 2: Decrypt with pdfjs-dist and rebuild a high-resolution, unencrypted PDF
   const pdfjs = await getPdfJs();
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(buffer),
     password: password || "",
   });
 
-  const pdfDoc = await loadingTask.promise;
+  let pdfDoc;
+  try {
+    pdfDoc = await loadingTask.promise;
+  } catch (err: any) {
+    if (
+      err?.name === "PasswordException" ||
+      err?.code === 1 ||
+      err?.code === 2 ||
+      (err?.message && err.message.toLowerCase().includes("password"))
+    ) {
+      if (!password) {
+        throw new Error("This PDF is password-protected. Please enter the password to unlock it.");
+      } else {
+        throw new Error("Incorrect password. Please verify your password and try again.");
+      }
+    }
+    throw err;
+  }
+
   const totalPages = pdfDoc.numPages;
+  if (totalPages === 0) {
+    throw new Error("The decrypted PDF document contains no pages.");
+  }
+
   let pdf: jsPDF | null = null;
 
   for (let i = 1; i <= totalPages; i++) {
     const page = await pdfDoc.getPage(i);
-    const viewport = page.getViewport({ scale: 2.0 });
+    const unscaledViewport = page.getViewport({ scale: 1.0 });
+    const ptWidth = unscaledViewport.width;
+    const ptHeight = unscaledViewport.height;
+    const orientation: "l" | "p" = ptWidth > ptHeight ? "l" : "p";
+
+    // 2.0x scale ensures crisp 144-150 DPI render for text and vector clarity
+    const renderScale = 2.0;
+    const renderViewport = page.getViewport({ scale: renderScale });
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas context initialization failed");
 
-    canvas.width = Math.floor(viewport.width);
-    canvas.height = Math.floor(viewport.height);
+    canvas.width = Math.floor(renderViewport.width);
+    canvas.height = Math.floor(renderViewport.height);
 
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     await page.render({
       canvasContext: ctx,
-      viewport,
+      viewport: renderViewport,
     }).promise;
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.95);
-    const orientation: "l" | "p" = viewport.width > viewport.height ? "l" : "p";
+    const imgData = canvas.toDataURL("image/jpeg", 0.92);
 
     if (i === 1) {
       pdf = new jsPDF({
         orientation,
-        unit: "px",
-        format: [viewport.width, viewport.height],
+        unit: "pt",
+        format: [ptWidth, ptHeight],
       });
-      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+      pdf.addImage(imgData, "JPEG", 0, 0, ptWidth, ptHeight);
     } else if (pdf) {
-      pdf.addPage([viewport.width, viewport.height], orientation);
-      pdf.addImage(imgData, "JPEG", 0, 0, viewport.width, viewport.height);
+      pdf.addPage([ptWidth, ptHeight], orientation);
+      pdf.addImage(imgData, "JPEG", 0, 0, ptWidth, ptHeight);
     }
 
-    if (onProgress) onProgress(0.2 + (0.8 * i) / totalPages);
+    // Free canvas backing buffer to prevent memory leaks on large multi-page PDFs
+    canvas.width = 0;
+    canvas.height = 0;
+
+    if (onProgress) onProgress(0.1 + (0.85 * i) / totalPages);
   }
 
   if (!pdf) throw new Error("Could not unlock or render PDF pages.");

@@ -640,11 +640,11 @@ export default function HomePage() {
           <div className="absolute top-[4.25rem] left-[33%] right-[33%] hidden sm:block pointer-events-none z-0">
             <div className="how-connector" />
           </div>
-          {([
-            { step: "01", title: "Drop your file",     desc: "Drag & drop or click to select. Format and metadata are detected instantly.", icon: Upload,    color: "text-blue-500",    bg: "from-blue-500/15 to-blue-600/5",      border: "border-blue-500/20", onClick: triggerUpload },
+          {[
+            { step: "01", title: "Drop your file",     desc: "Drag & drop or click to select. Format and metadata are detected instantly.", icon: Upload,    color: "text-blue-500",    bg: "from-blue-500/15 to-blue-600/5",      border: "border-blue-500/20", action: "upload" as const },
             { step: "02", title: "Choose output",      desc: "Pick from 200+ supported formats or use one of 30+ precision presets.",     icon: Settings2, color: "text-violet-500",  bg: "from-violet-500/15 to-violet-600/5",  border: "border-violet-500/20", href: "/convert" },
             { step: "03", title: "Download instantly", desc: "Converted right in browser memory. No queue wait, no tracking, no limits.", icon: Download,  color: "text-emerald-500", bg: "from-emerald-500/15 to-emerald-600/5", border: "border-emerald-500/20", href: "/history" },
-          ] as const).map((item, i) => {
+          ].map((item, i) => {
             const Icon = item.icon;
             const content = (
               <div className={`relative z-10 p-6 rounded-2xl border ${item.border} bg-gradient-to-br ${item.bg} backdrop-blur-sm flex flex-col items-center text-center gap-3 h-full transition-all group cursor-pointer hover:shadow-lg`}>
@@ -666,12 +666,12 @@ export default function HomePage() {
                 custom={i}
                 whileHover={{ y: -6, transition: { type: "spring", stiffness: 350 } }}
               >
-                {"onClick" in item ? (
-                  <button type="button" onClick={item.onClick} className="w-full text-left">
+                {"action" in item && item.action === "upload" ? (
+                  <button type="button" onClick={() => triggerUpload()} className="w-full text-left">
                     {content}
                   </button>
                 ) : (
-                  <Link href={item.href} className="block w-full">
+                  <Link href={item.href || "#"} className="block w-full">
                     {content}
                   </Link>
                 )}
