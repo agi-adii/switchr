@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SearchPalette } from "@/components/search-palette";
@@ -9,22 +9,37 @@ import { Search, Menu, X, User, DownloadCloud } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwa } from "@/lib/pwa-context";
 
+const NAV_LINKS = [
+  { label: "Home", href: "/" },
+  { label: "Convert", href: "/convert" },
+  { label: "AI Enhancer", href: "/tools/enhance" },
+  { label: "PDF Tools", href: "/pdf-tools" },
+  { label: "Compress", href: "/compress" },
+  { label: "Tools", href: "/tools" },
+  { label: "History", href: "/history" },
+  { label: "About", href: "/about" },
+];
+
 export function Navbar() {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isInstallable, isInstalled, promptInstall } = usePwa();
 
-  const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "Convert", href: "/convert" },
-    { label: "AI Enhancer", href: "/tools/enhance" },
-    { label: "PDF Tools", href: "/pdf-tools" },
-    { label: "Compress", href: "/compress" },
-    { label: "Tools", href: "/tools" },
-    { label: "History", href: "/history" },
-    { label: "About", href: "/about" },
-  ];
+  const navLinks = NAV_LINKS;
+
+  // Resolve the single most specific matching active link so parent/child routes
+  // (e.g. /tools vs /tools/enhance) don't both highlight at the same time.
+  const activeHref = useMemo(() => {
+    const matches = NAV_LINKS.filter((link) => {
+      if (link.href === "/") return pathname === "/";
+      return pathname === link.href || pathname.startsWith(`${link.href}/`);
+    });
+    if (matches.length === 0) return null;
+    return matches.reduce((longest, current) =>
+      current.href.length > longest.href.length ? current : longest
+    ).href;
+  }, [pathname]);
 
   return (
     <>
@@ -66,10 +81,7 @@ export function Navbar() {
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-1 lg:gap-2">
             {navLinks.map((link, i) => {
-              const isActive =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(link.href);
+              const isActive = link.href === activeHref;
               return (
                 <motion.div
                   key={link.href}
@@ -209,10 +221,7 @@ export function Navbar() {
                 className="py-4 space-y-1"
               >
                 {navLinks.map((link) => {
-                  const isActive =
-                    link.href === "/"
-                      ? pathname === "/"
-                      : pathname.startsWith(link.href);
+                  const isActive = link.href === activeHref;
                   return (
                     <motion.div
                       key={link.href}
