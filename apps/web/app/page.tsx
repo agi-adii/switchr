@@ -191,11 +191,11 @@ export default function HomePage() {
     <div className="homepage-shell w-full max-w-6xl mx-auto py-8 md:py-14 px-4 sm:px-6 space-y-16 md:space-y-24 overflow-hidden">
       
       {/* ── 1. Hero Section ── */}
-      <section className="hero-grid relative grid lg:grid-cols-[1.1fr_0.9fr] items-center gap-10 lg:gap-8 min-h-[520px]">
-        {/* Ambient background glow */}
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-primary/20 rounded-full blur-3xl pointer-events-none -z-10" />
+      <section className="relative flex flex-col items-center justify-center text-center py-6 md:py-12 min-h-[460px]">
+        {/* Ambient background glow centered */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[340px] bg-primary/20 rounded-full blur-3xl pointer-events-none -z-10" />
 
-        <div className="relative z-10 max-w-2xl pt-4 lg:pt-0">
+        <div className="relative z-10 max-w-3xl flex flex-col items-center text-center">
           <motion.div
             initial={{ opacity: 0, y: -12, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -216,7 +216,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.08, ease: smoothEase }}
-            className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-[-0.05em] leading-[1.02] text-foreground"
+            className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-[-0.05em] leading-[1.05] text-foreground text-center"
           >
             Transform files, <br />
             <span className="bg-gradient-to-r from-pink-500 via-fuchsia-400 to-purple-500 bg-clip-text text-transparent">
@@ -228,7 +228,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.16, ease: smoothEase }}
-            className="mt-5 text-sm sm:text-base leading-7 text-muted-foreground max-w-xl"
+            className="mt-5 text-sm sm:text-base leading-7 text-muted-foreground max-w-2xl text-center mx-auto"
           >
             Switchr converts, compresses, and enhances your files with near-instant WebAssembly speed. Zero server uploads, zero quotas, and total confidentiality.
           </motion.p>
@@ -238,7 +238,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.24, ease: smoothEase }}
-            className="mt-7 flex flex-wrap items-center gap-3"
+            className="mt-7 flex flex-wrap items-center justify-center gap-3"
           >
             <Link
               href="/convert"
@@ -271,7 +271,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.32, ease: smoothEase }}
-            className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold text-muted-foreground"
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs font-semibold text-muted-foreground"
           >
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -287,8 +287,6 @@ export default function HomePage() {
             </span>
           </motion.div>
         </div>
-
-
       </section>
 
       {/* ── 2. Interactive Stats Bar ── */}
