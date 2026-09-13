@@ -289,7 +289,38 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 2. Interactive Stats Bar ── */}
+      {/* ── 2. Interactive Scrolling Format Marquee ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.35, ease: smoothEase }}
+        className="space-y-3 -mt-6 mb-2"
+      >
+        <div className="flex items-center justify-center gap-2">
+          <p className="text-center text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
+            200+ formats supported — Click any format to start
+          </p>
+        </div>
+        <div className="marquee-container relative overflow-hidden">
+          <div className="marquee-track">
+            {[...MARQUEE_TAGS, ...MARQUEE_TAGS].map((tag, i) => {
+              const route = getRouteForExtension(tag);
+              return (
+                <Link
+                  key={`${tag}-${i}`}
+                  href={route}
+                  className="inline-flex items-center px-3.5 py-1.5 rounded-full text-[11px] font-bold border border-border/70 bg-card/80 text-muted-foreground whitespace-nowrap backdrop-blur-sm hover:border-primary/50 hover:text-primary hover:bg-muted/70 transition-all cursor-pointer shadow-sm active:scale-95"
+                  title={`Convert .${tag} files`}
+                >
+                  .{tag}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── 3. Interactive Stats Bar ── */}
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -860,39 +891,7 @@ export default function HomePage() {
         <PrivacyArchitectureGraphic />
       </motion.section>
 
-      {/* ── 11. Interactive Scrolling Format Marquee ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="space-y-3"
-      >
-        <div className="flex items-center justify-center gap-2">
-          <p className="text-center text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
-            200+ formats supported — Click any format to start
-          </p>
-        </div>
-        <div className="marquee-container relative overflow-hidden">
-          <div className="marquee-track">
-            {[...MARQUEE_TAGS, ...MARQUEE_TAGS].map((tag, i) => {
-              const route = getRouteForExtension(tag);
-              return (
-                <Link
-                  key={`${tag}-${i}`}
-                  href={route}
-                  className="inline-flex items-center px-3.5 py-1.5 rounded-full text-[11px] font-bold border border-border/70 bg-card/80 text-muted-foreground whitespace-nowrap backdrop-blur-sm hover:border-primary/50 hover:text-primary hover:bg-muted/70 transition-all cursor-pointer shadow-sm active:scale-95"
-                  title={`Convert .${tag} files`}
-                >
-                  .{tag}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── 12. Bottom High-Impact Call to Action ── */}
+      {/* ── 11. Bottom High-Impact Call to Action ── */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
