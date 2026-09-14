@@ -764,20 +764,20 @@ export default function HomePage() {
         <motion.div
           variants={fadeUp}
           custom={0}
-          className="section-heading flex items-center justify-between border-b border-border/70 pb-3"
+          className="section-heading flex items-center justify-between border-b border-white/15 pb-3"
         >
           <div>
-            <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-sm font-extrabold uppercase tracking-wider text-white/80">
               Featured Tools Suite
             </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Specialized offline utilities for everyday workflows</p>
+            <p className="text-xs text-white/60 mt-0.5">Specialized offline utilities for everyday workflows</p>
           </div>
           <Link
             href="/tools"
-            className="text-xs font-bold text-primary hover:underline flex items-center gap-1 group"
+            className="text-xs font-bold text-white hover:text-white/80 flex items-center gap-1 group transition-colors"
           >
             <span>All Tools Directory</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-white" />
           </Link>
         </motion.div>
 
@@ -794,27 +794,27 @@ export default function HomePage() {
               >
                 <Link
                   href={tool.href}
-                  className="quick-tool-card p-4 sm:p-5 border border-border/70 rounded-2xl flex items-center gap-3.5 group block bg-card/75 backdrop-blur-sm hover:border-primary/50 hover:shadow-lg transition-all"
+                  className="quick-tool-card p-4 sm:p-5 border border-white/20 rounded-2xl flex items-center gap-3.5 group block bg-white/10 backdrop-blur-md hover:border-white/40 hover:bg-white/15 hover:shadow-xl hover:shadow-white/5 transition-all"
                 >
                   <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${tool.color} group-hover:scale-110 transition-transform`}
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${tool.color} group-hover:scale-110 transition-transform shadow-xs border border-white/15`}
                   >
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
-                      <h4 className="text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                      <h4 className="text-xs sm:text-sm font-bold text-white truncate group-hover:text-white transition-colors">
                         {tool.title}
                       </h4>
                       {"badge" in tool && tool.badge && (
-                        <span className="px-1.5 py-0.2 rounded-full bg-primary/20 text-primary text-[9px] font-black shrink-0">
+                        <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-white text-[9px] font-black shrink-0 border border-white/30">
                           {tool.badge}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-muted-foreground truncate mt-0.5">{tool.desc}</p>
+                    <p className="text-[11px] text-white/70 truncate mt-0.5">{tool.desc}</p>
                   </div>
-                  <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-white/60 group-hover:text-white opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </Link>
               </motion.div>
             );
