@@ -86,21 +86,109 @@ export function GlobalAmbientMotion() {
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     document.addEventListener("mouseleave", handlePointerLeave);
 
-    // ── Rainbow spectrum bands config ───────────────────────────────
-    const bands = [
-      { hue: 320, label: "pink" },     // Vibrant pink/magenta matching theme
-      { hue: 285, label: "fuchsia" },  // Deep fuchsia
-      { hue: 260, label: "violet" },   // Violet / purple
-      { hue: 235, label: "indigo" },   // Indigo
-      { hue: 195, label: "cyan" },     // Cyan accent
-      { hue: 155, label: "emerald" },  // Subtle emerald
-      { hue: 300, label: "magenta" },  // Magenta
+    // ── Harmonically Ordered Color Palettes for Continuous Fluid Cycles ────
+    interface ColorPalette {
+      name: string;
+      bands: number[]; // 7 base hues for vertical rainbow curtain
+      orbHueRange: [number, number]; // [minHue, maxHue] for floating orbs
+      accentRgb: [number, number, number]; // Constellation links & cursor glow
+      beamRgb: [number, number, number];   // Cursor center beam
+      particles: string[]; // Sparkle shimmer colors
+    }
+
+    const PALETTES: ColorPalette[] = [
+      // 1. Cyberpunk Violet (Pink, Fuchsia, Violet, Indigo, Cyan, Emerald, Magenta)
+      {
+        name: "Cyberpunk Violet",
+        bands: [330, 298, 275, 245, 210, 180, 318],
+        orbHueRange: [280, 335],
+        accentRgb: [217, 70, 239],
+        beamRgb: [244, 63, 94],
+        particles: ["#ec4899", "#d946ef", "#a855f7", "#38bdf8", "#f43f5e", "#ffffff"],
+      },
+      // 2. Deep Twilight (Violet, Deep Purple, Royal Indigo, Cobalt, Azure, Lavender)
+      {
+        name: "Deep Twilight",
+        bands: [280, 260, 242, 222, 202, 185, 270],
+        orbHueRange: [240, 280],
+        accentRgb: [168, 85, 247],
+        beamRgb: [99, 102, 241],
+        particles: ["#a855f7", "#c084fc", "#818cf8", "#6366f1", "#c4b5fd", "#ffffff"],
+      },
+      // 3. Oceanic Azure & Teal (Royal Blue, Cyan, Aquamarine, Mint, Emerald)
+      {
+        name: "Oceanic Azure",
+        bands: [230, 210, 195, 180, 165, 150, 220],
+        orbHueRange: [180, 225],
+        accentRgb: [56, 189, 248],
+        beamRgb: [45, 212, 191],
+        particles: ["#38bdf8", "#06b6d4", "#2dd4bf", "#10b981", "#60a5fa", "#ffffff"],
+      },
+      // 4. Aurora Emerald (Emerald, Teal, Cyan, Sky, Indigo, Mint)
+      {
+        name: "Aurora Emerald",
+        bands: [160, 180, 200, 225, 250, 175, 155],
+        orbHueRange: [145, 195],
+        accentRgb: [16, 185, 129],
+        beamRgb: [6, 182, 212],
+        particles: ["#10b981", "#34d399", "#22d3ee", "#818cf8", "#6ee7b7", "#ffffff"],
+      },
+      // 5. Cosmic Sunset (Plum, Magenta, Hot Pink, Crimson, Amber Orange, Rose)
+      {
+        name: "Cosmic Sunset",
+        bands: [285, 310, 335, 355, 18, 340, 295],
+        orbHueRange: [325, 360],
+        accentRgb: [244, 63, 94],
+        beamRgb: [251, 146, 60],
+        particles: ["#f43f5e", "#fb923c", "#f59e0b", "#d946ef", "#fda4af", "#ffffff"],
+      },
+      // 6. Solar Amber (Crimson, Coral, Tangerine, Golden Amber, Warm Orange)
+      {
+        name: "Solar Amber",
+        bands: [348, 10, 28, 44, 24, 358, 338],
+        orbHueRange: [15, 45],
+        accentRgb: [249, 115, 22],
+        beamRgb: [234, 179, 8],
+        particles: ["#f97316", "#eab308", "#ef4444", "#f43f5e", "#fde047", "#ffffff"],
+      },
     ];
 
-    const NUM_BANDS = bands.length;
-    const phases = bands.map((_, i) => (i / NUM_BANDS) * Math.PI * 2);
-    const speeds = bands.map(() => 0.28 + Math.random() * 0.18);
-    const amps = bands.map(() => 0.08 + Math.random() * 0.12);
+    const NUM_BANDS = 7;
+    const phases = Array.from({ length: NUM_BANDS }).map((_, i) => (i / NUM_BANDS) * Math.PI * 2);
+    const speeds = Array.from({ length: NUM_BANDS }).map(() => 0.18 + Math.random() * 0.12);
+
+    // Shortest angular distance interpolation for smooth 360-degree color wheel transitions
+    const lerpHue = (a: number, b: number, t: number): number => {
+      const diff = ((b - a + 540) % 360) - 180;
+      return (a + diff * t + 360) % 360;
+    };
+
+    // Ken Perlin's C2-continuous Smootherstep (zero 1st and 2nd derivatives at endpoints)
+    const smootherstep = (t: number): number => {
+      const clamped = Math.max(0, Math.min(1, t));
+      return clamped * clamped * clamped * (clamped * (clamped * 6 - 15) + 10);
+    };
+
+    // ── Time Interval Configuration ─────────────────────────────────
+    const DWELL_TIME = 2.4;       // Dwell briefly on each color theme (2.4s)
+    const MORPH_TIME = 2.4;       // Seamlessly morph to next theme (2.4s)
+    const CYCLE_PERIOD = DWELL_TIME + MORPH_TIME; // Fast 4.8s dynamic cycle
+    const startTime = performance.now();
+    let lastTime = performance.now();
+
+    // ── Continuous State Damping (Viscous Fluid Lerp) ───────────────
+    const renderedHues = [...PALETTES[0].bands];
+    let renderedAccentR = PALETTES[0].accentRgb[0];
+    let renderedAccentG = PALETTES[0].accentRgb[1];
+    let renderedAccentB = PALETTES[0].accentRgb[2];
+
+    let renderedBeamR = PALETTES[0].beamRgb[0];
+    let renderedBeamG = PALETTES[0].beamRgb[1];
+    let renderedBeamB = PALETTES[0].beamRgb[2];
+
+    let renderedPrimaryHue = PALETTES[0].bands[1];
+    let renderedOrbMinHue = PALETTES[0].orbHueRange[0];
+    let renderedOrbMaxHue = PALETTES[0].orbHueRange[1];
 
     // ── Dot-matrix overlay config ───────────────────────────────────
     const DOT_SPACING = 30;   // pixels between dot centers
@@ -115,7 +203,7 @@ export function GlobalAmbientMotion() {
       vx: (Math.random() - 0.5) * 0.7,
       vy: (Math.random() - 0.5) * 0.7,
       radius: 220 + Math.random() * 260,
-      hue: 270 + Math.random() * 60, // Pink to purple hues
+      hue: 270 + Math.random() * 60,
     }));
 
     // ── Foreground Motion Graphics: Particles & Trail ───────────────
@@ -125,15 +213,7 @@ export function GlobalAmbientMotion() {
     const trailPoints: TrailPoint[] = [];
     const MAX_TRAIL_POINTS = 16;
 
-    const PARTICLE_COLORS = [
-      "#ec4899", // pink-500
-      "#d946ef", // fuchsia-500
-      "#a855f7", // purple-500
-      "#c084fc", // purple-400
-      "#38bdf8", // sky-400
-      "#f43f5e", // rose-500
-      "#ffffff", // pure white shimmer
-    ];
+    let currentParticleColors = PALETTES[0].particles;
 
     const PARTICLE_TYPES: Array<"diamond" | "cross" | "spark" | "ring"> = [
       "diamond",
@@ -150,7 +230,7 @@ export function GlobalAmbientMotion() {
 
         const angle = Math.random() * Math.PI * 2;
         const dispSpeed = 0.8 + Math.random() * (1.5 + Math.min(speed * 0.2, 3));
-        const color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+        const color = currentParticleColors[Math.floor(Math.random() * currentParticleColors.length)];
         const type = PARTICLE_TYPES[Math.floor(Math.random() * PARTICLE_TYPES.length)];
 
         particles.push({
@@ -173,7 +253,63 @@ export function GlobalAmbientMotion() {
 
     // ── Main Animation Render Loop ──────────────────────────────────
     const render = () => {
-      time += 0.008;
+      const now = performance.now();
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+
+      time += 0.007;
+
+      // ── Calculate Time-Interval Color Transitions ─────────────────
+      const elapsedSeconds = (now - startTime) / 1000;
+      const cycleProgress = elapsedSeconds % CYCLE_PERIOD;
+      const fromIdx = Math.floor(elapsedSeconds / CYCLE_PERIOD) % PALETTES.length;
+      const toIdx = (fromIdx + 1) % PALETTES.length;
+
+      let morphProgress = 0;
+      if (cycleProgress > DWELL_TIME) {
+        const rawT = (cycleProgress - DWELL_TIME) / MORPH_TIME;
+        morphProgress = smootherstep(rawT);
+      }
+
+      const pFrom = PALETTES[fromIdx];
+      const pTo = PALETTES[toIdx];
+
+      // Blend particle colors proportionally
+      currentParticleColors = morphProgress < 0.5 ? pFrom.particles : pTo.particles;
+
+      // Viscous fluid exponential damping (smooth, responsive tracking)
+      const fluidDamp = 1 - Math.exp(-5.5 * dt);
+
+      for (let b = 0; b < NUM_BANDS; b++) {
+        const targetH = lerpHue(pFrom.bands[b], pTo.bands[b], morphProgress);
+        renderedHues[b] = lerpHue(renderedHues[b], targetH, fluidDamp);
+      }
+
+      // Smooth accents
+      const targetAccR = pFrom.accentRgb[0] + (pTo.accentRgb[0] - pFrom.accentRgb[0]) * morphProgress;
+      const targetAccG = pFrom.accentRgb[1] + (pTo.accentRgb[1] - pFrom.accentRgb[1]) * morphProgress;
+      const targetAccB = pFrom.accentRgb[2] + (pTo.accentRgb[2] - pFrom.accentRgb[2]) * morphProgress;
+      renderedAccentR += (targetAccR - renderedAccentR) * fluidDamp;
+      renderedAccentG += (targetAccG - renderedAccentG) * fluidDamp;
+      renderedAccentB += (targetAccB - renderedAccentB) * fluidDamp;
+
+      const targetBmR = pFrom.beamRgb[0] + (pTo.beamRgb[0] - pFrom.beamRgb[0]) * morphProgress;
+      const targetBmG = pFrom.beamRgb[1] + (pTo.beamRgb[1] - pFrom.beamRgb[1]) * morphProgress;
+      const targetBmB = pFrom.beamRgb[2] + (pTo.beamRgb[2] - pFrom.beamRgb[2]) * morphProgress;
+      renderedBeamR += (targetBmR - renderedBeamR) * fluidDamp;
+      renderedBeamG += (targetBmG - renderedBeamG) * fluidDamp;
+      renderedBeamB += (targetBmB - renderedBeamB) * fluidDamp;
+
+      const targetPrimary = renderedHues[1] ?? 280;
+      renderedPrimaryHue = lerpHue(renderedPrimaryHue, targetPrimary, fluidDamp);
+
+      const targetOrbMin = lerpHue(pFrom.orbHueRange[0], pTo.orbHueRange[0], morphProgress);
+      const targetOrbMax = lerpHue(pFrom.orbHueRange[1], pTo.orbHueRange[1], morphProgress);
+      renderedOrbMinHue = lerpHue(renderedOrbMinHue, targetOrbMin, fluidDamp);
+      renderedOrbMaxHue = lerpHue(renderedOrbMaxHue, targetOrbMax, fluidDamp);
+
+      const currentAccentRgb = `${Math.round(renderedAccentR)}, ${Math.round(renderedAccentG)}, ${Math.round(renderedAccentB)}`;
+      const currentBeamRgb = `${Math.round(renderedBeamR)}, ${Math.round(renderedBeamG)}, ${Math.round(renderedBeamB)}`;
 
       // 1. Smooth mouse tracking with lerp
       if (mouse.isActive) {
@@ -217,37 +353,55 @@ export function GlobalAmbientMotion() {
       }
 
       // ─────────────────────────────────────────────────────────────
-      // LAYER 1: Background Canvas (Bands, Reactive Dot Matrix, Orbs)
+      // LAYER 1: Background Canvas (Atmospheric Glow, Bands, Dots, Orbs)
       // ─────────────────────────────────────────────────────────────
       bgCtx.clearRect(0, 0, width, height);
 
+      // 1a. Ambient deep radial backlight bathing the whole screen in current theme
+      const baseGrad = bgCtx.createRadialGradient(
+        width * 0.5,
+        height * 0.45,
+        0,
+        width * 0.5,
+        height * 0.5,
+        Math.max(width, height) * 0.85
+      );
+      baseGrad.addColorStop(0, `hsla(${renderedPrimaryHue.toFixed(1)}, 72%, 14%, 0.38)`);
+      baseGrad.addColorStop(0.5, `hsla(${renderedPrimaryHue.toFixed(1)}, 62%, 8%, 0.20)`);
+      baseGrad.addColorStop(1, "rgba(4, 4, 10, 0)");
+      bgCtx.fillStyle = baseGrad;
+      bgCtx.fillRect(0, 0, width, height);
+
       const bandW = width / NUM_BANDS;
 
-      // 1a. Draw flowing ambient rainbow curtain
+      // 1b. Draw flowing ambient rainbow curtain with coherent harmonic wave
       for (let b = 0; b < NUM_BANDS; b++) {
         const x = b * bandW;
-        const { hue } = bands[b];
-        const flow = Math.sin(time * speeds[b] + phases[b]);
+        const waveProgress = b / NUM_BANDS;
+        // Harmonic cohesive wave progression across bands
+        const wave = Math.sin(time * 0.8 + waveProgress * Math.PI * 1.5) * 2.8;
+        const hue = (renderedHues[b] + wave + 360) % 360;
+        const flow = Math.sin(time * 0.6 + waveProgress * Math.PI * 2);
 
-        const sat = 72 + flow * 15;
-        const light = 30 + flow * amps[b] * 100;
-        const alpha = 0.50 + flow * 0.18;
+        const sat = 75 + flow * 4;
+        const light = 31 + flow * 3;
+        const alpha = 0.50 + flow * 0.07;
 
         const grad = bgCtx.createLinearGradient(x, 0, x, height);
-        grad.addColorStop(0, `hsla(${hue}, ${sat}%, ${light + 18}%, ${alpha * 0.55})`);
-        grad.addColorStop(0.3, `hsla(${hue}, ${sat}%, ${light + 8}%,  ${alpha * 0.8})`);
-        grad.addColorStop(0.6, `hsla(${hue}, ${sat}%, ${light}%,      ${alpha})`);
-        grad.addColorStop(1, `hsla(${hue}, ${sat}%, ${light - 10}%, ${alpha * 0.5})`);
+        grad.addColorStop(0, `hsla(${hue.toFixed(1)}, ${sat}%, ${light + 16}%, ${alpha * 0.52})`);
+        grad.addColorStop(0.3, `hsla(${hue.toFixed(1)}, ${sat}%, ${light + 7}%,  ${alpha * 0.78})`);
+        grad.addColorStop(0.6, `hsla(${hue.toFixed(1)}, ${sat}%, ${light}%,      ${alpha})`);
+        grad.addColorStop(1, `hsla(${hue.toFixed(1)}, ${sat}%, ${light - 9}%, ${alpha * 0.48})`);
 
         bgCtx.fillStyle = grad;
-        bgCtx.fillRect(x - bandW * 0.35, 0, bandW * 1.7, height);
+        bgCtx.fillRect(x - bandW * 0.55, 0, bandW * 2.1, height);
       }
 
-      // 1b. Subtle vertical scan lines
+      // 1c. Subtle vertical scan lines
       for (let b = 0; b < NUM_BANDS; b++) {
         const cx = b * bandW + bandW / 2;
-        const flow = Math.sin(time * speeds[b] * 1.4 + phases[b] + 0.5);
-        const scanAlpha = 0.10 + flow * 0.07;
+        const flow = Math.sin(time * 0.9 + (b / NUM_BANDS) * Math.PI * 2 + 0.5);
+        const scanAlpha = 0.07 + flow * 0.04;
 
         const scanGrad = bgCtx.createLinearGradient(cx - 4, 0, cx + 4, 0);
         scanGrad.addColorStop(0, "rgba(255,255,255,0)");
@@ -258,7 +412,7 @@ export function GlobalAmbientMotion() {
         bgCtx.fillRect(cx - 8, 0, 16, height);
       }
 
-      // 1c. Floating Graphical Orbs with Cursor Repulsion Physics
+      // 1d. Floating Graphical Orbs with Cursor Repulsion & Dynamic Palette Hue
       bgCtx.globalCompositeOperation = "screen";
       for (let i = 0; i < NUM_ORBS; i++) {
         const orb = orbs[i];
@@ -290,7 +444,9 @@ export function GlobalAmbientMotion() {
         if (orb.y < -orb.radius) orb.vy = Math.abs(orb.vy) + 0.2;
         if (orb.y > height + orb.radius) orb.vy = -Math.abs(orb.vy) - 0.2;
 
-        orb.hue = (orb.hue + 0.04) % 360;
+        // Steering orb hue smoothly with faster transition tracking
+        const targetOrbHue = lerpHue(renderedOrbMinHue, renderedOrbMaxHue, i / NUM_ORBS);
+        orb.hue = lerpHue(orb.hue, targetOrbHue, fluidDamp * 0.7);
 
         const orbGrad = bgCtx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.radius);
         orbGrad.addColorStop(0, `hsla(${orb.hue}, 92%, 62%, 0.16)`);
@@ -304,7 +460,7 @@ export function GlobalAmbientMotion() {
       }
       bgCtx.globalCompositeOperation = "source-over";
 
-      // 1d. Interactive Dot-Matrix Overlay + Magnetic Cursor Lens & Constellation
+      // 1e. Interactive Dot-Matrix Overlay + Magnetic Cursor Lens & Constellation
       const cols = Math.ceil(width / DOT_SPACING) + 1;
       const rows = Math.ceil(height / DOT_SPACING) + 1;
 
@@ -349,14 +505,16 @@ export function GlobalAmbientMotion() {
           }
 
           const bIdx = Math.min(Math.floor((px / width) * NUM_BANDS), NUM_BANDS - 1);
-          const { hue } = bands[bIdx];
+          const hue = renderedHues[bIdx];
 
           const pulse = Math.sin(time * 1.6 + r * 0.35 + c * 0.45) * 0.5 + 0.5;
           const a = Math.min(1, DOT_ALPHA * (0.5 + pulse * 0.5) + extraAlpha);
 
-          // Hue shift towards vibrant fuchsia/pink/cyan when cursor is near
-          const targetHue = cursorInfluence > 0 ? (cursorInfluence > 0.5 ? 310 : 280) : hue;
-          const sat = 60 + pulse * 25 + cursorInfluence * 35;
+          // Hue shift towards active theme accent when cursor is near
+          const targetHue = cursorInfluence > 0 
+            ? (cursorInfluence > 0.5 ? lerpHue(hue, (renderedPrimaryHue + 40) % 360, 0.7) : hue) 
+            : hue;
+          const sat = 62 + pulse * 24 + cursorInfluence * 34;
           const lig = 60 + pulse * 20 + cursorInfluence * 25;
 
           bgCtx.beginPath();
@@ -366,7 +524,7 @@ export function GlobalAmbientMotion() {
         }
       }
 
-      // 1e. Holographic Constellation Lines between activated dots near cursor
+      // 1f. Holographic Constellation Lines between activated dots near cursor
       if (activeDots.length > 1) {
         bgCtx.lineWidth = 1.1;
         const maxLinkDist = DOT_SPACING * 1.65;
@@ -381,7 +539,7 @@ export function GlobalAmbientMotion() {
 
             if (distBetween < maxLinkDist) {
               const lineAlpha = (1 - distBetween / maxLinkDist) * d1.intensity * d2.intensity * 0.55;
-              bgCtx.strokeStyle = `rgba(217, 70, 239, ${lineAlpha.toFixed(3)})`;
+              bgCtx.strokeStyle = `rgba(${currentAccentRgb}, ${lineAlpha.toFixed(3)})`;
               bgCtx.beginPath();
               bgCtx.moveTo(d1.x, d1.y);
               bgCtx.lineTo(d2.x, d2.y);
@@ -392,7 +550,7 @@ export function GlobalAmbientMotion() {
           // Subtle beam linking the closest dots to the cursor center
           if (d1.dist < 85) {
             const beamAlpha = (1 - d1.dist / 85) * 0.38;
-            bgCtx.strokeStyle = `rgba(244, 63, 94, ${beamAlpha.toFixed(3)})`;
+            bgCtx.strokeStyle = `rgba(${currentBeamRgb}, ${beamAlpha.toFixed(3)})`;
             bgCtx.beginPath();
             bgCtx.moveTo(d1.x, d1.y);
             bgCtx.lineTo(mouse.x, mouse.y);
@@ -401,7 +559,7 @@ export function GlobalAmbientMotion() {
         }
       }
 
-      // 1f. Top vignette & bottom deep shadow
+      // 1g. Top vignette & bottom deep shadow
       const topVig = bgCtx.createLinearGradient(0, 0, 0, height * 0.55);
       topVig.addColorStop(0, "rgba(0,0,0,0.55)");
       topVig.addColorStop(0.45, "rgba(0,0,0,0)");
@@ -433,9 +591,9 @@ export function GlobalAmbientMotion() {
         );
         const auraAlpha = Math.min(0.18, 0.08 + (mouse.speed / 40) * 0.1);
 
-        auraGrad.addColorStop(0, `rgba(217, 70, 239, ${auraAlpha * 1.5})`);
-        auraGrad.addColorStop(0.35, `rgba(168, 85, 247, ${auraAlpha})`);
-        auraGrad.addColorStop(0.7, `rgba(56, 189, 248, ${auraAlpha * 0.4})`);
+        auraGrad.addColorStop(0, `rgba(${currentAccentRgb}, ${auraAlpha * 1.5})`);
+        auraGrad.addColorStop(0.35, `rgba(${currentBeamRgb}, ${auraAlpha})`);
+        auraGrad.addColorStop(0.7, `rgba(${currentAccentRgb}, ${auraAlpha * 0.4})`);
         auraGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
 
         fgCtx.fillStyle = auraGrad;
@@ -459,7 +617,7 @@ export function GlobalAmbientMotion() {
             const lineAlpha = p1.alpha * progress * 0.45;
 
             fgCtx.lineWidth = lineWidth;
-            fgCtx.strokeStyle = `rgba(236, 72, 153, ${lineAlpha.toFixed(3)})`;
+            fgCtx.strokeStyle = `rgba(${currentAccentRgb}, ${lineAlpha.toFixed(3)})`;
 
             fgCtx.beginPath();
             fgCtx.moveTo(p1.x, p1.y);
@@ -472,7 +630,7 @@ export function GlobalAmbientMotion() {
         // 2c. Sleek Follower Graphic Reticle / Micro-Crosshair
         const reticleRadius = 13 + Math.min(mouse.speed * 0.6, 10);
         fgCtx.save();
-        fgCtx.strokeStyle = "rgba(217, 70, 239, 0.45)";
+        fgCtx.strokeStyle = `rgba(${currentAccentRgb}, 0.5)`;
         fgCtx.lineWidth = 1.2;
 
         // Rotating micro-ring
