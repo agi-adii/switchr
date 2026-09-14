@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
+import { PSEO_PAIRS } from "@/lib/pseo-registry";
 
 const smoothEase = [0.16, 1, 0.3, 1] as const;
 
@@ -100,96 +101,141 @@ const cardVariants: Variants = {
 
 export default function ConvertHubPage() {
   return (
-    <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6">
-      <Breadcrumbs items={[{ label: "Convert" }]} />
+    <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-12">
+      <div>
+        <Breadcrumbs items={[{ label: "Convert" }]} />
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center space-y-2 mb-10"
-      >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, delay: 0.05 }}
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-2"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center space-y-2 mb-10"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          Dedicated Conversion Suites
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold mb-2 backdrop-blur-md"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-white" />
+            Dedicated Conversion Suites
+          </motion.div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            Select What You Want to Convert
+          </h1>
+          <p className="text-xs sm:text-sm text-white/70 max-w-xl mx-auto">
+            Choose a dedicated suite below, or jump directly into our most popular targeted file converters.
+          </p>
         </motion.div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-          Select What You Want to Convert
-        </h1>
-        <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
-          Choose a dedicated converter below. Each tool is focused on a single task with zero clutter.
-        </p>
-      </motion.div>
 
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-      >
-        {CATEGORIES.map((cat) => {
-          const Icon = cat.icon;
-          return (
-            <motion.div
-              key={cat.title}
-              variants={cardVariants}
-              whileHover={{ y: -5, transition: { type: "spring", stiffness: 320, damping: 18 } }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:border-white/40 hover:bg-white/15 hover:shadow-lg transition-all duration-200"
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <motion.div
-                    whileHover={{ scale: 1.12, rotate: 6 }}
-                    transition={{ type: "spring", stiffness: 280, damping: 14 }}
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${cat.accent}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </motion.div>
-                  <div className="flex flex-wrap gap-1">
-                    {cat.formats.slice(0, 3).map((f) => (
-                      <span
-                        key={f}
-                        className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white/15 text-white/70"
-                      >
-                        {f}
-                      </span>
-                    ))}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <motion.div
+                key={cat.title}
+                variants={cardVariants}
+                whileHover={{ y: -5, transition: { type: "spring", stiffness: 320, damping: 18 } }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:border-white/40 hover:bg-white/15 hover:shadow-lg transition-all duration-200"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <motion.div
+                      whileHover={{ scale: 1.12, rotate: 6 }}
+                      transition={{ type: "spring", stiffness: 280, damping: 14 }}
+                      className={`w-11 h-11 rounded-2xl flex items-center justify-center ${cat.accent}`}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </motion.div>
+                    <div className="flex flex-wrap gap-1">
+                      {cat.formats.slice(0, 3).map((f) => (
+                        <span
+                          key={f}
+                          className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white/15 text-white/70"
+                        >
+                          {f}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-bold text-white">{cat.title}</h3>
+                    <p className="text-xs text-white/60 mt-1.5 leading-relaxed">
+                      {cat.desc}
+                    </p>
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-base font-bold text-white">{cat.title}</h3>
-                  <p className="text-xs text-white/60 mt-1.5 leading-relaxed">
-                    {cat.desc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-6 mt-4 border-t border-white/15">
-                <Link
-                  href={cat.href}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/15 hover:bg-primary hover:text-primary-foreground text-white rounded-xl text-xs font-bold transition-all group"
-                >
-                  <span>{cat.buttonText}</span>
-                  <motion.span
-                    className="inline-flex"
-                    whileHover={{ x: 4 }}
-                    transition={{ type: "spring", stiffness: 400 }}
+                <div className="pt-6 mt-4 border-t border-white/15">
+                  <Link
+                    href={cat.href}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/15 hover:bg-primary hover:text-primary-foreground text-white rounded-xl text-xs font-bold transition-all group"
                   >
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </motion.span>
-                </Link>
+                    <span>{cat.buttonText}</span>
+                    <motion.span
+                      className="inline-flex"
+                      whileHover={{ x: 4 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </motion.span>
+                  </Link>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </div>
+
+      {/* ── Popular Dedicated Converters (pSEO Internal Links) ── */}
+      <section className="pt-8 border-t border-white/15 space-y-6">
+        <div className="text-center space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-white/80">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Targeted 1-Click Converters</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Popular Conversions
+          </h2>
+          <p className="text-xs text-white/65 max-w-lg mx-auto">
+            Direct dedicated tools for high-frequency conversions with instant presets, zero server upload, and rich settings.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
+          {PSEO_PAIRS.map((pair) => (
+            <Link
+              key={pair.slug}
+              href={`/convert/${pair.slug}`}
+              className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 hover:bg-white/15 transition-all group flex flex-col justify-between space-y-2 shadow-xs"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-white group-hover:text-amber-200 transition-colors">
+                  {pair.fromFormat} &rarr; {pair.toFormat}
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/15 text-white/80 uppercase">
+                  {pair.category}
+                </span>
               </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
+              <p className="text-[11px] text-white/65 line-clamp-2 leading-snug">
+                {pair.subtitle}
+              </p>
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-white/90 group-hover:text-white">
+                <span>Launch Tool</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
+

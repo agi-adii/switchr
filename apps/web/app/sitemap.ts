@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getAllPseoSlugs } from "@/lib/pseo-registry";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://switchrx.vercel.app";
@@ -90,5 +91,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  return routes;
+  // Programmatic SEO dedicated conversion routes
+  const pseoRoutes = getAllPseoSlugs().map((slug) => ({
+    url: `${siteUrl}/convert/${slug}`,
+    lastModified,
+    changeFrequency: "weekly" as const,
+    priority: 0.9,
+  }));
+
+  return [...routes, ...pseoRoutes];
 }
+
