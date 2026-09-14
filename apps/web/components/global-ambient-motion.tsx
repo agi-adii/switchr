@@ -1,7 +1,85 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
+
+// ── Mobile-Only Lightweight Color Palettes (0% CPU, CSS Compositor GPU Transitions) ──
+const MOBILE_PALETTES = [
+  // 1. Cyberpunk Violet
+  {
+    primary: "rgba(217, 70, 239, 0.32)",
+    secondary: "rgba(56, 189, 248, 0.22)",
+    accent: "rgba(244, 63, 94, 0.22)",
+  },
+  // 2. Deep Twilight
+  {
+    primary: "rgba(168, 85, 247, 0.32)",
+    secondary: "rgba(99, 102, 241, 0.22)",
+    accent: "rgba(192, 132, 252, 0.22)",
+  },
+  // 3. Oceanic Azure
+  {
+    primary: "rgba(56, 189, 248, 0.32)",
+    secondary: "rgba(45, 212, 191, 0.22)",
+    accent: "rgba(16, 185, 129, 0.22)",
+  },
+  // 4. Aurora Emerald
+  {
+    primary: "rgba(16, 185, 129, 0.32)",
+    secondary: "rgba(6, 182, 212, 0.22)",
+    accent: "rgba(129, 140, 248, 0.22)",
+  },
+  // 5. Cosmic Sunset
+  {
+    primary: "rgba(244, 63, 94, 0.32)",
+    secondary: "rgba(251, 146, 60, 0.22)",
+    accent: "rgba(217, 70, 239, 0.22)",
+  },
+  // 6. Solar Amber
+  {
+    primary: "rgba(249, 115, 22, 0.32)",
+    secondary: "rgba(234, 179, 8, 0.22)",
+    accent: "rgba(239, 68, 68, 0.22)",
+  },
+];
+
+function MobileAmbientMotion() {
+  const [paletteIndex, setPaletteIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPaletteIndex((prev) => (prev + 1) % MOBILE_PALETTES.length);
+    }, 4800);
+    return () => clearInterval(timer);
+  }, []);
+
+  const current = MOBILE_PALETTES[paletteIndex];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none bg-[#04040a]"
+    >
+      {/* Top Ambient Glow Pool */}
+      <div
+        className="absolute -top-20 -left-10 w-[330px] h-[330px] rounded-full blur-[80px] pointer-events-none transition-colors duration-[2400ms] ease-in-out will-change-[background-color]"
+        style={{ backgroundColor: current.primary }}
+      />
+      {/* Middle-Right Ambient Glow Pool */}
+      <div
+        className="absolute top-1/3 -right-16 w-[300px] h-[300px] rounded-full blur-[75px] pointer-events-none transition-colors duration-[2400ms] ease-in-out will-change-[background-color]"
+        style={{ backgroundColor: current.secondary }}
+      />
+      {/* Bottom Ambient Glow Pool */}
+      <div
+        className="absolute -bottom-20 left-1/4 w-[350px] h-[350px] rounded-full blur-[85px] pointer-events-none transition-colors duration-[2400ms] ease-in-out will-change-[background-color]"
+        style={{ backgroundColor: current.accent }}
+      />
+      {/* Soft Vignette Depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70 pointer-events-none" />
+    </div>
+  );
+}
 
 interface Particle {
   x: number;
@@ -32,6 +110,17 @@ export function GlobalAmbientMotion() {
   useEffect(() => {
     if (reduceMotion) return;
 
+    // Mobile & Touch Check: Keep desktop 100% untouched, do not run heavy canvas loop on mobile
+    const isTouchOrMobile = () => {
+      return (
+        window.innerWidth < 768 ||
+        window.matchMedia("(pointer: coarse)").matches ||
+        navigator.maxTouchPoints > 0
+      );
+    };
+
+    if (isTouchOrMobile()) return;
+
     const bgCanvas = bgCanvasRef.current;
     const fgCanvas = fgCanvasRef.current;
     if (!bgCanvas || !fgCanvas) return;
@@ -44,6 +133,13 @@ export function GlobalAmbientMotion() {
     let height = (bgCanvas.height = fgCanvas.height = window.innerHeight);
 
     const handleResize = () => {
+      if (isTouchOrMobile()) {
+        if (animFrameId.current) {
+          cancelAnimationFrame(animFrameId.current);
+          animFrameId.current = 0;
+        }
+        return;
+      }
       if (!bgCanvas || !fgCanvas) return;
       width = bgCanvas.width = fgCanvas.width = window.innerWidth;
       height = bgCanvas.height = fgCanvas.height = window.innerHeight;
@@ -58,6 +154,7 @@ export function GlobalAmbientMotion() {
       targetX: -1000,
       targetY: -1000,
       prevX: -1000,
+
       prevY: -1000,
       vx: 0,
       vy: 0,
@@ -745,22 +842,31 @@ export function GlobalAmbientMotion() {
 
   return (
     <>
-      {/* Background Canvas: Rainbow spectrum curtain, magnetic dot-matrix & orbs */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
-      >
-        <canvas ref={bgCanvasRef} className="absolute inset-0 w-full h-full" />
+      {/* ── MOBILE-ONLY AMBIENT BACKGROUND (0% CPU, CSS Compositor GPU Transitions) ── */}
+      <div className="md:hidden">
+        <MobileAmbientMotion />
       </div>
 
-      {/* Foreground Canvas: Motion graphics particles, glowing cursor aura & holographic reticle */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-40 overflow-hidden select-none"
-      >
-        <canvas ref={fgCanvasRef} className="absolute inset-0 w-full h-full" />
+      {/* ── DESKTOP-ONLY DUAL CANVAS (100% UNTOUCHED ORIGINAL EXPERIENCE) ── */}
+      <div className="hidden md:block">
+        {/* Background Canvas: Rainbow spectrum curtain, magnetic dot-matrix & orbs */}
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
+        >
+          <canvas ref={bgCanvasRef} className="absolute inset-0 w-full h-full" />
+        </div>
+
+        {/* Foreground Canvas: Motion graphics particles, glowing cursor aura & holographic reticle */}
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none z-40 overflow-hidden select-none"
+        >
+          <canvas ref={fgCanvasRef} className="absolute inset-0 w-full h-full" />
+        </div>
       </div>
     </>
   );
 }
+
 

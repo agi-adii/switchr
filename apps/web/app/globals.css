@@ -631,3 +631,19 @@ button, a {
   background-size: 200% 200%;
   animation: moving-gradient 6s ease infinite;
 }
+
+/* ── Mobile Performance Hardware Acceleration (Mobile Only) ── */
+@media (max-width: 768px) {
+  .glass-panel,
+  .quick-tool-card,
+  .stat-card,
+  .format-card,
+  nav,
+  header {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
