@@ -77,7 +77,7 @@ export function ImageToolsSection() {
               </label>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,.heic,.heif,image/heic,image/heif"
                 onChange={handleFileSelect}
                 className="w-full text-xs text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer bg-muted/40 p-2 rounded-2xl border border-border"
               />

@@ -679,6 +679,66 @@ export function upscaleCanvas(
 }
 
 /**
+ * Detects if a Blob or File is in HEIC/HEIF format by checking:
+ * 1. File name extension (.heic, .heif)
+ * 2. MIME type (image/heic, image/heif)
+ * 3. ISOBMFF magic byte header ('ftyp' brand starting with 'hei', 'hev', 'mif1', 'msf1')
+ */
+export async function isHeicFormat(blob: Blob, fileName?: string): Promise<boolean> {
+  const name = fileName || (blob instanceof File ? blob.name : "");
+  if (/\.(heic|heif)$/i.test(name)) return true;
+  if (/image\/(heic|heif)/i.test(blob.type)) return true;
+
+  if (blob.size >= 12) {
+    try {
+      const buffer = await blob.slice(0, 16).arrayBuffer();
+      const view = new DataView(buffer);
+      // Bytes 4-7 must be ASCII 'ftyp'
+      const ftyp = String.fromCharCode(
+        view.getUint8(4),
+        view.getUint8(5),
+        view.getUint8(6),
+        view.getUint8(7)
+      );
+      if (ftyp === "ftyp") {
+        const brand = String.fromCharCode(
+          view.getUint8(8),
+          view.getUint8(9),
+          view.getUint8(10),
+          view.getUint8(11)
+        ).toLowerCase();
+        if (
+          brand.startsWith("hei") ||
+          brand.startsWith("hev") ||
+          brand === "mif1" ||
+          brand === "msf1"
+        ) {
+          return true;
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Decodes a HEIC/HEIF Blob into a standard JPEG Blob using heic2any
+ */
+export async function decodeHeicBlob(blob: Blob, quality = 0.98): Promise<Blob> {
+  const heic2anyModule = await import("heic2any");
+  const heic2any = heic2anyModule.default || heic2anyModule;
+  const converted = await heic2any({
+    blob,
+    toType: "image/jpeg",
+    quality,
+  });
+  return Array.isArray(converted) ? converted[0] : converted;
+}
+
+/**
  * Full enhancement pipeline execution
  */
 export async function enhanceImageFile(
@@ -694,18 +754,27 @@ export async function enhanceImageFile(
   originalHeight: number;
   histogram: ImageHistogramData;
 }> {
-  if (onProgress) onProgress(0.1);
+  if (onProgress) onProgress(0.05);
+
+  let activeBlob = fileOrBlob;
+  if (await isHeicFormat(activeBlob)) {
+    activeBlob = await decodeHeicBlob(activeBlob);
+  }
+
+  if (onProgress) onProgress(0.15);
 
   const img = new Image();
-  const objectUrl = URL.createObjectURL(fileOrBlob);
+  const objectUrl = URL.createObjectURL(activeBlob);
 
-  await new Promise<void>((resolve, reject) => {
-    img.onload = () => resolve();
-    img.onerror = () => reject(new Error("Failed to load image for enhancement"));
-    img.src = objectUrl;
-  });
-
-  URL.revokeObjectURL(objectUrl);
+  try {
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error("Failed to load image for enhancement"));
+      img.src = objectUrl;
+    });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 
   const originalWidth = img.naturalWidth;
   const originalHeight = img.naturalHeight;

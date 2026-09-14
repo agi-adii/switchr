@@ -8,6 +8,8 @@ import { ImageHistogram } from "@/components/enhancer/histogram";
 import {
   enhanceImageFile,
   autoCalibrateImage,
+  isHeicFormat,
+  decodeHeicBlob,
   ENHANCE_PRESETS,
   DEFAULT_SETTINGS,
   type EnhanceSettings,
@@ -20,7 +22,6 @@ import {
   UploadCloud,
   Download,
   RefreshCw,
-  Sliders,
   Wand2,
   User,
   Sun,
@@ -31,8 +32,6 @@ import {
   Loader2,
   Gauge,
   Palette,
-  Layers,
-  Activity,
   SlidersHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -87,6 +86,8 @@ export default function PhotoEnhancerPage() {
   const [enhancedWidth, setEnhancedWidth] = useState<number>(0);
   const [enhancedHeight, setEnhancedHeight] = useState<number>(0);
   const [enhancedSize, setEnhancedSize] = useState<number>(0);
+  const [originalFileSize, setOriginalFileSize] = useState<number>(0);
+  const [isHeicSource, setIsHeicSource] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<ComponentTab>("tone");
@@ -135,24 +136,59 @@ export default function PhotoEnhancerPage() {
   // Load a file into workspace
   const handleLoadImage = useCallback(
     async (fileOrBlob: File | Blob, name = "photo.jpg") => {
-      setSelectedFile(fileOrBlob);
+      setIsProcessing(true);
+      setProgress(0.05);
+
+      const isHeic = await isHeicFormat(fileOrBlob, name);
+      setIsHeicSource(isHeic);
+      setOriginalFileSize(fileOrBlob.size);
       setFileName(name);
-      const url = URL.createObjectURL(fileOrBlob);
+
+      let workingBlob: Blob = fileOrBlob;
+
+      if (isHeic) {
+        const toastId = toast.loading("Decoding Apple HEIC photo...");
+        try {
+          workingBlob = await decodeHeicBlob(fileOrBlob);
+          toast.success("Apple HEIC decoded successfully", { id: toastId });
+        } catch (heicErr: any) {
+          console.error("HEIC decode error:", heicErr);
+          toast.error("Failed to decode HEIC file. Please ensure it is a valid HEIC/HEIF photo.", { id: toastId });
+          setIsProcessing(false);
+          return;
+        }
+      }
+
+      setSelectedFile(workingBlob);
+      if (originalUrl) {
+        URL.revokeObjectURL(originalUrl);
+      }
+      const url = URL.createObjectURL(workingBlob);
       setOriginalUrl(url);
 
       const img = new Image();
       img.src = url;
-      await new Promise<void>((resolve) => {
-        img.onload = () => {
-          setOriginalWidth(img.naturalWidth);
-          setOriginalHeight(img.naturalHeight);
-          resolve();
-        };
-      });
+      try {
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => {
+            setOriginalWidth(img.naturalWidth);
+            setOriginalHeight(img.naturalHeight);
+            resolve();
+          };
+          img.onerror = () => {
+            reject(new Error("Unable to decode image"));
+          };
+        });
+      } catch (err: any) {
+        console.error(err);
+        toast.error("Failed to load image file");
+        setIsProcessing(false);
+        return;
+      }
 
-      runEnhancement(fileOrBlob, settings, exportScale);
+      await runEnhancement(workingBlob, settings, exportScale);
     },
-    [settings, exportScale, runEnhancement]
+    [originalUrl, settings, exportScale, runEnhancement]
   );
 
   // AI Auto-Calibrate (scans histogram and sets exact component values)
@@ -163,7 +199,10 @@ export default function PhotoEnhancerPage() {
     try {
       const img = new Image();
       img.src = originalUrl;
-      await new Promise<void>((r) => (img.onload = () => r()));
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Failed to load image"));
+      });
 
       const canvas = document.createElement("canvas");
       canvas.width = img.naturalWidth;
@@ -178,7 +217,8 @@ export default function PhotoEnhancerPage() {
       setSettings(calibratedSettings);
       await runEnhancement(selectedFile, calibratedSettings, exportScale);
       toast.success("AI accurately calibrated all components!", { id: toastId });
-    } catch (err) {
+    } catch (err: any) {
+      console.error(err);
       toast.error("Auto-calibration failed", { id: toastId });
     }
   };
@@ -246,9 +286,9 @@ export default function PhotoEnhancerPage() {
 
     saveHistoryItem({
       fileName: downloadName,
-      fromFormat: fileName.split(".").pop() || "image",
+      fromFormat: isHeicSource ? "HEIC" : (fileName.split(".").pop() || "image"),
       toFormat: exportFormat,
-      originalSize: selectedFile?.size || 0,
+      originalSize: originalFileSize || selectedFile?.size || 0,
       convertedSize: enhancedSize || 0,
       downloadUrl: enhancedUrl,
       category: "image",
@@ -259,6 +299,7 @@ export default function PhotoEnhancerPage() {
 
   // Reset workspace
   const handleReset = () => {
+    if (originalUrl) URL.revokeObjectURL(originalUrl);
     setSelectedFile(null);
     setFileName("");
     setOriginalUrl("");
@@ -267,6 +308,9 @@ export default function PhotoEnhancerPage() {
     setOriginalHeight(0);
     setEnhancedWidth(0);
     setEnhancedHeight(0);
+    setEnhancedSize(0);
+    setOriginalFileSize(0);
+    setIsHeicSource(false);
     setHistogramData(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -279,7 +323,8 @@ export default function PhotoEnhancerPage() {
       const blob = await res.blob();
       await handleLoadImage(blob, name);
       toast.success(`Loaded ${name}`, { id: toastId });
-    } catch (err) {
+    } catch (err: any) {
+      console.error(err);
       toast.error("Failed to load sample image", { id: toastId });
     }
   };
@@ -328,7 +373,7 @@ export default function PhotoEnhancerPage() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.heif,image/heic,image/heif"
               className="hidden"
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
@@ -344,7 +389,7 @@ export default function PhotoEnhancerPage() {
               <span className="text-violet-500 underline underline-offset-2">browse files</span>
             </h3>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-              Supports JPG, PNG, WebP, HEIC, and BMP. Processed 100% client-side with zero server uploads.
+              Supports JPG, PNG, WebP, Apple HEIC, and BMP. Processed 100% client-side with zero server uploads.
             </p>
           </div>
 
@@ -414,10 +459,17 @@ export default function PhotoEnhancerPage() {
                 <ImageIcon className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-foreground truncate">{fileName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs font-bold text-foreground truncate">{fileName}</p>
+                  {isHeicSource && (
+                    <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 text-[10px] font-extrabold border border-blue-500/20 shrink-0">
+                      Apple HEIC
+                    </span>
+                  )}
+                </div>
                 <p className="text-[11px] text-muted-foreground font-mono">
                   {originalWidth}×{originalHeight} px •{" "}
-                  {selectedFile ? formatFileSize(selectedFile.size) : ""}
+                  {originalFileSize ? formatFileSize(originalFileSize) : selectedFile ? formatFileSize(selectedFile.size) : ""}
                 </p>
               </div>
             </div>
