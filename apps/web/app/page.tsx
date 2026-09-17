@@ -75,7 +75,7 @@ function getRouteForExtension(ext: string): string {
   if (["pdf"].includes(lower)) {
     return "/pdf-tools";
   }
-  if (["docx", "doc", "txt", "html", "rtf", "md", "xlsx", "pptx"].includes(lower)) {
+  if (["pptx", "ppt", "docx", "doc", "txt", "html", "rtf", "md", "xlsx"].includes(lower)) {
     return "/convert/documents";
   }
   if (["mp3", "wav", "aac", "flac", "ogg", "m4a"].includes(lower)) {
@@ -150,7 +150,7 @@ export default function HomePage() {
 
   const CONVERT_CATEGORIES = [
     { title: "Images", desc: "JPG, PNG, WEBP, AVIF", href: "/convert/images", icon: FileImage, color: "text-blue-500 bg-blue-500/10", border: "border-blue-500/20" },
-    { title: "Documents", desc: "DOCX, TXT, HTML, RTF", href: "/convert/documents", icon: FileText, color: "text-amber-500 bg-amber-500/10", border: "border-amber-500/20" },
+    { title: "Documents", desc: "PPT, DOCX, TXT, HTML", href: "/convert/documents", icon: FileText, color: "text-amber-500 bg-amber-500/10", border: "border-amber-500/20" },
     { title: "PDF Suite", desc: "PDF to Image, Merge & Text", href: "/pdf-tools", icon: FileText, color: "text-red-500 bg-red-500/10", border: "border-red-500/20" },
     { title: "Audio", desc: "MP3, WAV, AAC, FLAC", href: "/convert/audio", icon: Music, color: "text-emerald-500 bg-emerald-500/10", border: "border-emerald-500/20" },
     { title: "Video", desc: "MP4, WebM, MOV, GIF", href: "/convert/video", icon: Video, color: "text-violet-500 bg-violet-500/10", border: "border-violet-500/20" },

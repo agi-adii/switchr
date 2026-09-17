@@ -6,6 +6,11 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ConverterTemplate } from "@/components/converter-template";
 import { convertImage } from "@/lib/converters/image-converter";
 import { imagesToPdf } from "@/lib/converters/pdf-tools";
+import {
+  presentationToPdf,
+  presentationToDocx,
+  docxToPdf,
+} from "@/lib/converters/presentation-converter";
 import { loadFfmpeg, convertFile } from "@/lib/ffmpeg";
 import { PseoConversionPair, PSEO_PAIRS } from "@/lib/pseo-registry";
 import {
@@ -17,7 +22,6 @@ import {
   ArrowRight,
   Sparkles,
   HelpCircle,
-  FileCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -33,8 +37,37 @@ export function PseoConverterClient({ pair }: Props) {
     toFormat: string,
     onProgress: (p: number) => void
   ) => {
-    // 1. PDF Output from image
+    const ext = file.name.split(".").pop()?.toLowerCase() || "";
+    const isPpt = ext === "pptx" || ext === "ppt" || pair.fromFormat.toLowerCase().includes("ppt");
+    const isDocx = ext === "docx" || pair.fromFormat.toLowerCase().includes("docx");
+
+    // 1. DOCX Output
+    if (toFormat.toLowerCase() === "docx") {
+      if (isPpt) {
+        const docxBlob = await presentationToDocx(file, onProgress);
+        return {
+          url: URL.createObjectURL(docxBlob),
+          newSize: docxBlob.size,
+        };
+      }
+    }
+
+    // 2. PDF Output (Presentations, Word docs, Images)
     if (toFormat.toLowerCase() === "pdf") {
+      if (isPpt) {
+        const pdfBlob = await presentationToPdf(file, {}, onProgress);
+        return {
+          url: URL.createObjectURL(pdfBlob),
+          newSize: pdfBlob.size,
+        };
+      }
+      if (isDocx) {
+        const pdfBlob = await docxToPdf(file, onProgress);
+        return {
+          url: URL.createObjectURL(pdfBlob),
+          newSize: pdfBlob.size,
+        };
+      }
       const pdfBlob = await imagesToPdf([file], {}, onProgress);
       return {
         url: URL.createObjectURL(pdfBlob),

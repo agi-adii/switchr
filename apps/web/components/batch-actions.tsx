@@ -4,6 +4,12 @@ import { useConversionStore } from "@/store/conversion-store";
 import { convertFile, loadFfmpeg } from "@/lib/ffmpeg";
 import { convertImage } from "@/lib/converters/image-converter";
 import { imagesToPdf, textToPdf } from "@/lib/converters/pdf-tools";
+import {
+  presentationToPdf,
+  presentationToDocx,
+  docxToPdf,
+  presentationToText,
+} from "@/lib/converters/presentation-converter";
 import { jsonToCsv, csvToJson, jsonToXml, xmlToJson } from "@/lib/converters/data-converter";
 import { saveHistoryItem } from "@/lib/history-store";
 import { getConversionEngine, getFormatMetadata } from "@/lib/registry";
@@ -50,8 +56,19 @@ export function BatchActions() {
           let convertedBlob: Blob | null = null;
           const engine = getConversionEngine(item.fromFormat, item.toFormat);
 
-          // 1. CANVAS ENGINE (Images -> WebP, PNG, JPG, BMP)
-          if (engine === "canvas") {
+          // 1. DOCX TARGET ENGINE (PPT/PPTX -> DOCX)
+          if (item.toFormat === "docx") {
+            if (["pptx", "ppt"].includes(item.fromFormat)) {
+              convertedBlob = await presentationToDocx(item.file, (p) =>
+                updateFile(item.id, { progress: p })
+              );
+            } else {
+              throw new Error(`Converting from ${item.fromFormat} to DOCX is not supported yet.`);
+            }
+            outputUrl = URL.createObjectURL(convertedBlob);
+          }
+          // 2. CANVAS ENGINE (Images -> WebP, PNG, JPG, BMP)
+          else if (engine === "canvas") {
             const result = await convertImage(
               item.file,
               { toFormat: item.toFormat, quality: 0.92 },
@@ -60,9 +77,17 @@ export function BatchActions() {
             outputUrl = result.url;
             convertedBlob = result.blob;
           }
-          // 2. PDF ENGINE (Images -> PDF, Text -> PDF)
+          // 3. PDF ENGINE (PPT/PPTX -> PDF, DOCX -> PDF, Images -> PDF, Text -> PDF)
           else if (engine === "jspdf" || item.toFormat === "pdf") {
-            if (["jpg", "jpeg", "png", "webp", "gif", "bmp", "svg"].includes(item.fromFormat)) {
+            if (["pptx", "ppt"].includes(item.fromFormat)) {
+              convertedBlob = await presentationToPdf(item.file, {}, (p) =>
+                updateFile(item.id, { progress: p })
+              );
+            } else if (item.fromFormat === "docx") {
+              convertedBlob = await docxToPdf(item.file, (p) =>
+                updateFile(item.id, { progress: p })
+              );
+            } else if (["jpg", "jpeg", "png", "webp", "gif", "bmp", "svg", "heic", "heif"].includes(item.fromFormat)) {
               convertedBlob = await imagesToPdf([item.file], {}, (p) =>
                 updateFile(item.id, { progress: p })
               );
@@ -72,28 +97,33 @@ export function BatchActions() {
             }
             outputUrl = URL.createObjectURL(convertedBlob);
           }
-          // 3. DATA ENGINE (JSON, CSV, XML)
+          // 4. DATA ENGINE (JSON, CSV, XML, Presentations -> Text)
           else if (engine === "data") {
-            const rawText = await item.file.text();
             let resultText = "";
             let mimeType = "text/plain";
 
-            if (item.fromFormat === "json" && item.toFormat === "csv") {
-              resultText = jsonToCsv(rawText);
-              mimeType = "text/csv";
-            } else if (item.fromFormat === "csv" && item.toFormat === "json") {
-              const parsed = csvToJson(rawText);
-              resultText = JSON.stringify(parsed, null, 2);
-              mimeType = "application/json";
-            } else if (item.fromFormat === "json" && item.toFormat === "xml") {
-              resultText = jsonToXml(rawText);
-              mimeType = "application/xml";
-            } else if (item.fromFormat === "xml" && item.toFormat === "json") {
-              const parsed = xmlToJson(rawText);
-              resultText = JSON.stringify(parsed, null, 2);
-              mimeType = "application/json";
+            if (["pptx", "ppt"].includes(item.fromFormat) && item.toFormat === "txt") {
+              resultText = await presentationToText(item.file);
+              mimeType = "text/plain";
             } else {
-              resultText = rawText;
+              const rawText = await item.file.text();
+              if (item.fromFormat === "json" && item.toFormat === "csv") {
+                resultText = jsonToCsv(rawText);
+                mimeType = "text/csv";
+              } else if (item.fromFormat === "csv" && item.toFormat === "json") {
+                const parsed = csvToJson(rawText);
+                resultText = JSON.stringify(parsed, null, 2);
+                mimeType = "application/json";
+              } else if (item.fromFormat === "json" && item.toFormat === "xml") {
+                resultText = jsonToXml(rawText);
+                mimeType = "application/xml";
+              } else if (item.fromFormat === "xml" && item.toFormat === "json") {
+                const parsed = xmlToJson(rawText);
+                resultText = JSON.stringify(parsed, null, 2);
+                mimeType = "application/json";
+              } else {
+                resultText = rawText;
+              }
             }
 
             convertedBlob = new Blob([resultText], { type: mimeType });

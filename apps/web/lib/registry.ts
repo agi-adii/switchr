@@ -325,6 +325,54 @@ export const CONVERSION_REGISTRY: Record<string, FormatMetadata> = {
   },
 
   // DOCUMENTS
+  pptx: {
+    extension: "pptx",
+    name: "PowerPoint Presentation (PPTX)",
+    category: "document",
+    mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    conversions: [
+      { target: "pdf", engine: "jspdf", description: "Convert slides to high-resolution landscape PDF presentation", recommended: true },
+      { target: "docx", engine: "jspdf", description: "Export slides to structured Microsoft Word document", recommended: true },
+      { target: "txt", engine: "data", description: "Extract slide text outline and presenter notes" },
+      { target: "html", engine: "data", description: "Interactive HTML slide outline" },
+    ],
+    smartActions: [
+      { id: "pptx-pdf", label: "Convert to PDF", toFormat: "pdf", badge: "Presentation", description: "Multi-slide landscape PDF document", engine: "jspdf" },
+      { id: "pptx-docx", label: "Convert to DOCX", toFormat: "docx", badge: "Word Doc", description: "Turn slides into formatted Word document", engine: "jspdf" },
+      { id: "pptx-txt", label: "Extract Outline", toFormat: "txt", badge: "Text Only", description: "Extract slide text and speaker notes", engine: "data" },
+    ],
+  },
+  ppt: {
+    extension: "ppt",
+    name: "Legacy PowerPoint (PPT)",
+    category: "document",
+    mimeType: "application/vnd.ms-powerpoint",
+    conversions: [
+      { target: "pdf", engine: "jspdf", description: "Convert PowerPoint slides to landscape PDF document", recommended: true },
+      { target: "docx", engine: "jspdf", description: "Convert slides to formatted Microsoft Word document", recommended: true },
+      { target: "txt", engine: "data", description: "Extract slide text outline and notes" },
+    ],
+    smartActions: [
+      { id: "ppt-pdf", label: "Convert to PDF", toFormat: "pdf", badge: "Presentation", description: "Export presentation slides as PDF", engine: "jspdf" },
+      { id: "ppt-docx", label: "Convert to DOCX", toFormat: "docx", badge: "Word Doc", description: "Extract presentation into Word document", engine: "jspdf" },
+      { id: "ppt-txt", label: "Extract Outline", toFormat: "txt", badge: "Text Only", description: "Extract slide text", engine: "data" },
+    ],
+  },
+  docx: {
+    extension: "docx",
+    name: "Microsoft Word Document (DOCX)",
+    category: "document",
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    conversions: [
+      { target: "pdf", engine: "jspdf", description: "Convert Word document to clean printable PDF", recommended: true },
+      { target: "txt", engine: "data", description: "Extract plain text content" },
+      { target: "html", engine: "data", description: "Web-ready HTML page" },
+    ],
+    smartActions: [
+      { id: "docx-pdf", label: "Convert to PDF", toFormat: "pdf", badge: "Print-Ready", description: "Convert formatted Word document to PDF", engine: "jspdf" },
+      { id: "docx-txt", label: "Extract Text", toFormat: "txt", badge: "Clean Text", description: "Extract text from Word document", engine: "data" },
+    ],
+  },
   txt: {
     extension: "txt",
     name: "Plain Text",

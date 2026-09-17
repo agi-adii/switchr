@@ -31,7 +31,10 @@ const SEARCH_ITEMS: SearchItem[] = [
   { id: "audio-conv", title: "Audio Converter", category: "Media", description: "Convert MP3, WAV, AAC, M4A, OGG", href: "/convert/audio", icon: Music },
 
   // Documents
-  { id: "doc-conv", title: "Document Converter", category: "Documents", description: "Convert DOCX, TXT, HTML, PDF", href: "/convert/documents", icon: FileText },
+  { id: "pptx-pdf", title: "PPT to PDF Converter", category: "Documents", description: "Convert PowerPoint slides into landscape PDF deck", href: "/convert/pptx-to-pdf", icon: FileText },
+  { id: "pptx-docx", title: "PPT to DOCX Converter", category: "Documents", description: "Turn PowerPoint slides into editable Word document", href: "/convert/pptx-to-docx", icon: FileText },
+  { id: "docx-pdf", title: "DOCX to PDF Converter", category: "Documents", description: "Convert Microsoft Word document to print-ready PDF", href: "/convert/docx-to-pdf", icon: FileText },
+  { id: "doc-conv", title: "Document Converter", category: "Documents", description: "Convert PPT, DOCX, TXT, HTML, PDF", href: "/convert/documents", icon: FileText },
 
   // Data & Archive
   { id: "json-csv", title: "JSON to CSV", category: "Data", description: "Convert JSON array to spreadsheet CSV", href: "/convert/data", icon: FileCode },

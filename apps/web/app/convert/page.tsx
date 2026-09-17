@@ -29,12 +29,12 @@ const CATEGORIES = [
   },
   {
     title: "Document Converter",
-    desc: "Convert DOCX, DOC, TXT, HTML, RTF to high-resolution formatted PDFs and text files.",
+    desc: "Convert PPT, PPTX, DOCX, DOC, TXT, HTML to high-resolution formatted PDFs, DOCX, and text files.",
     href: "/convert/documents",
     icon: FileText,
     accent: "text-amber-500 bg-amber-500/10",
     buttonText: "Open Document Converter",
-    formats: ["DOCX", "PDF", "TXT", "HTML"],
+    formats: ["PPTX", "DOCX", "PDF", "TXT", "HTML"],
   },
   {
     title: "PDF Converter & Suite",

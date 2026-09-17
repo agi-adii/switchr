@@ -534,6 +534,291 @@ export const PSEO_PAIRS: PseoConversionPair[] = [
       },
     ],
   },
+
+  // ── 11. PPTX to PDF ─────────────────────────────────────────────
+  {
+    slug: "pptx-to-pdf",
+    fromFormat: "PPTX",
+    toFormat: "PDF",
+    category: "document",
+    title: "Convert PPTX to PDF Online – Free, Fast & Private | Switchr",
+    metaDescription:
+      "Convert PowerPoint PPTX presentations to clean, printable PDF slide decks online. 100% private in-browser conversion, zero file uploads, and no size limits.",
+    h1: "Convert PPTX to PDF Online",
+    subtitle:
+      "Transform PowerPoint slides into crisp, multi-page landscape PDF presentation decks directly in your browser. 100% free, confidential, and instant.",
+    accept: ".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    defaultTarget: "pdf",
+    recommendedFormats: ["pdf", "docx", "txt", "html"],
+    howTo: [
+      {
+        name: "Select your PPTX presentation",
+        text: "Drag and drop your .pptx file into the converter or click Choose File to browse from your device.",
+      },
+      {
+        name: "Choose PDF format",
+        text: "Ensure PDF is selected as the output format. Each slide is mapped to a dedicated landscape presentation page.",
+      },
+      {
+        name: "Download your converted PDF",
+        text: "Click Convert and download your high-resolution presentation PDF immediately.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Is this PPTX to PDF converter completely private?",
+        answer:
+          "Yes. All slide parsing and PDF generation runs locally inside your browser using client-side JavaScript. Your presentation is never uploaded to any cloud server.",
+      },
+      {
+        question: "How are the slides formatted in the generated PDF?",
+        answer:
+          "Each slide is converted into a high-resolution landscape page formatted to widescreen aspect ratio, featuring styled titles, slide numbering badges, and bullet point hierarchies.",
+      },
+      {
+        question: "Are embedded images preserved in the PDF?",
+        answer:
+          "Yes. Switchr extracts embedded slide illustrations and diagrams from the PPTX archive and renders them cleanly within the PDF deck.",
+      },
+    ],
+    benefits: [
+      {
+        title: "100% Confidential",
+        desc: "Sensitive business slides and student presentations never leave your browser sandbox.",
+      },
+      {
+        title: "Landscape Slide Layout",
+        desc: "Preserves the widescreen presentation aspect ratio for seamless projector and screen viewing.",
+      },
+      {
+        title: "Zero File Size Limits",
+        desc: "Convert lengthy multi-slide presentations without cloud upload caps or waitlists.",
+      },
+    ],
+  },
+
+  // ── 12. PPT to PDF ──────────────────────────────────────────────
+  {
+    slug: "ppt-to-pdf",
+    fromFormat: "PPT",
+    toFormat: "PDF",
+    category: "document",
+    title: "Convert PPT to PDF Online – Free, Fast & Private | Switchr",
+    metaDescription:
+      "Convert legacy PowerPoint PPT presentations to high-resolution PDF documents online. 100% private in-browser conversion with zero server uploads.",
+    h1: "Convert PPT to PDF Online",
+    subtitle:
+      "Transform PowerPoint PPT presentations into clean, portable landscape PDF slide decks directly in your browser.",
+    accept: ".ppt,application/vnd.ms-powerpoint",
+    defaultTarget: "pdf",
+    recommendedFormats: ["pdf", "docx", "txt"],
+    howTo: [
+      {
+        name: "Upload your PPT file",
+        text: "Drag and drop your legacy .ppt file into the converter box.",
+      },
+      {
+        name: "Select PDF output",
+        text: "PDF is automatically configured as the recommended export target.",
+      },
+      {
+        name: "Download PDF deck",
+        text: "Click Convert to generate and download your printable PDF presentation.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Can this tool open older PowerPoint 97-2003 PPT files?",
+        answer:
+          "Yes! Switchr contains a specialized binary stream parser designed to extract slides and text from legacy .ppt files without requiring Microsoft Office.",
+      },
+      {
+        question: "Do I need PowerPoint installed on my computer?",
+        answer:
+          "No software installation is required. Everything runs directly inside your web browser.",
+      },
+    ],
+    benefits: [
+      {
+        title: "Legacy Support",
+        desc: "Easily open and convert older PowerPoint files without compatibility errors.",
+      },
+      {
+        title: "Instant In-Browser Conversion",
+        desc: "Convert slides in seconds using local hardware acceleration.",
+      },
+      {
+        title: "Full Privacy",
+        desc: "Zero data collection, zero tracking, and zero cloud uploads.",
+      },
+    ],
+  },
+
+  // ── 13. PPTX to DOCX ────────────────────────────────────────────
+  {
+    slug: "pptx-to-docx",
+    fromFormat: "PPTX",
+    toFormat: "DOCX",
+    category: "document",
+    title: "Convert PPTX to DOCX Online – Free PowerPoint to Word | Switchr",
+    metaDescription:
+      "Convert PowerPoint PPTX presentations into structured Microsoft Word DOCX documents online. 100% in-browser, private, and instant.",
+    h1: "Convert PPTX to Word DOCX Online",
+    subtitle:
+      "Turn PowerPoint presentation slides, bullet points, and images into an editable, structured Microsoft Word document directly in your browser.",
+    accept: ".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    defaultTarget: "docx",
+    recommendedFormats: ["docx", "pdf", "txt"],
+    howTo: [
+      {
+        name: "Select your PPTX file",
+        text: "Upload your PowerPoint presentation file into the converter.",
+      },
+      {
+        name: "Choose DOCX",
+        text: "Select DOCX as the target format to convert slides into an editable Word document outline.",
+      },
+      {
+        name: "Download your Word document",
+        text: "Click Convert and download your formatted .docx file ready for Microsoft Word or Google Docs.",
+      },
+    ],
+    faqs: [
+      {
+        question: "How does PPTX to DOCX conversion organize my slides?",
+        answer:
+          "Each slide is organized under a clear Heading (e.g. 'Slide 1: Title') with bullet points, content paragraphs, speaker notes, and embedded illustrations preserved.",
+      },
+      {
+        question: "Is the resulting DOCX compatible with Microsoft Word and Google Docs?",
+        answer:
+          "Yes. Switchr generates genuine OpenXML (.docx) files fully compliant with Microsoft Word, Google Docs, Apple Pages, and LibreOffice.",
+      },
+    ],
+    benefits: [
+      {
+        title: "Editable Word Document",
+        desc: "Easily edit and expand presentation outlines in Microsoft Word or Google Docs.",
+      },
+      {
+        title: "Structured Slide Headings",
+        desc: "Organized with clear Heading 2 sections and Word bullet hierarchies.",
+      },
+      {
+        title: "100% Private",
+        desc: "Your document is generated on your device with zero remote server processing.",
+      },
+    ],
+  },
+
+  // ── 14. PPT to DOCX ─────────────────────────────────────────────
+  {
+    slug: "ppt-to-docx",
+    fromFormat: "PPT",
+    toFormat: "DOCX",
+    category: "document",
+    title: "Convert PPT to DOCX Online – PowerPoint to Word | Switchr",
+    metaDescription:
+      "Convert legacy PPT slides into editable Word DOCX documents with structured headings and bullet outlines. 100% private.",
+    h1: "Convert PPT to Word DOCX Online",
+    subtitle:
+      "Extract PowerPoint presentation content into an editable Microsoft Word document directly in your browser.",
+    accept: ".ppt,application/vnd.ms-powerpoint",
+    defaultTarget: "docx",
+    recommendedFormats: ["docx", "pdf", "txt"],
+    howTo: [
+      {
+        name: "Upload your PPT presentation",
+        text: "Drag and drop your PowerPoint presentation into Switchr.",
+      },
+      {
+        name: "Select DOCX target",
+        text: "Select DOCX to extract slide content into a Word document.",
+      },
+      {
+        name: "Download .docx file",
+        text: "Download and open your new Word document in any word processor.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Can I convert PPT slides to DOCX without Microsoft Office?",
+        answer:
+          "Yes. Switchr runs entirely in your browser without needing Microsoft Office or any paid license.",
+      },
+    ],
+    benefits: [
+      {
+        title: "Universal Word Format",
+        desc: "Open legacy presentations in modern word processors instantly.",
+      },
+      {
+        title: "Fast Local Processing",
+        desc: "Extract text and outline structure in milliseconds.",
+      },
+      {
+        title: "Safe & Secure",
+        desc: "Zero uploads or cloud storage of your proprietary presentations.",
+      },
+    ],
+  },
+
+  // ── 15. DOCX to PDF ─────────────────────────────────────────────
+  {
+    slug: "docx-to-pdf",
+    fromFormat: "DOCX",
+    toFormat: "PDF",
+    category: "document",
+    title: "Convert DOCX to PDF Online – Free Word to PDF | Switchr",
+    metaDescription:
+      "Convert Microsoft Word DOCX documents to print-ready PDF files directly in your browser. 100% private, no file uploads.",
+    h1: "Convert Word DOCX to PDF Online",
+    subtitle:
+      "Convert Microsoft Word documents into clean, printable PDFs with standard formatting and page breaks. Zero server uploads.",
+    accept: ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    defaultTarget: "pdf",
+    recommendedFormats: ["pdf", "txt", "html"],
+    howTo: [
+      {
+        name: "Upload your DOCX document",
+        text: "Drop your Microsoft Word (.docx) file into the upload zone.",
+      },
+      {
+        name: "Select PDF target",
+        text: "PDF is automatically configured as the standard print-ready format.",
+      },
+      {
+        name: "Download your PDF",
+        text: "Click Convert and download your clean PDF document.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Is my Word document kept private during conversion?",
+        answer:
+          "Absolutely. All document parsing and PDF rendering occurs exclusively in your browser memory. No files are uploaded to any server.",
+      },
+      {
+        question: "Are headings and bullet points formatted in the PDF?",
+        answer:
+          "Yes. Heading hierarchies, bold titles, bullet points, and margins are rendered into standard A4 pages with clean typography.",
+      },
+    ],
+    benefits: [
+      {
+        title: "Print-Ready Output",
+        desc: "Standard A4 layout suitable for professional printing and digital sharing.",
+      },
+      {
+        title: "Zero Wait Time",
+        desc: "Instant conversion without queueing behind server-side queues.",
+      },
+      {
+        title: "Completely Free",
+        desc: "No limits on number of documents, watermarks, or hidden paywalls.",
+      },
+    ],
+  },
 ];
 
 export function getPseoPairBySlug(slug: string): PseoConversionPair | undefined {
