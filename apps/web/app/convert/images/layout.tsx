@@ -15,12 +15,20 @@ export const metadata: Metadata = {
     "convert images free",
   ],
   alternates: {
-    canonical: "/convert/images",
+    canonical: "https://switchrx.vercel.app/convert/images",
   },
   openGraph: {
     title: "Free Online Image Converter | Switchr",
     description: "Convert WebP, PNG, JPG, AVIF, HEIC, and SVG locally with zero server uploads.",
-    url: "/convert/images",
+    url: "https://switchrx.vercel.app/convert/images",
+    images: [
+      {
+        url: "/api/og?title=Image%20Converter&badge=Privacy-First%20WASM",
+        width: 1200,
+        height: 630,
+        alt: "Switchr Image Converter",
+      },
+    ],
   },
 };
 

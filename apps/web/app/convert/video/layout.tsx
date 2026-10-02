@@ -14,12 +14,20 @@ export const metadata: Metadata = {
     "video to gif",
   ],
   alternates: {
-    canonical: "/convert/video",
+    canonical: "https://switchrx.vercel.app/convert/video",
   },
   openGraph: {
     title: "Fast Video Converter Online | Switchr",
     description: "Convert video formats with WebAssembly & WebCodecs. 100% private, client-side video conversion.",
-    url: "/convert/video",
+    url: "https://switchrx.vercel.app/convert/video",
+    images: [
+      {
+        url: "/api/og?title=Video%20Converter&badge=WASM%20%2B%20WebCodecs",
+        width: 1200,
+        height: 630,
+        alt: "Switchr Video Converter",
+      },
+    ],
   },
 };
 

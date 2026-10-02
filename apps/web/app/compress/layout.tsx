@@ -15,12 +15,20 @@ export const metadata: Metadata = {
     "compress jpeg",
   ],
   alternates: {
-    canonical: "/compress",
+    canonical: "https://switchrx.vercel.app/compress",
   },
   openGraph: {
     title: "Free Client-Side File Compressor | Switchr",
-    description: "Shrink image, video, and PDF file sizes directly in your browser with zero quality loss.",
-    url: "/compress",
+    description: "Shrink image, video, and PDF file sizes directly in your browser with optimized compression algorithms.",
+    url: "https://switchrx.vercel.app/compress",
+    images: [
+      {
+        url: "/api/og?title=Smart%20File%20Compressor&badge=Images%20%2B%20Video%20%2B%20PDF",
+        width: 1200,
+        height: 630,
+        alt: "Switchr Smart File Compressor",
+      },
+    ],
   },
 };
 

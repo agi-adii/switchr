@@ -14,12 +14,20 @@ export const metadata: Metadata = {
     "extract audio from video",
   ],
   alternates: {
-    canonical: "/convert/audio",
+    canonical: "https://switchrx.vercel.app/convert/audio",
   },
   openGraph: {
     title: "Free High-Fidelity Audio Converter | Switchr",
     description: "Convert WAV, MP3, FLAC, AAC, and OGG audio tracks right in your browser.",
-    url: "/convert/audio",
+    url: "https://switchrx.vercel.app/convert/audio",
+    images: [
+      {
+        url: "/api/og?title=Audio%20Converter&badge=Lossless%20%2B%20MP3",
+        width: 1200,
+        height: 630,
+        alt: "Switchr Audio Converter",
+      },
+    ],
   },
 };
 

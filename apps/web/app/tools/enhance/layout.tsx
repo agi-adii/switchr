@@ -14,12 +14,20 @@ export const metadata: Metadata = {
     "sharpen photo free",
   ],
   alternates: {
-    canonical: "/tools/enhance",
+    canonical: "https://switchrx.vercel.app/tools/enhance",
   },
   openGraph: {
-    title: "AI Photo Enhancer & Upscaler | Switchr",
-    description: "Upscale images and enhance quality right in your browser with zero uploads.",
-    url: "/tools/enhance",
+    title: "AI Photo Enhancer & Neural Upscaler | Switchr",
+    description: "Upscale images and enhance quality right in your browser with Real-ESRGAN and zero uploads.",
+    url: "https://switchrx.vercel.app/tools/enhance",
+    images: [
+      {
+        url: "/api/og?title=AI%20Photo%20Enhancer&badge=Real-ESRGAN%20%2B%20WebGPU",
+        width: 1200,
+        height: 630,
+        alt: "Switchr AI Photo Enhancer",
+      },
+    ],
   },
 };
 

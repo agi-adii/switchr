@@ -13,12 +13,20 @@ export const metadata: Metadata = {
     "convert documents free",
   ],
   alternates: {
-    canonical: "/convert/documents",
+    canonical: "https://switchrx.vercel.app/convert/documents",
   },
   openGraph: {
     title: "Secure Document Converter | Switchr",
     description: "Convert documents locally with complete confidentiality. No uploads to third-party servers.",
-    url: "/convert/documents",
+    url: "https://switchrx.vercel.app/convert/documents",
+    images: [
+      {
+        url: "/api/og?title=Document%20Converter&badge=PDF%20%2B%20DOCX%20%2B%20Markdown",
+        width: 1200,
+        height: 630,
+        alt: "Switchr Document Converter",
+      },
+    ],
   },
 };
 

@@ -11,12 +11,20 @@ export const metadata: Metadata = {
     "webassembly file converter",
   ],
   alternates: {
-    canonical: "/about",
+    canonical: "https://switchrx.vercel.app/about",
   },
   openGraph: {
     title: "About Switchr - Privacy-First File Conversion",
     description: "Discover why Switchr keeps your files 100% private with local WebAssembly processing.",
-    url: "/about",
+    url: "https://switchrx.vercel.app/about",
+    images: [
+      {
+        url: "/api/og?title=About%20Switchr&badge=Zero%20Server%20Uploads",
+        width: 1200,
+        height: 630,
+        alt: "About Switchr",
+      },
+    ],
   },
 };
 

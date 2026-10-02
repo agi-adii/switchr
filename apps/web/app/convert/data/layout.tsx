@@ -13,12 +13,20 @@ export const metadata: Metadata = {
     "format json online",
   ],
   alternates: {
-    canonical: "/convert/data",
+    canonical: "https://switchrx.vercel.app/convert/data",
   },
   openGraph: {
     title: "Instant Data Converter (JSON, CSV, YAML, XML) | Switchr",
     description: "Convert and transform structured data files right in your browser.",
-    url: "/convert/data",
+    url: "https://switchrx.vercel.app/convert/data",
+    images: [
+      {
+        url: "/api/og?title=Data%20Converter&badge=JSON%20%2B%20CSV%20%2B%20YAML",
+        width: 1200,
+        height: 630,
+        alt: "Switchr Data Converter",
+      },
+    ],
   },
 };
 
