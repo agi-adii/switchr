@@ -69,22 +69,42 @@ const fadeUp: Variants = {
 
 function getRouteForExtension(ext: string): string {
   const lower = ext.toLowerCase();
-  if (["jpg", "jpeg", "png", "webp", "avif", "svg", "gif", "ico", "bmp", "tiff"].includes(lower)) {
+  const directPairs: Record<string, string> = {
+    webp: "/convert/webp-to-png",
+    heic: "/convert/heic-to-jpg",
+    png: "/convert/png-to-jpg",
+    jpg: "/convert/jpg-to-pdf",
+    jpeg: "/convert/jpg-to-pdf",
+    mp4: "/convert/mp4-to-webm",
+    mov: "/convert/mov-to-mp4",
+    mp3: "/convert/mp4-to-mp3",
+    wav: "/convert/wav-to-mp3",
+    json: "/convert/json-to-csv",
+    csv: "/convert/csv-to-json",
+    pdf: "/convert/merge-pdf",
+    pptx: "/convert/pptx-to-pdf",
+    ppt: "/convert/ppt-to-pdf",
+    docx: "/convert/docx-to-pdf",
+    gif: "/convert/video-to-gif",
+  };
+
+  if (directPairs[lower]) {
+    return directPairs[lower];
+  }
+
+  if (["avif", "svg", "ico", "bmp", "tiff"].includes(lower)) {
     return "/convert/images";
   }
-  if (["pdf"].includes(lower)) {
-    return "/pdf-tools";
-  }
-  if (["pptx", "ppt", "docx", "doc", "txt", "html", "rtf", "md", "xlsx"].includes(lower)) {
+  if (["doc", "txt", "html", "rtf", "md", "xlsx"].includes(lower)) {
     return "/convert/documents";
   }
-  if (["mp3", "wav", "aac", "flac", "ogg", "m4a"].includes(lower)) {
+  if (["aac", "flac", "ogg", "m4a"].includes(lower)) {
     return "/convert/audio";
   }
-  if (["mp4", "webm", "mov", "mkv", "avi"].includes(lower)) {
+  if (["webm", "mkv", "avi"].includes(lower)) {
     return "/convert/video";
   }
-  if (["json", "csv", "xml", "yaml", "toml"].includes(lower)) {
+  if (["xml", "yaml", "toml"].includes(lower)) {
     return "/convert/data";
   }
   if (["zip", "7z", "tar"].includes(lower)) {
@@ -172,7 +192,7 @@ export default function HomePage() {
   const FEATURED_TOOLS = [
     { title: "AI Photo Enhancer", desc: "Calibrate exposure, shadows & upscale to 4K", href: "/tools/enhance", icon: Sparkles, color: "text-purple-400 bg-purple-500/10", badge: "NEW" },
     { title: "PDF to Image", desc: "Extract crisp PNG, JPG or WebP pages", href: "/pdf-tools?tab=pdf-to-image", icon: FileImage, color: "text-blue-400 bg-blue-500/10", badge: "HOT" },
-    { title: "File Compressor", desc: "Reduce filesize up to 90% without loss", href: "/compress", icon: Minimize2, color: "text-emerald-400 bg-emerald-500/10" },
+    { title: "File Compressor", desc: "Shrink photos, PDFs and media with smart adaptive compression", href: "/compress", icon: Minimize2, color: "text-emerald-400 bg-emerald-500/10" },
     { title: "Merge PDF", desc: "Combine multiple PDF documents seamlessly", href: "/pdf-tools", icon: Layers, color: "text-red-400 bg-red-500/10" },
     { title: "Image Converter", desc: "Convert WebP, AVIF, PNG, JPG, SVG", href: "/convert/images", icon: Maximize2, color: "text-cyan-400 bg-cyan-500/10" },
     { title: "Video to MP3", desc: "Extract high-bitrate audio from video clips", href: "/convert/video", icon: Music, color: "text-violet-400 bg-violet-500/10" },
@@ -637,9 +657,6 @@ export default function HomePage() {
         </motion.div>
 
         <div className="relative grid sm:grid-cols-3 gap-4">
-          <div className="absolute top-[4.25rem] left-[33%] right-[33%] hidden sm:block pointer-events-none z-0">
-            <div className="how-connector" />
-          </div>
           {[
             { step: "01", title: "Drop your file",     desc: "Drag & drop or click to select. Format and metadata are detected instantly.", icon: Upload,    color: "text-blue-500",    bg: "from-blue-500/15 to-blue-600/5",      border: "border-blue-500/20", action: "upload" as const },
             { step: "02", title: "Choose output",      desc: "Pick from 200+ supported formats or use one of 30+ precision presets.",     icon: Settings2, color: "text-violet-500",  bg: "from-violet-500/15 to-violet-600/5",  border: "border-violet-500/20", href: "/convert" },

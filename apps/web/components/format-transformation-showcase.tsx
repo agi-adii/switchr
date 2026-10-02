@@ -153,7 +153,8 @@ export function FormatTransformationShowcase() {
               src="/graphics/sample-city.jpg"
               alt="Optimized output"
               fill
-              priority
+              sizes="(max-width: 1024px) 100vw, 1000px"
+              loading="lazy"
               className="object-cover object-center"
             />
             {/* Tag Badge: Output */}
@@ -175,7 +176,8 @@ export function FormatTransformationShowcase() {
                 src="/graphics/sample-city.jpg"
                 alt="Original file"
                 fill
-                priority
+                sizes="(max-width: 1024px) 100vw, 1000px"
+                loading="lazy"
                 className="object-cover object-center"
               />
             </div>

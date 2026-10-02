@@ -11,7 +11,9 @@ import {
   FileCode,
   ArrowRight,
   Sparkles,
+  Layers,
 } from "lucide-react";
+import { PSEO_PAIRS } from "@/lib/pseo-registry";
 import { motion, type Variants } from "framer-motion";
 
 const smoothEase = [0.16, 1, 0.3, 1] as const;
@@ -21,9 +23,9 @@ const TOOL_GROUPS = [
     category: "Image Tools",
     badge: "Visual & Photos",
     tools: [
-      { name: "AI Photo Enhancer", desc: "Restore detail, expand dynamic range & upscale to 4K", href: "/tools/enhance", icon: Sparkles, tag: "AI" },
+      { name: "AI Photo Enhancer", desc: "Real-ESRGAN neural super-resolution, dynamic range & tone calibration", href: "/tools/enhance", icon: Sparkles, tag: "AI" },
       { name: "Image Converter", desc: "Convert JPG, PNG, WEBP, SVG, and BMP", href: "/convert/images", icon: FileImage },
-      { name: "Image Compressor", desc: "Reduce photo file sizes without quality loss", href: "/compress", icon: FileImage },
+      { name: "Image Compressor", desc: "Reduce photo file sizes with smart adaptive compression", href: "/compress", icon: FileImage },
       { name: "Image to PDF", desc: "Compile single or multiple photos into PDF", href: "/pdf-tools", icon: FileText },
     ],
   },
@@ -215,6 +217,36 @@ export default function ToolsDirectoryPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* ── HTML Sitemap Directory: All Dedicated Conversion Pairs ── */}
+      <section className="pt-8 border-t border-border space-y-4" aria-label="Conversion Directory">
+        <div className="flex items-center gap-2">
+          <Layers className="w-4 h-4 text-primary" />
+          <h2 className="text-xl font-bold text-foreground">
+            Direct Format Conversion Pages (HTML Directory)
+          </h2>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Index of dedicated single-purpose converter engines. Statically rendered with in-browser WebAssembly execution.
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {PSEO_PAIRS.map((pair) => (
+            <Link
+              key={pair.slug}
+              href={`/convert/${pair.slug}`}
+              className="p-3.5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:bg-muted/40 transition-all text-center group block shadow-xs"
+            >
+              <span className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">
+                {pair.fromFormat} &rarr; {pair.toFormat}
+              </span>
+              <span className="text-[10px] text-muted-foreground block mt-0.5">
+                {pair.category.toUpperCase()} • Free
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

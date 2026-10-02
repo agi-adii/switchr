@@ -145,6 +145,8 @@ export function PrivacyArchitectureGraphic() {
               src="/graphics/graphic-vault.jpg"
               alt="Client-Side Encrypted Vault"
               fill
+              sizes="112px"
+              loading="lazy"
               className="object-cover"
             />
           </div>
@@ -161,8 +163,10 @@ export function PrivacyArchitectureGraphic() {
           <div className="relative w-28 h-28 rounded-2xl overflow-hidden border border-white/10 shadow-lg group-hover:scale-105 transition-transform duration-500">
             <Image
               src="/graphics/graphic-speed.jpg"
-              alt="WebAssembly Quantum Speed"
+              alt="WebAssembly Fast Execution"
               fill
+              sizes="112px"
+              loading="lazy"
               className="object-cover"
             />
           </div>
@@ -179,15 +183,17 @@ export function PrivacyArchitectureGraphic() {
           <div className="relative w-28 h-28 rounded-2xl overflow-hidden border border-white/10 shadow-lg group-hover:scale-105 transition-transform duration-500">
             <Image
               src="/graphics/graphic-unlimited.jpg"
-              alt="Unlimited Batch Processing"
+              alt="Local Batch Processing"
               fill
+              sizes="112px"
+              loading="lazy"
               className="object-cover"
             />
           </div>
           <div>
-            <h3 className="font-extrabold text-foreground text-sm">Infinite Throughput</h3>
+            <h3 className="font-extrabold text-foreground text-sm">Device Memory Processing</h3>
             <p className="text-[11px] text-muted-foreground mt-1">
-              Batch convert hundreds of documents or photos simultaneously without quotas or subscriptions.
+              Batch processing runs locally on your device without cloud server quotas or artificial queues.
             </p>
           </div>
         </div>

@@ -44,9 +44,9 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'maskable',
       },
       {
-        src: '/logo.jpg',
+        src: '/logo.svg',
         sizes: '512x512',
-        type: 'image/jpeg',
+        type: 'image/svg+xml',
       },
     ],
     shortcuts: [

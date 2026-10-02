@@ -7,8 +7,12 @@
  * 4. Noise Suppression (Bilateral edge-preserving denoise)
  * 5. Luminance-preserved color math (prevents hue distortion and clipping)
  * 6. AI Auto-Calibration: scans image histogram & sets exact optimal component values
- * 7. Super-resolution upscaling (2x / 4x)
+ * 7. Real-ESRGAN Neural Super-resolution upscaling (2x / 4x) powered by ONNX Runtime & WebGPU
  */
+
+import { realEsrganUpscale } from "./real-esrgan";
+
+export { realEsrganUpscale } from "./real-esrgan";
 
 export interface EnhanceSettings {
   preset: "magic" | "portrait" | "hdr" | "night" | "sharp" | "custom";
@@ -36,6 +40,7 @@ export interface EnhanceSettings {
 
   // Super-Resolution
   scale: 1 | 2 | 4;
+  upscaleMethod?: "real-esrgan" | "bicubic";
 }
 
 export const DEFAULT_SETTINGS: EnhanceSettings = {
@@ -56,6 +61,7 @@ export const DEFAULT_SETTINGS: EnhanceSettings = {
   dehaze: 0,
   denoise: 0,
   scale: 1,
+  upscaleMethod: "real-esrgan",
 };
 
 export const ENHANCE_PRESETS: Record<string, EnhanceSettings> = {
@@ -744,7 +750,7 @@ export async function decodeHeicBlob(blob: Blob, quality = 0.98): Promise<Blob> 
 export async function enhanceImageFile(
   fileOrBlob: Blob,
   settings: EnhanceSettings,
-  onProgress?: (p: number) => void
+  onProgress?: (p: number, statusText?: string) => void
 ): Promise<{
   blob: Blob;
   dataUrl: string;
@@ -754,14 +760,15 @@ export async function enhanceImageFile(
   originalHeight: number;
   histogram: ImageHistogramData;
 }> {
-  if (onProgress) onProgress(0.05);
+  if (onProgress) onProgress(0.05, "Preparing photo...");
 
   let activeBlob = fileOrBlob;
   if (await isHeicFormat(activeBlob)) {
+    if (onProgress) onProgress(0.1, "Decoding HEIC image...");
     activeBlob = await decodeHeicBlob(activeBlob);
   }
 
-  if (onProgress) onProgress(0.15);
+  if (onProgress) onProgress(0.15, "Loading photo data...");
 
   const img = new Image();
   const objectUrl = URL.createObjectURL(activeBlob);
@@ -779,7 +786,7 @@ export async function enhanceImageFile(
   const originalWidth = img.naturalWidth;
   const originalHeight = img.naturalHeight;
 
-  if (onProgress) onProgress(0.25);
+  if (onProgress) onProgress(0.25, "Processing tone & clarity...");
 
   const canvas = document.createElement("canvas");
   canvas.width = originalWidth;
@@ -789,20 +796,31 @@ export async function enhanceImageFile(
 
   ctx.drawImage(img, 0, 0);
 
-  if (onProgress) onProgress(0.4);
+  if (onProgress) onProgress(0.4, "Applying color science...");
 
   const srcData = ctx.getImageData(0, 0, originalWidth, originalHeight);
   const enhancedData = processEnhancedImageData(srcData, settings);
   ctx.putImageData(enhancedData, 0, 0);
 
-  if (onProgress) onProgress(0.7);
-
   let finalCanvas = canvas;
-  if (settings.scale > 1) {
-    finalCanvas = upscaleCanvas(canvas, settings.scale);
+  const targetScale = settings.scale;
+  if (targetScale === 2 || targetScale === 4) {
+    if (settings.upscaleMethod !== "bicubic") {
+      try {
+        finalCanvas = await realEsrganUpscale(canvas, targetScale, (p, text) => {
+          if (onProgress) onProgress(0.4 + p * 0.5, text || "AI Neural Super-Resolution...");
+        });
+      } catch (err) {
+        console.warn("Real-ESRGAN failed, falling back to bicubic/acuity upscaler:", err);
+        finalCanvas = upscaleCanvas(canvas, targetScale);
+      }
+    } else {
+      if (onProgress) onProgress(0.65, "Applying high-acuity upscaler...");
+      finalCanvas = upscaleCanvas(canvas, targetScale);
+    }
   }
 
-  if (onProgress) onProgress(0.85);
+  if (onProgress) onProgress(0.92, "Rendering output photo...");
 
   const finalBlob = await new Promise<Blob>((resolve, reject) => {
     finalCanvas.toBlob(
@@ -815,7 +833,7 @@ export async function enhanceImageFile(
   const dataUrl = finalCanvas.toDataURL("image/jpeg", 0.95);
   const histogram = computeImageHistogram(enhancedData);
 
-  if (onProgress) onProgress(1.0);
+  if (onProgress) onProgress(1.0, "Ready");
 
   return {
     blob: finalBlob,

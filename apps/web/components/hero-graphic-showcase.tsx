@@ -56,7 +56,7 @@ export function HeroGraphicShowcase() {
           <div className="w-3 h-3 rounded-full bg-yellow-400" />
           <div className="w-3 h-3 rounded-full bg-green-500" />
           <div className="flex-1 flex justify-center items-center gap-1.5" style={{ marginLeft: "-3.5rem" }}>
-            <Image src="/logo.jpg" alt="Switchr" width={16} height={16} className="rounded" onError={() => {}} />
+            <Image src="/logo.svg" alt="Switchr" width={16} height={16} className="rounded" onError={() => {}} />
             <span className="text-[12px] font-semibold text-white/75 tracking-wide">Switchr</span>
           </div>
         </div>

@@ -32,9 +32,12 @@ export async function generateMetadata({
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://switchrx.vercel.app";
   const canonicalUrl = `${siteUrl}/convert/${config.slug}`;
+  const fullTitle = `${config.title} | Switchr`;
 
   return {
-    title: config.title,
+    title: {
+      absolute: fullTitle,
+    },
     description: config.metaDescription,
     keywords: [
       `convert ${config.fromFormat.toLowerCase()} to ${config.toFormat.toLowerCase()}`,
@@ -45,30 +48,33 @@ export async function generateMetadata({
       "switchrx",
       "client side file converter",
       "private file converter",
+      "no upload converter",
     ],
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: config.title,
+      title: fullTitle,
       description: config.metaDescription,
       url: canonicalUrl,
       siteName: "Switchr",
       type: "website",
       images: [
         {
-          url: "/logo.jpg",
-          width: 512,
-          height: 512,
-          alt: config.title,
+          url: `/api/og?title=${encodeURIComponent(config.h1)}&subtitle=${encodeURIComponent(config.subtitle)}`,
+          width: 1200,
+          height: 630,
+          alt: `${config.fromFormat} to ${config.toFormat} Converter - Switchr`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: config.title,
+      title: fullTitle,
       description: config.metaDescription,
-      images: ["/logo.jpg"],
+      images: [
+        `/api/og?title=${encodeURIComponent(config.h1)}&subtitle=${encodeURIComponent(config.subtitle)}`,
+      ],
       creator: "@switchrapp",
     },
   };
@@ -104,8 +110,8 @@ export default async function PseoConverterPage({ params }: PageProps) {
     "featureList": [
       "100% Client-Side In-Browser Conversion",
       "Zero File Uploads to Cloud Servers",
-      "No File Size Limits",
-      "Lossless Quality Retention",
+      "Local Device Memory Processing",
+      "High Fidelity Conversion",
       "Offline Capable Progressive Web App",
     ],
   };
@@ -140,6 +146,32 @@ export default async function PseoConverterPage({ params }: PageProps) {
     })),
   };
 
+  // Structured Data 4: BreadcrumbList Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": siteUrl,
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Convert",
+        "item": `${siteUrl}/convert`,
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": `${config.fromFormat} to ${config.toFormat}`,
+        "item": pageUrl,
+      },
+    ],
+  };
+
   return (
     <>
       {/* Search Engine Rich Snippet JSON-LD Scripts */}
@@ -155,8 +187,12 @@ export default async function PseoConverterPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
 
-      {/* Main Interactive Converter Experience */}
+      {/* Main Interactive Converter Experience & Server-Hydrated Content */}
       <PseoConverterClient pair={config} />
     </>
   );

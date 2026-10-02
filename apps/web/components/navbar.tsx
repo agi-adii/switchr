@@ -61,7 +61,7 @@ export function Navbar() {
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className="w-8 h-8 rounded-xl overflow-hidden shadow-md shadow-primary/20"
             >
-              <Image src="/logo.jpg" alt="Switchr Logo" width={32} height={32} className="w-full h-full object-cover" />
+              <Image src="/logo.svg" alt="Switchr Logo" width={32} height={32} className="w-full h-full object-contain" />
             </motion.div>
             <div className="flex items-center gap-1.5">
               <span className="text-lg font-extrabold tracking-tight text-white">

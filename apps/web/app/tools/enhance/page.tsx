@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 import { BeforeAfterSlider } from "@/components/enhancer/before-after-slider";
@@ -100,22 +100,36 @@ export default function PhotoEnhancerPage() {
 
   const [exportFormat, setExportFormat] = useState<"jpg" | "png" | "webp">("jpg");
   const [exportScale, setExportScale] = useState<1 | 2 | 4>(1);
+  const [upscaleMethod, setUpscaleMethod] = useState<"real-esrgan" | "bicubic">("real-esrgan");
+  const [statusMessage, setStatusMessage] = useState<string>("");
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Execute enhancement pipeline
   const runEnhancement = useCallback(
-    async (file: File | Blob, currentSettings: EnhanceSettings, scale: 1 | 2 | 4) => {
+    async (
+      file: File | Blob,
+      currentSettings: EnhanceSettings,
+      scale: 1 | 2 | 4,
+      method: "real-esrgan" | "bicubic" = upscaleMethod
+    ) => {
       setIsProcessing(true);
       setProgress(0.1);
+      setStatusMessage(
+        scale > 1 && method === "real-esrgan"
+          ? "Starting Real-ESRGAN Neural Net..."
+          : "Processing photo..."
+      );
       try {
         const activeSettings: EnhanceSettings = {
           ...currentSettings,
           scale,
+          upscaleMethod: method,
         };
 
-        const res = await enhanceImageFile(file, activeSettings, (p) => {
+        const res = await enhanceImageFile(file, activeSettings, (p, text) => {
           setProgress(p);
+          if (text) setStatusMessage(text);
         });
 
         setEnhancedUrl(res.dataUrl);
@@ -128,9 +142,10 @@ export default function PhotoEnhancerPage() {
         toast.error(err.message || "Failed to enhance image");
       } finally {
         setIsProcessing(false);
+        setStatusMessage("");
       }
     },
-    []
+    [upscaleMethod]
   );
 
   // Load a file into workspace
@@ -228,7 +243,7 @@ export default function PhotoEnhancerPage() {
     const newSettings = { ...ENHANCE_PRESETS[presetKey], scale: exportScale };
     setSettings(newSettings);
     if (selectedFile) {
-      runEnhancement(selectedFile, newSettings, exportScale);
+      runEnhancement(selectedFile, newSettings, exportScale, upscaleMethod);
     }
   };
 
@@ -248,7 +263,7 @@ export default function PhotoEnhancerPage() {
     if (!selectedFile) return;
     if (sliderTimeoutRef.current) clearTimeout(sliderTimeoutRef.current);
     sliderTimeoutRef.current = setTimeout(() => {
-      runEnhancement(selectedFile, settings, exportScale);
+      runEnhancement(selectedFile, settings, exportScale, upscaleMethod);
     }, 120);
   };
 
@@ -256,7 +271,12 @@ export default function PhotoEnhancerPage() {
   const handleResetComponents = () => {
     setSettings({ ...DEFAULT_SETTINGS, scale: exportScale });
     if (selectedFile) {
-      runEnhancement(selectedFile, { ...DEFAULT_SETTINGS, scale: exportScale }, exportScale);
+      runEnhancement(
+        selectedFile,
+        { ...DEFAULT_SETTINGS, scale: exportScale },
+        exportScale,
+        upscaleMethod
+      );
     }
     toast.info("Reset all components to neutral");
   };
@@ -265,7 +285,15 @@ export default function PhotoEnhancerPage() {
   const handleScaleChange = (scale: 1 | 2 | 4) => {
     setExportScale(scale);
     if (selectedFile) {
-      runEnhancement(selectedFile, settings, scale);
+      runEnhancement(selectedFile, settings, scale, upscaleMethod);
+    }
+  };
+
+  // Switch between Real-ESRGAN and classic high-acuity upscaling
+  const handleMethodChange = (method: "real-esrgan" | "bicubic") => {
+    setUpscaleMethod(method);
+    if (selectedFile && exportScale > 1) {
+      runEnhancement(selectedFile, settings, exportScale, method);
     }
   };
 
@@ -337,13 +365,13 @@ export default function PhotoEnhancerPage() {
       <div className="text-center space-y-2 mb-8">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 text-violet-500 text-xs font-bold mb-2 border border-violet-500/20">
           <Sparkles className="w-3.5 h-3.5" />
-          Accurate Multi-Component AI Vision Engine
+          Real-ESRGAN Deep Neural Model &amp; Vision Engine
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
           AI Photo Enhancer &amp; Super-Resolution
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
-          Independently adjust and balance all photo components — tone zones, white balance, micro-texture, and upscaling — with zero color distortion.
+          Calibrate tone, dynamic range, and texture with precision computational photography, or upscale up to 4x using Real-ESRGAN deep neural networks via ONNX Runtime &amp; WebGPU.
         </p>
       </div>
 
@@ -487,9 +515,9 @@ export default function PhotoEnhancerPage() {
               </button>
 
               {isProcessing && (
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 text-violet-500 text-xs font-bold animate-pulse">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  {Math.round(progress * 100)}%
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 text-violet-500 text-xs font-bold animate-pulse max-w-[280px] truncate">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                  <span className="truncate">{statusMessage || `${Math.round(progress * 100)}%`}</span>
                 </span>
               )}
 
@@ -934,26 +962,60 @@ export default function PhotoEnhancerPage() {
             </div>
 
             {/* Export & Super-Resolution Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-border">
-              <div className="flex flex-wrap items-center gap-3 text-xs">
-                {/* Resolution Scale */}
-                <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-muted-foreground">Upscale:</span>
-                  <div className="flex bg-muted/60 p-1 rounded-xl border border-border">
-                    {([1, 2, 4] as const).map((sc) => (
-                      <button
-                        key={sc}
-                        onClick={() => handleScaleChange(sc)}
-                        className={`px-3 py-1 font-bold text-[11px] rounded-lg transition-all cursor-pointer ${
-                          exportScale === sc
-                            ? "bg-card text-foreground shadow-xs border border-border"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {sc === 1 ? "1x (Original)" : `${sc}x Super-Res`}
-                      </button>
-                    ))}
+            <div className="flex flex-col gap-4 pt-4 border-t border-border">
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                {/* Resolution Scale & Model Engine */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-muted-foreground">Upscale:</span>
+                    <div className="flex bg-muted/60 p-1 rounded-xl border border-border">
+                      {([1, 2, 4] as const).map((sc) => (
+                        <button
+                          key={sc}
+                          onClick={() => handleScaleChange(sc)}
+                          className={`px-3 py-1 font-bold text-[11px] rounded-lg transition-all cursor-pointer ${
+                            exportScale === sc
+                              ? "bg-card text-foreground shadow-xs border border-border"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {sc === 1 ? "1x (Original)" : `${sc}x Super-Res`}
+                        </button>
+                      ))}
+                    </div>
                   </div>
+
+                  {exportScale > 1 && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-muted-foreground">Engine:</span>
+                      <div className="flex bg-muted/60 p-1 rounded-xl border border-border">
+                        <button
+                          onClick={() => handleMethodChange("real-esrgan")}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 font-bold text-[11px] rounded-lg transition-all cursor-pointer ${
+                            upscaleMethod === "real-esrgan"
+                              ? "bg-violet-600 text-white shadow-xs"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                          title="Real-ESRGAN deep neural network running directly in-browser via ONNX Runtime & WebGPU"
+                        >
+                          <Sparkles className="w-3 h-3" />
+                          Real-ESRGAN (AI Model)
+                        </button>
+                        <button
+                          onClick={() => handleMethodChange("bicubic")}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 font-bold text-[11px] rounded-lg transition-all cursor-pointer ${
+                            upscaleMethod === "bicubic"
+                              ? "bg-card text-foreground shadow-xs border border-border"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                          title="Instant high-order bicubic interpolation with directional edge sharpening"
+                        >
+                          <Zap className="w-3 h-3" />
+                          Classic High-Acuity
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Target Format */}
@@ -971,9 +1033,21 @@ export default function PhotoEnhancerPage() {
                 </div>
               </div>
 
+              {exportScale > 1 && upscaleMethod === "real-esrgan" && (
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-violet-500/5 border border-violet-500/20 text-[11px]">
+                  <div className="flex items-center gap-2 text-violet-400 font-medium">
+                    <Sparkles className="w-3.5 h-3.5 text-violet-500 shrink-0" />
+                    <span>Real-ESRGAN General x4v3 Neural Network active (ONNX Runtime WebGPU/WASM)</span>
+                  </div>
+                  <span className="hidden sm:inline-block text-[10px] text-muted-foreground font-mono">
+                    100% In-Browser ML • 0 Server Uploads
+                  </span>
+                </div>
+              )}
+
               {/* Download Action */}
-              <div className="flex items-center gap-3">
-                <div className="text-right font-mono text-[11px] text-muted-foreground hidden sm:block">
+              <div className="flex items-center justify-between sm:justify-end gap-3 pt-2">
+                <div className="text-right font-mono text-[11px] text-muted-foreground">
                   <div>
                     {enhancedWidth}×{enhancedHeight} px
                   </div>

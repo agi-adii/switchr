@@ -15,11 +15,13 @@ import { PwaInstallBanner } from "@/components/pwa-install-banner";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 import { JsonLd } from "@/components/seo/json-ld";
@@ -66,9 +68,6 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  alternates: {
-    canonical: "/",
-  },
   verification: {
     google: "tmqaM3yKYddbFFhrHWett8KIfDMxuujgomlHbUN5RL4",
   },
@@ -82,10 +81,10 @@ export const metadata: Metadata = {
       "Convert images, videos, audio, documents, and PDFs directly in your browser. 100% free, private, zero server uploads.",
     images: [
       {
-        url: "/logo.jpg",
-        width: 512,
-        height: 512,
-        alt: "Switchr - Universal File Converter",
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "Switchr - Universal In-Browser File Converter",
       },
     ],
   },
@@ -93,8 +92,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Switchr - Free Universal File Converter & PDF Suite",
     description:
-      "Convert images, videos, audio, documents, and PDFs right in your browser. 100% free, private, and unlimited.",
-    images: ["/logo.jpg"],
+      "Convert images, videos, audio, documents, and PDFs right in your browser. 100% free, private, zero server uploads.",
+    images: ["/api/og"],
     creator: "@switchrapp",
   },
   robots: {
@@ -112,9 +111,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon.png", type: "image/png", sizes: "32x32" },
-      { url: "/logo.jpg", type: "image/jpeg", sizes: "512x512" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
     ],
     apple: [
       { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
