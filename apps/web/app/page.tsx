@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,5 +7,14 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  redirect("/studio.html");
+  return (
+    <div className="fixed inset-0 z-50 w-full h-full bg-[#0E0D0B] overflow-hidden">
+      <iframe
+        src="/studio.html"
+        className="w-full h-full border-0 block"
+        title="Switchr — Tactile Swiss Studio"
+        allow="clipboard-read; clipboard-write"
+      />
+    </div>
+  );
 }

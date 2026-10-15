@@ -28,22 +28,6 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: "/",
-          destination: "/studio.html",
-        },
-        {
-          source: "/studio",
-          destination: "/studio.html",
-        },
-      ],
-      afterFiles: [],
-      fallback: [],
-    };
-  },
   async headers() {
     return [
       {
