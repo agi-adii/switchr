@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
-import { AppShell } from "@/components/app-shell";
 import { PwaProvider } from "@/lib/pwa-context";
 import { PwaInstallBanner } from "@/components/pwa-install-banner";
 
@@ -143,11 +142,11 @@ export default function RootLayout({
         <meta name="google-site-verification" content="tmqaM3yKYddbFFhrHWett8KIfDMxuujgomlHbUN5RL4" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased relative overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#0E0D0B] text-foreground font-sans antialiased m-0 p-0 overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
@@ -155,7 +154,7 @@ export default function RootLayout({
             {/* Structured Data for Search Engine Rich Snippets */}
             <JsonLd />
 
-            <AppShell>{children}</AppShell>
+            <main className="w-full min-h-screen m-0 p-0">{children}</main>
 
             {/* PWA Floating Install Banner and Offline Notice */}
             <PwaInstallBanner />
