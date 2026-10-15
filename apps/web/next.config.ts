@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
           source: "/",
           destination: "/studio.html",
         },
+        {
+          source: "/studio",
+          destination: "/studio.html",
+        },
       ],
       afterFiles: [],
       fallback: [],
