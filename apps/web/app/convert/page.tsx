@@ -81,6 +81,42 @@ const CATEGORIES = [
     buttonText: "Open Archive Tools",
     formats: ["Create ZIP", "Extract ZIP"],
   },
+  {
+    title: "Subtitle Converter",
+    desc: "Convert SRT, WebVTT (VTT), and ASS subtitle files client-side.",
+    href: "/convert/subtitles",
+    icon: FileText,
+    accent: "text-pink-500 bg-pink-500/10",
+    buttonText: "Open Subtitle Converter",
+    formats: ["SRT", "VTT", "ASS"],
+  },
+  {
+    title: "Font Converter",
+    desc: "Convert TTF, OTF, and WOFF fonts directly in your browser with glyph parsing.",
+    href: "/convert/fonts",
+    icon: Sparkles,
+    accent: "text-rose-500 bg-rose-500/10",
+    buttonText: "Open Font Converter",
+    formats: ["TTF", "OTF", "WOFF"],
+  },
+  {
+    title: "Developer & Code Converter",
+    desc: "Convert YAML, JSON, Markdown, TOML, and TSV files with instant formatting.",
+    href: "/convert/programming",
+    icon: FileCode,
+    accent: "text-amber-600 bg-amber-600/10",
+    buttonText: "Open Code Converter",
+    formats: ["YAML", "JSON", "Markdown", "TSV"],
+  },
+  {
+    title: "E-Book Converter",
+    desc: "Convert EPUB e-books directly into clean TXT, HTML, or PDF documents.",
+    href: "/convert/ebooks",
+    icon: FileText,
+    accent: "text-teal-500 bg-teal-500/10",
+    buttonText: "Open E-Book Converter",
+    formats: ["EPUB → PDF", "EPUB → TXT", "HTML"],
+  },
 ];
 
 const containerVariants = {

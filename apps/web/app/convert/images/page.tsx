@@ -112,8 +112,8 @@ export default function ImageConverterPage() {
       description="Convert JPG, PNG, WEBP, and Apple HEIC photos directly to PDF, JPG, or modern web formats."
       breadcrumbs={[{ label: "Convert", href: "/convert" }, { label: "Images" }]}
       accept="image/*,.heic,.heif"
-      recommendedFormats={["pdf", "webp", "png", "jpg"]}
-      moreFormats={["bmp", "gif"]}
+      recommendedFormats={["pdf", "webp", "png", "jpg", "avif"]}
+      moreFormats={["bmp", "gif", "ico"]}
       defaultTarget="webp"
       category="image"
       advancedOptionsNode={advancedOptions}

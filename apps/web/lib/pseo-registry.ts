@@ -130,7 +130,51 @@ export const PSEO_PAIRS: PseoConversionPair[] = [
         { feature: "Android Support", fromVal: "Limited to Android 9+", toVal: "Universal" },
       ],
     },
-    relatedSlugs: ["webp-to-png", "png-to-jpg", "jpg-to-pdf", "pdf-to-jpg"],
+    relatedSlugs: ["webp-to-png", "png-to-jpg", "jpg-to-pdf", "pdf-to-jpg", "heic-to-pdf"],
+  },
+
+  // ── HEIC to PDF ───────────────────────────────────────────────
+  {
+    slug: "heic-to-pdf",
+    fromFormat: "HEIC",
+    toFormat: "PDF",
+    category: "image",
+    title: "Convert HEIC to PDF Online Free",
+    metaDescription: "Convert Apple iPhone HEIC photos directly into clean, high-resolution PDF documents. 100% private, client-side decoding with zero cloud uploads.",
+    h1: "Convert HEIC to PDF Online",
+    subtitle: "Turn Apple iPhone HEIC and HEIF photos into printable, document-ready PDFs directly on your device.",
+    accept: ".heic,.heif,image/heic,image/heif",
+    defaultTarget: "pdf",
+    recommendedFormats: ["pdf", "jpg", "png", "webp"],
+    moreFormats: ["bmp"],
+    howTo: [
+      { name: "Upload your iPhone HEIC", text: "Drag and drop your .heic image into the upload area or click to select from your device." },
+      { name: "Configure page options", text: "Choose PDF layout, page orientation, or compile multiple HEIC photos into a multi-page document." },
+      { name: "Download your PDF", text: "Download your high-resolution printable PDF file instantly without any watermarks." },
+    ],
+    faqs: [
+      { question: "Can I convert multiple iPhone HEIC photos into a single PDF?", answer: "Yes! You can compile multiple HEIC photos directly into a multi-page PDF document with custom margins and orientations." },
+      { question: "Are my personal photos uploaded to any server?", answer: "No. Conversion runs 100% client-side in your browser memory using WebAssembly. Your photos never leave your device." },
+      { question: "Will the PDF retain high print resolution?", answer: "Yes. Switchr preserves the full pixel dimensions of your iPhone camera sensors for sharp, print-ready document output." },
+    ],
+    benefits: [
+      { title: "Direct Apple HEIC Support", desc: "Decodes Apple HEVC images without requiring iTunes, iOS, or paid Windows codecs." },
+      { title: "Instant Document Assembly", desc: "Turn photo receipts, scans, and documents into clean A4 PDFs." },
+      { title: "Zero Server Uploads", desc: "Completely private and safe for sensitive IDs, contracts, and personal records." },
+    ],
+    editorial: {
+      aboutFrom: "HEIC is Apple's high-efficiency image format used by iPhones and iPads to capture high-resolution photos at compact file sizes.",
+      aboutTo: "PDF is the universal standard for digital documents, printable forms, official records, and cross-platform archiving.",
+      whenToUse: "Convert HEIC photos of documents, receipts, contracts, or photo collections into standard PDFs for printing, emailing, or filing official applications.",
+      qualityNotes: "High-resolution sensor data is mapped to vector PDF container pages without downsampling, maintaining pristine document clarity.",
+      comparisonTable: [
+        { feature: "Primary Use", fromVal: "Photo storage", toVal: "Document sharing & printing" },
+        { feature: "Multi-page Support", fromVal: "Single photo / burst", toVal: "Unlimited pages per file" },
+        { feature: "Universal Viewer Support", fromVal: "Limited (Apple native)", toVal: "Universal (Every device & browser)" },
+        { feature: "Print Readiness", fromVal: "Requires conversion", toVal: "Standardized print dimensions" },
+      ],
+    },
+    relatedSlugs: ["heic-to-jpg", "jpg-to-pdf", "png-to-pdf"],
   },
 
   // ── 3. PNG to JPG ──────────────────────────────────────────────

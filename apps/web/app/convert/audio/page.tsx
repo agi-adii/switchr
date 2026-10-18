@@ -57,8 +57,9 @@ export default function AudioConverterPage() {
       title="Audio Converter"
       description="Convert audio tracks between MP3, WAV, AAC, and other formats client-side using FFmpeg."
       breadcrumbs={[{ label: "Convert", href: "/convert" }, { label: "Audio" }]}
-      accept="audio/*"
-      recommendedFormats={["mp3", "wav", "aac"]}
+      accept="audio/*,.flac,.m4a,.ogg,.opus,.wma,.aiff,.amr,.ac3,.au,.caf"
+      recommendedFormats={["mp3", "wav", "aac", "flac", "ogg"]}
+      moreFormats={["m4a", "opus", "wma", "aiff"]}
       defaultTarget="mp3"
       category="audio"
       advancedOptionsNode={advancedOptions}

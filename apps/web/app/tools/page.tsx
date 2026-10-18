@@ -12,13 +12,28 @@ import {
   ArrowRight,
   Sparkles,
   Layers,
+  FileCheck,
 } from "lucide-react";
 import { PSEO_PAIRS } from "@/lib/pseo-registry";
 import { motion, type Variants } from "framer-motion";
 
 const smoothEase = [0.16, 1, 0.3, 1] as const;
 
-const TOOL_GROUPS = [
+interface ToolItem {
+  name: string;
+  desc: string;
+  href: string;
+  icon: any;
+  tag?: string;
+}
+
+interface ToolGroup {
+  category: string;
+  badge: string;
+  tools: ToolItem[];
+}
+
+const TOOL_GROUPS: ToolGroup[] = [
   {
     category: "Image Tools",
     badge: "Visual & Photos",
@@ -26,7 +41,7 @@ const TOOL_GROUPS = [
       { name: "AI Photo Enhancer", desc: "Real-ESRGAN neural super-resolution, dynamic range & tone calibration", href: "/tools/enhance", icon: Sparkles, tag: "AI" },
       { name: "Image Converter", desc: "Convert JPG, PNG, WEBP, SVG, and BMP", href: "/convert/images", icon: FileImage },
       { name: "Image Compressor", desc: "Reduce photo file sizes with smart adaptive compression", href: "/compress", icon: FileImage },
-      { name: "Image to PDF", desc: "Compile single or multiple photos into PDF", href: "/pdf-tools", icon: FileText },
+      { name: "Image Metadata Inspector", desc: "Inspect image dimensions, aspect ratio, color depth, and EXIF", href: "/tools/image-metadata", icon: FileImage },
     ],
   },
   {
@@ -48,6 +63,8 @@ const TOOL_GROUPS = [
       { name: "Video Converter", desc: "Convert MP4, WebM, MOV, and MKV", href: "/convert/video", icon: Video },
       { name: "Video to MP3", desc: "Extract audio sound from video clips", href: "/convert/video", icon: Music },
       { name: "Video to GIF", desc: "Make short animated GIF loops", href: "/convert/video", icon: Video },
+      { name: "Subtitle Converter", desc: "Convert SRT, WebVTT (VTT), and ASS subtitles", href: "/convert/subtitles", icon: FileText },
+      { name: "Font Converter", desc: "Convert TTF, OTF, and WOFF fonts", href: "/convert/fonts", icon: Sparkles },
     ],
   },
   {
@@ -56,15 +73,20 @@ const TOOL_GROUPS = [
     tools: [
       { name: "ZIP Creator", desc: "Package multiple files into a clean archive", href: "/tools/archive", icon: Archive },
       { name: "ZIP Extractor", desc: "Unpack and inspect ZIP files in browser", href: "/tools/archive", icon: Archive },
+      { name: "File Checksum / Hash", desc: "Calculate SHA-256, SHA-1, SHA-512 hashes", href: "/tools/checksum", icon: FileCheck },
     ],
   },
   {
-    category: "Data Tools",
-    badge: "Code & Structured",
+    category: "Developer & Utility Tools",
+    badge: "Code & Formatters",
     tools: [
-      { name: "JSON to CSV", desc: "Convert JSON array to spreadsheet rows", href: "/convert/data", icon: FileCode },
-      { name: "CSV to JSON", desc: "Convert spreadsheet tables to JSON", href: "/convert/data", icon: FileCode },
-      { name: "XML Converter", desc: "Convert XML structure into clean JSON", href: "/convert/data", icon: FileCode },
+      { name: "JSON Formatter", desc: "Prettify, minify, and validate JSON syntax", href: "/tools/json-formatter", icon: FileCode },
+      { name: "YAML Formatter", desc: "Format, validate, and convert YAML configs", href: "/tools/yaml-formatter", icon: FileCode },
+      { name: "XML Formatter", desc: "Clean up and indent XML markup documents", href: "/tools/xml-formatter", icon: FileCode },
+      { name: "Base64 Tool", desc: "Encode or decode text and binary files", href: "/tools/base64", icon: FileCode },
+      { name: "URL Encoder", desc: "Percent-encode and decode query parameters", href: "/tools/url-encode", icon: FileCode },
+      { name: "QR Code Generator", desc: "Generate custom styled QR codes", href: "/tools/qr-generator", icon: Sparkles },
+      { name: "CSV Deduplication", desc: "Remove duplicate rows and clean CSVs", href: "/tools/csv-cleanup", icon: FileCode },
     ],
   },
 ];

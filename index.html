@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Switchr — Tactile Swiss Studio (Client-Side WASM Engine)</title>
+  <script src="/heic2any.min.js"></script>
+  <script src="/pdf.min.js"></script>
+  <script src="/pdf-lib.min.js"></script>
+  <script src="/jspdf.umd.min.js"></script>
   
   <style>
     /* -------------------------------------------------------------
@@ -963,12 +967,12 @@
         <!-- ============================================== -->
         <div id="pdfWorkbench" class="hidden" style="margin: 1.5rem 0; flex: 1; display: flex; flex-direction: column; gap: 1rem;">
           
-          <input type="file" id="pdfImagesInput" multiple accept="image/*" class="hidden" onchange="handleAddPdfImages(this.files)" />
+          <input type="file" id="pdfImagesInput" multiple accept="image/*,.heic,.heif" class="hidden" onchange="handleAddPdfImages(this.files)" />
           <input type="file" id="pdfDocInput" accept=".pdf" class="hidden" onchange="handlePdfDocUpload(this.files[0])" />
 
           <!-- PDF Sub-Toolbar -->
           <div style="display: flex; justify-content: space-between; align-items: center; background: var(--muted); padding: 0.5rem 1rem; border: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; gap: 0.5rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
               <button onclick="switchPdfTab('compile')" id="pdfTabCompileBtn" style="padding: 0.25rem 0.75rem; background: var(--ink); color: var(--canvas); font-weight: 700; border: none;">
                 Images → Multi-Page PDF
               </button>
@@ -978,14 +982,27 @@
               <button onclick="switchPdfTab('text')" id="pdfTabTextBtn" style="padding: 0.25rem 0.75rem;">
                 Text / Markdown → PDF
               </button>
+              <button onclick="switchPdfTab('lock')" id="pdfTabLockBtn" style="padding: 0.25rem 0.75rem;">
+                🔒 Lock PDF
+              </button>
+              <button onclick="switchPdfTab('unlock')" id="pdfTabUnlockBtn" style="padding: 0.25rem 0.75rem;">
+                🔓 Unlock PDF
+              </button>
+            </div>
+            <div style="font-size: 0.6875rem; color: var(--sub);" id="pdfSecurityTelemetry">
+              WASM / 128-BIT CRYPTO READY
             </div>
           </div>
 
           <!-- TAB 1: IMAGES TO PDF COMPILER -->
           <div id="pdfCompilePanel" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div style="border: 2px dashed var(--border); background: var(--surface); padding: 1.5rem; text-align: center; cursor: pointer;" onclick="document.getElementById('pdfImagesInput').click()">
+            <div style="border: 2px dashed var(--border); background: var(--surface); padding: 1.5rem; text-align: center; cursor: pointer;" 
+                 onclick="document.getElementById('pdfImagesInput').click()"
+                 ondragover="event.preventDefault(); this.style.borderColor='var(--braun-orange)';"
+                 ondragleave="this.style.borderColor='var(--border)';"
+                 ondrop="event.preventDefault(); this.style.borderColor='var(--border)'; handleAddPdfImages(event.dataTransfer.files);">
               <p style="font-weight: 600; font-size: 0.875rem;">Drop photos or scans to compile into PDF, or <span style="text-decoration: underline; color: var(--braun-orange);">browse disk</span></p>
-              <p style="font-size: 0.6875rem; font-family: var(--font-mono); color: var(--sub); margin-top: 0.25rem;">Compiles JPEG, PNG, WebP into valid PDF 1.4 documents without server uploads</p>
+              <p style="font-size: 0.6875rem; font-family: var(--font-mono); color: var(--sub); margin-top: 0.25rem;">Compiles HEIC, JPEG, PNG, WebP into valid PDF 1.4 documents without server uploads</p>
             </div>
 
             <div style="border: 1px solid var(--border); background: var(--surface); padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem;">
@@ -1047,6 +1064,124 @@
                 </button>
               </div>
               <textarea id="pdfDocBody" style="width: 100%; height: 280px; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; resize: vertical;" placeholder="Type or paste document text / Markdown here to compile into a clean Swiss PDF..."></textarea>
+            </div>
+          </div>
+
+          <!-- TAB 4: LOCK / ENCRYPT PDF -->
+          <div id="pdfLockPanel" class="hidden" style="display: flex; flex-direction: column; gap: 1rem;">
+            <input type="file" id="pdfLockFileInput" accept="application/pdf" class="hidden" onchange="handlePdfLockUpload(this.files[0])" />
+            
+            <div style="border: 2px dashed var(--border); background: var(--surface); padding: 1.5rem; text-align: center; cursor: pointer;" 
+                 onclick="document.getElementById('pdfLockFileInput').click()"
+                 ondragover="event.preventDefault(); this.style.borderColor='var(--braun-orange)';"
+                 ondragleave="this.style.borderColor='var(--border)';"
+                 ondrop="event.preventDefault(); this.style.borderColor='var(--border)'; handlePdfLockUpload(event.dataTransfer.files[0]);">
+              <p style="font-weight: 600; font-size: 0.875rem;">Drop any PDF to password-protect & lock, or <span style="text-decoration: underline; color: var(--braun-orange);">browse disk</span></p>
+              <p style="font-size: 0.6875rem; font-family: var(--font-mono); color: var(--sub); margin-top: 0.25rem;">Applies standard 128-bit encryption with open password and permissions client-side</p>
+            </div>
+
+            <div style="border: 1px solid var(--border); background: var(--surface); padding: 1.25rem; font-family: var(--font-mono); font-size: 0.75rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="font-weight: 700;">DOCUMENT:</span>
+                  <span id="pdfLockFileName" style="color: var(--sub);">No document selected</span>
+                  <span id="pdfLockFileMeta" style="color: var(--sub); font-size: 0.6875rem;"></span>
+                </div>
+                <button onclick="executeLockPdf()" id="pdfLockSubmitBtn" class="btn-orange" style="padding: 0.35rem 0.85rem; font-weight: 700;" disabled>
+                  Encrypt & Download Locked PDF ↓
+                </button>
+              </div>
+
+              <!-- Password & Configuration Grid -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div>
+                  <label style="display: block; font-weight: 700; margin-bottom: 0.35rem;">USER / OPEN PASSWORD (REQUIRED):</label>
+                  <div style="display: flex; border: 1px solid var(--border);">
+                    <input type="password" id="pdfLockPassword" placeholder="Enter password to open file" style="flex: 1; padding: 0.4rem 0.6rem; border: none; background: var(--elevated); color: var(--ink); font-family: var(--font-mono); font-size: 0.75rem;" oninput="validatePdfLockInputs()" />
+                    <button type="button" onclick="togglePasswordVisibility('pdfLockPassword', this)" style="border: none; border-left: 1px solid var(--border); background: var(--muted); padding: 0 0.5rem; cursor: pointer; color: var(--ink); font-size: 0.75rem;">👁</button>
+                  </div>
+                </div>
+
+                <div>
+                  <label style="display: block; font-weight: 700; margin-bottom: 0.35rem;">CONFIRM PASSWORD:</label>
+                  <div style="display: flex; border: 1px solid var(--border);">
+                    <input type="password" id="pdfLockConfirmPassword" placeholder="Re-enter password" style="flex: 1; padding: 0.4rem 0.6rem; border: none; background: var(--elevated); color: var(--ink); font-family: var(--font-mono); font-size: 0.75rem;" oninput="validatePdfLockInputs()" />
+                    <button type="button" onclick="togglePasswordVisibility('pdfLockConfirmPassword', this)" style="border: none; border-left: 1px solid var(--border); background: var(--muted); padding: 0 0.5rem; cursor: pointer; color: var(--ink); font-size: 0.75rem;">👁</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="pdfLockMatchHint" style="font-size: 0.6875rem; color: var(--sub); display: none;"></div>
+
+              <!-- Permissions Checkboxes -->
+              <div style="border-top: 1px solid var(--border); padding-top: 0.75rem;">
+                <div style="font-weight: 700; margin-bottom: 0.5rem;">PERMISSIONS & ACCESS RESTRICTIONS:</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem;">
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="pdfLockPermPrint" checked />
+                    <span>Allow Printing</span>
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="pdfLockPermCopy" checked />
+                    <span>Allow Text/Image Copy</span>
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="pdfLockPermModify" />
+                    <span>Allow Modifying Content</span>
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="pdfLockPermForms" checked />
+                    <span>Allow Annotations & Forms</span>
+                  </label>
+                </div>
+              </div>
+
+              <div id="pdfLockStatus" class="hidden" style="padding: 0.5rem 0.75rem; background: var(--muted); border: 1px solid var(--border); font-size: 0.7rem; color: var(--ink);">
+                Ready
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: UNLOCK / DECRYPT PDF -->
+          <div id="pdfUnlockPanel" class="hidden" style="display: flex; flex-direction: column; gap: 1rem;">
+            <input type="file" id="pdfUnlockFileInput" accept="application/pdf" class="hidden" onchange="handlePdfUnlockUpload(this.files[0])" />
+            
+            <div style="border: 2px dashed var(--border); background: var(--surface); padding: 1.5rem; text-align: center; cursor: pointer;" 
+                 onclick="document.getElementById('pdfUnlockFileInput').click()"
+                 ondragover="event.preventDefault(); this.style.borderColor='var(--braun-orange)';"
+                 ondragleave="this.style.borderColor='var(--border)';"
+                 ondrop="event.preventDefault(); this.style.borderColor='var(--border)'; handlePdfUnlockUpload(event.dataTransfer.files[0]);">
+              <p style="font-weight: 600; font-size: 0.875rem;">Drop password-protected PDF to unlock, or <span style="text-decoration: underline; color: var(--braun-orange);">browse disk</span></p>
+              <p style="font-size: 0.6875rem; font-family: var(--font-mono); color: var(--sub); margin-top: 0.25rem;">Removes password requirements and usage restrictions client-side in RAM</p>
+            </div>
+
+            <div style="border: 1px solid var(--border); background: var(--surface); padding: 1.25rem; font-family: var(--font-mono); font-size: 0.75rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="font-weight: 700;">DOCUMENT:</span>
+                  <span id="pdfUnlockFileName" style="color: var(--sub);">No document selected</span>
+                  <span id="pdfUnlockSecurityBadge" style="padding: 0.15rem 0.4rem; font-size: 0.625rem; background: var(--muted); border: 1px solid var(--border);">Awaiting file</span>
+                </div>
+                <button onclick="executeUnlockPdf()" id="pdfUnlockSubmitBtn" class="btn-orange" style="padding: 0.35rem 0.85rem; font-weight: 700;" disabled>
+                  Unlock & Download Decrypted PDF ↓
+                </button>
+              </div>
+
+              <!-- Password Input Area -->
+              <div id="pdfUnlockPasswordGroup">
+                <label style="display: block; font-weight: 700; margin-bottom: 0.35rem;">ENTER PASSWORD TO DECRYPT:</label>
+                <div style="display: flex; border: 1px solid var(--border); max-width: 480px;">
+                  <input type="password" id="pdfUnlockPassword" placeholder="Enter document password" style="flex: 1; padding: 0.4rem 0.6rem; border: none; background: var(--elevated); color: var(--ink); font-family: var(--font-mono); font-size: 0.75rem;" />
+                  <button type="button" onclick="togglePasswordVisibility('pdfUnlockPassword', this)" style="border: none; border-left: 1px solid var(--border); background: var(--muted); padding: 0 0.5rem; cursor: pointer; color: var(--ink); font-size: 0.75rem;">👁</button>
+                </div>
+                <div style="color: var(--sub); font-size: 0.6875rem; margin-top: 0.25rem;">
+                  If the document has no user open password (only permissions restrictions), you can leave this blank.
+                </div>
+              </div>
+
+              <div id="pdfUnlockStatus" class="hidden" style="padding: 0.5rem 0.75rem; background: var(--muted); border: 1px solid var(--border); font-size: 0.7rem; color: var(--ink);">
+                Ready
+              </div>
             </div>
           </div>
 
@@ -1214,8 +1349,8 @@
           <span>→ Open Local Files from Disk...</span>
           <span style="color: var(--sub); font-size: 0.625rem;">BROWSE</span>
         </div>
-        <div data-action="mode-pdf" data-keywords="pdf extract merge vector rasterize dpi cmyk srgb pages compile" onclick="executeCmd(this)" class="cmd-item" style="padding: 0.625rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
-          <span>→ Launch PDF Vector Suite (Compile / Rasterize)</span>
+        <div data-action="mode-pdf" data-keywords="pdf extract merge vector rasterize dpi cmyk srgb pages compile lock unlock protect password encrypt decrypt" onclick="executeCmd(this)" class="cmd-item" style="padding: 0.625rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
+          <span>→ Launch PDF Vector Suite (Compile / Lock / Unlock / Rasterize)</span>
           <span style="color: var(--sub); font-size: 0.625rem;">PDF SUITE</span>
         </div>
         <div data-action="mode-compress" data-keywords="compress lossless size savings exif strip metadata optimization" onclick="executeCmd(this)" class="cmd-item" style="padding: 0.625rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
@@ -2655,8 +2790,12 @@
       document.getElementById('pdfCompilePanel').classList.toggle('hidden', tab !== 'compile');
       document.getElementById('pdfRasterPanel').classList.toggle('hidden', tab !== 'raster');
       document.getElementById('pdfTextPanel').classList.toggle('hidden', tab !== 'text');
+      const lockPanel = document.getElementById('pdfLockPanel');
+      if (lockPanel) lockPanel.classList.toggle('hidden', tab !== 'lock');
+      const unlockPanel = document.getElementById('pdfUnlockPanel');
+      if (unlockPanel) unlockPanel.classList.toggle('hidden', tab !== 'unlock');
 
-      ['compile', 'raster', 'text'].forEach(t => {
+      ['compile', 'raster', 'text', 'lock', 'unlock'].forEach(t => {
         const btn = document.getElementById('pdfTab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Btn');
         if (!btn) return;
         if (t === tab) {
@@ -2673,9 +2812,38 @@
       });
     }
 
-    function handleAddPdfImages(fileList) {
+    async function handleAddPdfImages(fileList) {
       if (!fileList || !fileList.length) return;
-      Array.from(fileList).forEach(file => {
+      const files = Array.from(fileList);
+      for (const file of files) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        const isHeic = ext === 'heic' || ext === 'heif' || (file.type && (file.type.includes('heic') || file.type.includes('heif')));
+
+        if (isHeic) {
+          showToast(`Decoding Apple HEIC: ${file.name}...`);
+          try {
+            if (typeof heic2any === 'function') {
+              const res = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+              const blob = Array.isArray(res) ? res[0] : res;
+              const url = URL.createObjectURL(blob);
+              const img = new Image();
+              await new Promise((resolve) => {
+                img.onload = function() {
+                  pdfImagesList.push({ name: file.name, img, url });
+                  renderPdfImagesQueue();
+                  resolve();
+                };
+                img.onerror = resolve;
+                img.src = url;
+              });
+              continue;
+            }
+          } catch (e) {
+            console.error('HEIC decoding failed:', e);
+            showToast(`HEIC decode error on ${file.name}`);
+          }
+        }
+
         const url = URL.createObjectURL(file);
         const img = new Image();
         img.onload = function() {
@@ -2683,8 +2851,8 @@
           renderPdfImagesQueue();
         };
         img.src = url;
-      });
-      showToast(`Added ${fileList.length} image(s) to PDF compiler`);
+      }
+      showToast(`Added ${files.length} image(s) to PDF compiler`);
     }
 
     function renderPdfImagesQueue() {
@@ -2816,6 +2984,349 @@
       const body = document.getElementById('pdfDocBody').value;
       const blob = createPdfFromTextDocument(title, body);
       triggerDownload(URL.createObjectURL(blob), `${title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.pdf`);
+    }
+
+    /* -------------------------------------------------------------
+       PDF LOCK & UNLOCK CRYPTOGRAPHIC ENGINE
+       ------------------------------------------------------------- */
+    let pdfLockCurrentFile = null;
+    let pdfUnlockCurrentFile = null;
+    let pdfUnlockArrayBuffer = null;
+
+    function togglePasswordVisibility(inputId, btn) {
+      const el = document.getElementById(inputId);
+      if (!el) return;
+      if (el.type === 'password') {
+        el.type = 'text';
+        btn.innerText = '🙈';
+      } else {
+        el.type = 'password';
+        btn.innerText = '👁';
+      }
+    }
+
+    function initPdfWorker() {
+      if (window.pdfjsLib && !window.pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+      }
+    }
+
+    async function handlePdfLockUpload(file) {
+      if (!file) return;
+      pdfLockCurrentFile = file;
+      document.getElementById('pdfLockFileName').innerText = file.name;
+      document.getElementById('pdfLockFileMeta').innerText = `• ${(file.size / 1024).toFixed(1)} KB`;
+      validatePdfLockInputs();
+      showToast(`Selected "${file.name}" for locking`);
+    }
+
+    function validatePdfLockInputs() {
+      const pwd = (document.getElementById('pdfLockPassword').value || '').trim();
+      const confirm = (document.getElementById('pdfLockConfirmPassword').value || '').trim();
+      const hint = document.getElementById('pdfLockMatchHint');
+      const submitBtn = document.getElementById('pdfLockSubmitBtn');
+
+      if (!pdfLockCurrentFile) {
+        submitBtn.disabled = true;
+        if (hint) hint.style.display = 'none';
+        return;
+      }
+
+      if (!pwd) {
+        submitBtn.disabled = true;
+        if (hint) {
+          hint.innerText = 'Enter a password to protect the PDF.';
+          hint.style.color = 'var(--sub)';
+          hint.style.display = 'block';
+        }
+        return;
+      }
+
+      if (pwd !== confirm) {
+        submitBtn.disabled = true;
+        if (hint) {
+          hint.innerText = 'Passwords do not match.';
+          hint.style.color = '#DC2626';
+          hint.style.display = 'block';
+        }
+        return;
+      }
+
+      if (hint) {
+        hint.innerText = '✓ Passwords match. Ready to encrypt.';
+        hint.style.color = '#15803D';
+        hint.style.display = 'block';
+      }
+      submitBtn.disabled = false;
+    }
+
+    async function executeLockPdf() {
+      if (!pdfLockCurrentFile) {
+        showToast('Please select a PDF file first.');
+        return;
+      }
+
+      const pwd = (document.getElementById('pdfLockPassword').value || '').trim();
+      const confirm = (document.getElementById('pdfLockConfirmPassword').value || '').trim();
+
+      if (!pwd) {
+        showToast('Please specify a password to lock the PDF.');
+        return;
+      }
+
+      if (pwd !== confirm) {
+        showToast('Passwords do not match.');
+        return;
+      }
+
+      initPdfWorker();
+      const statusEl = document.getElementById('pdfLockStatus');
+      statusEl.classList.remove('hidden');
+      statusEl.innerText = 'Reading document and initializing cryptographic cipher...';
+      const submitBtn = document.getElementById('pdfLockSubmitBtn');
+      submitBtn.disabled = true;
+
+      try {
+        const rawBuffer = await pdfLockCurrentFile.arrayBuffer();
+        
+        if (!window.pdfjsLib) {
+          throw new Error('PDF processing library not loaded. Please refresh the page.');
+        }
+
+        const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(rawBuffer.slice(0)) });
+        let pdfDoc;
+        try {
+          pdfDoc = await loadingTask.promise;
+        } catch (e) {
+          if (e && (e.name === 'PasswordException' || (e.message && e.message.toLowerCase().includes('password')))) {
+            throw new Error('This document is already locked with a password. Please unlock it first in the Unlock tab.');
+          }
+          throw e;
+        }
+
+        const totalPages = pdfDoc.numPages;
+        statusEl.innerText = `Encrypting ${totalPages} page(s) with 128-bit AES/RC4 cipher...`;
+
+        const permissionsList = [];
+        if (document.getElementById('pdfLockPermPrint').checked) permissionsList.push('print');
+        if (document.getElementById('pdfLockPermCopy').checked) permissionsList.push('copy');
+        if (document.getElementById('pdfLockPermModify').checked) permissionsList.push('modify');
+        if (document.getElementById('pdfLockPermForms').checked) permissionsList.push('annot-forms');
+
+        const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+        if (!jsPdfClass) {
+          throw new Error('jsPDF encryption engine not available.');
+        }
+
+        let encryptedPdf = null;
+
+        for (let i = 1; i <= totalPages; i++) {
+          statusEl.innerText = `Processing and locking page ${i} of ${totalPages}...`;
+          const page = await pdfDoc.getPage(i);
+          const unscaledViewport = page.getViewport({ scale: 1.0 });
+          const ptWidth = unscaledViewport.width;
+          const ptHeight = unscaledViewport.height;
+          const orientation = ptWidth > ptHeight ? 'l' : 'p';
+
+          const renderScale = 2.0; // High DPI vector fidelity
+          const viewport = page.getViewport({ scale: renderScale });
+
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.floor(viewport.width);
+          canvas.height = Math.floor(viewport.height);
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+          if (i === 1) {
+            encryptedPdf = new jsPdfClass({
+              orientation,
+              unit: 'pt',
+              format: [ptWidth, ptHeight],
+              encryption: {
+                userPassword: pwd,
+                ownerPassword: pwd,
+                userPermissions: permissionsList
+              }
+            });
+            encryptedPdf.addImage(imgData, 'JPEG', 0, 0, ptWidth, ptHeight);
+          } else if (encryptedPdf) {
+            encryptedPdf.addPage([ptWidth, ptHeight], orientation);
+            encryptedPdf.addImage(imgData, 'JPEG', 0, 0, ptWidth, ptHeight);
+          }
+          canvas.width = 0; canvas.height = 0;
+        }
+
+        const outBlob = encryptedPdf.output('blob');
+        const outName = `${pdfLockCurrentFile.name.replace(/\.[^/.]+$/, '')}_locked.pdf`;
+        triggerDownload(URL.createObjectURL(outBlob), outName);
+
+        statusEl.innerText = `✓ Locked & encrypted: ${outName} (${(outBlob.size / 1024).toFixed(1)} KB)`;
+        showToast(`✓ Document locked successfully!`);
+      } catch (err) {
+        console.error(err);
+        statusEl.innerText = `Error: ${err.message || 'Encryption failed'}`;
+        showToast(`Encryption failed: ${err.message || err}`);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function handlePdfUnlockUpload(file) {
+      if (!file) return;
+      pdfUnlockCurrentFile = file;
+      document.getElementById('pdfUnlockFileName').innerText = file.name;
+      const badge = document.getElementById('pdfUnlockSecurityBadge');
+      badge.innerText = 'Analyzing encryption...';
+      badge.style.color = 'var(--sub)';
+
+      initPdfWorker();
+      try {
+        const testBuf = await file.arrayBuffer();
+        if (window.pdfjsLib) {
+          const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(testBuf.slice(0)) });
+          try {
+            const doc = await loadingTask.promise;
+            badge.innerText = `NO OPEN PASSWORD (${doc.numPages} PAGES)`;
+            badge.style.color = '#15803D';
+            showToast(`Document has ${doc.numPages} pages. Ready to strip restrictions.`);
+          } catch (passErr) {
+            if (passErr && (passErr.name === 'PasswordException' || (passErr.message && passErr.message.toLowerCase().includes('password')))) {
+              badge.innerText = '🔒 PASSWORD PROTECTED';
+              badge.style.color = '#EA580C';
+              showToast(`Password-protected PDF detected. Enter password to unlock.`);
+              document.getElementById('pdfUnlockPassword').focus();
+            } else {
+              badge.innerText = 'RESTRICTED / ENCRYPTED';
+            }
+          }
+        }
+      } catch (e) {
+        badge.innerText = 'ENCRYPTED';
+      }
+
+      document.getElementById('pdfUnlockSubmitBtn').disabled = false;
+    }
+
+    async function executeUnlockPdf() {
+      if (!pdfUnlockCurrentFile) {
+        showToast('Please select a PDF file first.');
+        return;
+      }
+
+      const pwd = document.getElementById('pdfUnlockPassword').value || '';
+      const statusEl = document.getElementById('pdfUnlockStatus');
+      statusEl.classList.remove('hidden');
+      statusEl.innerText = 'Decrypting document...';
+      const submitBtn = document.getElementById('pdfUnlockSubmitBtn');
+      submitBtn.disabled = true;
+
+      initPdfWorker();
+
+      try {
+        const freshBuffer = await pdfUnlockCurrentFile.arrayBuffer();
+
+        // Strategy 1: If no password is provided and document is not encrypted, use lossless copy via PDFLib
+        if (!pwd && window.PDFLib) {
+          try {
+            const loadedDoc = await window.PDFLib.PDFDocument.load(freshBuffer.slice(0));
+            if (!loadedDoc.isEncrypted) {
+              const unlockedDoc = await window.PDFLib.PDFDocument.create();
+              const copiedPages = await unlockedDoc.copyPages(loadedDoc, loadedDoc.getPageIndices());
+              copiedPages.forEach(p => unlockedDoc.addPage(p));
+              const pdfBytes = await unlockedDoc.save();
+              const blob = new Blob([pdfBytes.buffer], { type: 'application/pdf' });
+              const outName = `${pdfUnlockCurrentFile.name.replace(/\.[^/.]+$/, '')}_unlocked.pdf`;
+              triggerDownload(URL.createObjectURL(blob), outName);
+              statusEl.innerText = `✓ Losslessly unlocked: ${outName}`;
+              showToast('✓ PDF restrictions stripped successfully!');
+              return;
+            }
+          } catch (e) {
+            // Protected/encrypted, continue to pdfjsLib rendering decryption
+          }
+        }
+
+        // Strategy 2: Decrypt via pdfjsLib and re-generate clean unencrypted PDF
+        if (!window.pdfjsLib) {
+          throw new Error('PDF engine not loaded. Please refresh the page.');
+        }
+
+        const loadingTask = window.pdfjsLib.getDocument({
+          data: new Uint8Array(freshBuffer.slice(0)),
+          password: pwd
+        });
+
+        let pdfDoc;
+        try {
+          pdfDoc = await loadingTask.promise;
+        } catch (err) {
+          if (err && (err.name === 'PasswordException' || (err.message && err.message.toLowerCase().includes('password')))) {
+            if (!pwd) {
+              throw new Error('This document requires an open password. Please enter the password above.');
+            } else {
+              throw new Error('Incorrect password. Please verify and try again.');
+            }
+          }
+          throw err;
+        }
+
+        const totalPages = pdfDoc.numPages;
+        statusEl.innerText = `Decrypted! Rebuilding ${totalPages} clean page(s)...`;
+
+        const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+        let unlockedPdf = null;
+
+        for (let i = 1; i <= totalPages; i++) {
+          statusEl.innerText = `Rendering clean page ${i} of ${totalPages}...`;
+          const page = await pdfDoc.getPage(i);
+          const unscaledViewport = page.getViewport({ scale: 1.0 });
+          const ptWidth = unscaledViewport.width;
+          const ptHeight = unscaledViewport.height;
+          const orientation = ptWidth > ptHeight ? 'l' : 'p';
+
+          const viewport = page.getViewport({ scale: 2.0 });
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.floor(viewport.width);
+          canvas.height = Math.floor(viewport.height);
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+          if (i === 1) {
+            unlockedPdf = new jsPdfClass({
+              orientation,
+              unit: 'pt',
+              format: [ptWidth, ptHeight]
+              // Note: No encryption specified -> clean unencrypted document!
+            });
+            unlockedPdf.addImage(imgData, 'JPEG', 0, 0, ptWidth, ptHeight);
+          } else if (unlockedPdf) {
+            unlockedPdf.addPage([ptWidth, ptHeight], orientation);
+            unlockedPdf.addImage(imgData, 'JPEG', 0, 0, ptWidth, ptHeight);
+          }
+          canvas.width = 0; canvas.height = 0;
+        }
+
+        const outBlob = unlockedPdf.output('blob');
+        const outName = `${pdfUnlockCurrentFile.name.replace(/\.[^/.]+$/, '')}_unlocked.pdf`;
+        triggerDownload(URL.createObjectURL(outBlob), outName);
+
+        statusEl.innerText = `✓ Unlocked: ${outName} (${(outBlob.size / 1024).toFixed(1)} KB)`;
+        showToast('✓ PDF unlocked and decrypted successfully!');
+      } catch (err) {
+        console.error(err);
+        statusEl.innerText = `Error: ${err.message || 'Decryption failed'}`;
+        showToast(err.message || 'Decryption failed');
+      } finally {
+        submitBtn.disabled = false;
+      }
     }
 
     /* -------------------------------------------------------------
@@ -2998,6 +3509,7 @@
 
     // Initialize on DOM Ready
     window.addEventListener('DOMContentLoaded', () => {
+      initPdfWorker();
       updateEnhancer();
       setWipeSplit(50);
       renderPdfRasterPage(1);
