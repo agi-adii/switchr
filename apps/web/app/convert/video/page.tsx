@@ -5,7 +5,7 @@ import { ConverterTemplate } from "@/components/converter-template";
 import { loadFfmpeg, convertFile } from "@/lib/ffmpeg";
 
 export default function VideoConverterPage() {
-  const [preset, setPreset] = useState("balanced");
+  const [preset, setPreset] = useState("original");
 
   const handleConvert = async (
     file: File,
@@ -13,7 +13,9 @@ export default function VideoConverterPage() {
     onProgress: (p: number) => void
   ) => {
     const ffmpeg = await loadFfmpeg();
-    const url = await convertFile(ffmpeg, file, toFormat, onProgress);
+    const url = await convertFile(ffmpeg, file, toFormat, onProgress, {
+      preset,
+    });
     return { url };
   };
 

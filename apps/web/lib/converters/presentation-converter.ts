@@ -554,7 +554,7 @@ export async function presentationToPdf(
         const img = slide.images[0];
         const maxImgWidth = (widthMm - 40) * 0.35;
         const maxImgHeight = heightMm - 60;
-        pdf.addImage(img.dataUrl, img.mimeType === "image/png" ? "PNG" : "JPEG", imageStartX, 42, maxImgWidth, maxImgHeight, undefined, "FAST");
+        pdf.addImage(img.dataUrl, img.mimeType === "image/png" ? "PNG" : "JPEG", imageStartX, 42, maxImgWidth, maxImgHeight, undefined, "NONE");
       } catch (imgErr) {
         console.warn(`Failed to render slide image for slide ${slide.slideNumber}:`, imgErr);
       }

@@ -10,7 +10,7 @@ export function ImageToolsSection() {
   const [file, setFile] = useState<File | null>(null);
   const [previewSrc, setPreviewSrc] = useState<string>("");
   const [toFormat, setToFormat] = useState<string>("webp");
-  const [quality, setQuality] = useState<number>(85);
+  const [quality, setQuality] = useState<number>(100);
   const [scale, setScale] = useState<number>(100);
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<{ url: string; newSize: number; savedPercent: number } | null>(null);

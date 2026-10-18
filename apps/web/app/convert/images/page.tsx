@@ -7,7 +7,7 @@ import { imagesToPdf } from "@/lib/converters/pdf-tools";
 import { Sliders, Sparkles } from "lucide-react";
 
 export default function ImageConverterPage() {
-  const [quality, setQuality] = useState(85);
+  const [quality, setQuality] = useState(100);
   const [resizeWidth, setResizeWidth] = useState<string>("");
   const [resizeHeight, setResizeHeight] = useState<string>("");
 
@@ -17,7 +17,7 @@ export default function ImageConverterPage() {
     onProgress: (p: number) => void
   ) => {
     if (toFormat === "pdf") {
-      const pdfBlob = await imagesToPdf([file], {}, onProgress);
+      const pdfBlob = await imagesToPdf([file], { quality: quality / 100 }, onProgress);
       return {
         url: URL.createObjectURL(pdfBlob),
         newSize: pdfBlob.size,

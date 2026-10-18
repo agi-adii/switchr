@@ -5,7 +5,7 @@ import { ConverterTemplate } from "@/components/converter-template";
 import { loadFfmpeg, convertFile } from "@/lib/ffmpeg";
 
 export default function AudioConverterPage() {
-  const [bitrate, setBitrate] = useState("192k");
+  const [bitrate, setBitrate] = useState("320k");
   const [sampleRate, setSampleRate] = useState("44100");
 
   const handleConvert = async (
@@ -14,7 +14,10 @@ export default function AudioConverterPage() {
     onProgress: (p: number) => void
   ) => {
     const ffmpeg = await loadFfmpeg();
-    const url = await convertFile(ffmpeg, file, toFormat, onProgress);
+    const url = await convertFile(ffmpeg, file, toFormat, onProgress, {
+      bitrate,
+      sampleRate,
+    });
     return { url };
   };
 
