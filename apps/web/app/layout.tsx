@@ -142,11 +142,11 @@ export default function RootLayout({
         <meta name="google-site-verification" content="tmqaM3yKYddbFFhrHWett8KIfDMxuujgomlHbUN5RL4" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#0E0D0B] text-foreground font-sans antialiased m-0 p-0 overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground font-sans antialiased m-0 p-0 overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

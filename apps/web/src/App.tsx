@@ -41,7 +41,7 @@ import TermsPage from "@/app/terms/page";
 
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="light">
       <PwaProvider>
         <BrowserRouter>
           <main className="w-full min-h-screen m-0 p-0 bg-background text-foreground antialiased">
