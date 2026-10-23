@@ -733,7 +733,7 @@ export async function isHeicFormat(blob: Blob, fileName?: string): Promise<boole
 /**
  * Decodes a HEIC/HEIF Blob into a standard JPEG Blob using heic2any
  */
-export async function decodeHeicBlob(blob: Blob, quality = 1.0): Promise<Blob> {
+export async function decodeHeicBlob(blob: Blob, quality = 0.98): Promise<Blob> {
   const heic2anyModule = await import("heic2any");
   const heic2any = heic2anyModule.default || heic2anyModule;
   const converted = await heic2any({

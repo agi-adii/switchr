@@ -9,8 +9,6 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "dev:web": "npm run dev --workspace=web",
-    "dev:server": "npm run dev --workspace=server",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "indexnow": "node scripts/submit-indexnow.js"
