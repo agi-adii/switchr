@@ -7,7 +7,7 @@ import { imagesToPdf } from "@/lib/converters/pdf-tools";
 import { Sliders, Sparkles } from "lucide-react";
 
 export default function ImageConverterPage() {
-  const [quality, setQuality] = useState(100);
+  const [quality, setQuality] = useState(85);
   const [resizeWidth, setResizeWidth] = useState<string>("");
   const [resizeHeight, setResizeHeight] = useState<string>("");
 
@@ -17,7 +17,7 @@ export default function ImageConverterPage() {
     onProgress: (p: number) => void
   ) => {
     if (toFormat === "pdf") {
-      const pdfBlob = await imagesToPdf([file], { quality: quality / 100 }, onProgress);
+      const pdfBlob = await imagesToPdf([file], {}, onProgress);
       return {
         url: URL.createObjectURL(pdfBlob),
         newSize: pdfBlob.size,
@@ -112,8 +112,8 @@ export default function ImageConverterPage() {
       description="Convert JPG, PNG, WEBP, and Apple HEIC photos directly to PDF, JPG, or modern web formats."
       breadcrumbs={[{ label: "Convert", href: "/convert" }, { label: "Images" }]}
       accept="image/*,.heic,.heif"
-      recommendedFormats={["pdf", "webp", "png", "jpg", "avif"]}
-      moreFormats={["bmp", "gif", "ico"]}
+      recommendedFormats={["pdf", "webp", "png", "jpg"]}
+      moreFormats={["bmp", "gif"]}
       defaultTarget="webp"
       category="image"
       advancedOptionsNode={advancedOptions}
