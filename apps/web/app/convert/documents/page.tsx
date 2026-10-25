@@ -74,6 +74,30 @@ export default function DocumentConverterPage() {
     const textContent = await file.text();
     onProgress(0.6);
 
+    const isMarkdown = ext === "md" || ext === "markdown";
+
+    if (toFormat === "html") {
+      let html = "";
+      if (isMarkdown) {
+        const { markdownToHtml } = await import("@/lib/converters/text-utils");
+        html = await markdownToHtml(textContent);
+      } else {
+        html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>${file.name}</title></head>
+<body style="font-family:system-ui;max-width:800px;margin:40px auto;line-height:1.6;padding:0 20px;">
+<pre style="white-space:pre-wrap;font-family:inherit;">${textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+</body>
+</html>`;
+      }
+      const blob = new Blob([html], { type: "text/html" });
+      onProgress(1.0);
+      return {
+        url: URL.createObjectURL(blob),
+        newSize: blob.size,
+      };
+    }
+
     if (toFormat === "pdf") {
       const pdfBlob = await textToPdf(textContent, file.name);
       onProgress(1.0);
@@ -83,24 +107,9 @@ export default function DocumentConverterPage() {
       };
     }
 
-    if (toFormat === "html") {
-      const html = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>${file.name}</title></head>
-<body style="font-family:system-ui;max-width:800px;margin:40px auto;line-height:1.6;padding:0 20px;">
-<pre style="white-space:pre-wrap;font-family:inherit;">${textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
-</body>
-</html>`;
-      const blob = new Blob([html], { type: "text/html" });
-      onProgress(1.0);
-      return {
-        url: URL.createObjectURL(blob),
-        newSize: blob.size,
-      };
-    }
-
-    // Fallback: plain text
-    const blob = new Blob([textContent], { type: "text/plain" });
+    // Fallback: plain text / markdown / rtf
+    const mime = toFormat === "md" ? "text/markdown" : "text/plain";
+    const blob = new Blob([textContent], { type: mime });
     onProgress(1.0);
     return {
       url: URL.createObjectURL(blob),
@@ -111,10 +120,11 @@ export default function DocumentConverterPage() {
   return (
     <ConverterTemplate
       title="Document Converter"
-      description="Convert presentations, Word documents, and text files to clean PDFs, DOCX, and formatted files."
+      description="Convert presentations, Word documents, Markdown, and text files to clean PDFs, DOCX, HTML, and formatted files."
       breadcrumbs={[{ label: "Convert", href: "/convert" }, { label: "Documents" }]}
-      accept=".pptx,.ppt,.docx,.doc,.txt,.rtf,.html,.odt"
-      recommendedFormats={["pdf", "docx", "txt", "html"]}
+      accept=".pptx,.ppt,.docx,.doc,.txt,.rtf,.html,.odt,.md,.markdown,.tex,.xml"
+      recommendedFormats={["pdf", "docx", "txt", "html", "md"]}
+      moreFormats={["odt", "rtf", "xml"]}
       defaultTarget="pdf"
       category="document"
       onConvert={handleConvert}

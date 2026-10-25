@@ -5,7 +5,7 @@ import { ConverterTemplate } from "@/components/converter-template";
 import { loadFfmpeg, convertFile } from "@/lib/ffmpeg";
 
 export default function VideoConverterPage() {
-  const [preset, setPreset] = useState("balanced");
+  const [preset, setPreset] = useState("original");
 
   const handleConvert = async (
     file: File,
@@ -13,7 +13,9 @@ export default function VideoConverterPage() {
     onProgress: (p: number) => void
   ) => {
     const ffmpeg = await loadFfmpeg();
-    const url = await convertFile(ffmpeg, file, toFormat, onProgress);
+    const url = await convertFile(ffmpeg, file, toFormat, onProgress, {
+      preset,
+    });
     return { url };
   };
 
@@ -52,9 +54,9 @@ export default function VideoConverterPage() {
       title="Video Converter"
       description="Convert video files into MP4, WebM, animated GIFs, or extract sound directly in your browser."
       breadcrumbs={[{ label: "Convert", href: "/convert" }, { label: "Video" }]}
-      accept="video/*"
-      recommendedFormats={["mp4", "webm", "mp3", "gif"]}
-      moreFormats={["mov", "mkv", "wav"]}
+      accept="video/*,.mp4,.webm,.mkv,.mov,.avi,.wmv,.flv,.3gp,.mpeg,.mpg,.m4v,.ts,.mts,.m2ts,.vob,.ogv,.mxf,.asf"
+      recommendedFormats={["mp4", "webm", "mkv", "mov", "gif", "mp3"]}
+      moreFormats={["avi", "wmv", "flv", "3gp", "mpeg", "m4v", "ts", "wav", "aac"]}
       defaultTarget="mp4"
       category="video"
       advancedOptionsNode={advancedOptions}

@@ -5,7 +5,7 @@ import { ConverterTemplate } from "@/components/converter-template";
 import { loadFfmpeg, convertFile } from "@/lib/ffmpeg";
 
 export default function AudioConverterPage() {
-  const [bitrate, setBitrate] = useState("192k");
+  const [bitrate, setBitrate] = useState("320k");
   const [sampleRate, setSampleRate] = useState("44100");
 
   const handleConvert = async (
@@ -14,7 +14,10 @@ export default function AudioConverterPage() {
     onProgress: (p: number) => void
   ) => {
     const ffmpeg = await loadFfmpeg();
-    const url = await convertFile(ffmpeg, file, toFormat, onProgress);
+    const url = await convertFile(ffmpeg, file, toFormat, onProgress, {
+      bitrate,
+      sampleRate,
+    });
     return { url };
   };
 
@@ -57,8 +60,9 @@ export default function AudioConverterPage() {
       title="Audio Converter"
       description="Convert audio tracks between MP3, WAV, AAC, and other formats client-side using FFmpeg."
       breadcrumbs={[{ label: "Convert", href: "/convert" }, { label: "Audio" }]}
-      accept="audio/*"
-      recommendedFormats={["mp3", "wav", "aac"]}
+      accept="audio/*,.flac,.m4a,.ogg,.opus,.wma,.aiff,.amr,.ac3,.au,.caf"
+      recommendedFormats={["mp3", "wav", "aac", "flac", "ogg"]}
+      moreFormats={["m4a", "opus", "wma", "aiff"]}
       defaultTarget="mp3"
       category="audio"
       advancedOptionsNode={advancedOptions}

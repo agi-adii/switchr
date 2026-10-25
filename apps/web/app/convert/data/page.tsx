@@ -4,17 +4,55 @@ import { useState } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 import { jsonToCsv, csvToJson, jsonToXml, xmlToJson } from "@/lib/converters/data-converter";
-import { FileCode, Download, Eye, UploadCloud, CheckCircle2 } from "lucide-react";
+import { jsonToYaml, yamlToJson, yamlToXml, csvToYaml, yamlToCsv } from "@/lib/converters/yaml-converter";
+import { csvToTsv, tsvToCsv } from "@/lib/converters/text-utils";
+import { FileCode, Download, Eye, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { saveHistoryItem } from "@/lib/history-store";
 
+type DataFormat = "json" | "csv" | "tsv" | "xml" | "yaml";
+
 export default function DataConverterPage() {
-  const [activeTab, setActiveTab] = useState<"json" | "csv" | "xml">("json");
+  const [activeTab, setActiveTab] = useState<DataFormat>("json");
   const [targetFormat, setTargetFormat] = useState<string>("csv");
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
   const [previewRows, setPreviewRows] = useState<any[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const getAvailableTargets = (source: DataFormat): { value: string; label: string }[] => {
+    switch (source) {
+      case "json":
+        return [
+          { value: "csv", label: "CSV Spreadsheet" },
+          { value: "tsv", label: "TSV Tab-Separated" },
+          { value: "yaml", label: "YAML Document" },
+          { value: "xml", label: "XML Document" },
+        ];
+      case "csv":
+        return [
+          { value: "json", label: "JSON Array" },
+          { value: "tsv", label: "TSV Tab-Separated" },
+          { value: "yaml", label: "YAML Document" },
+        ];
+      case "tsv":
+        return [
+          { value: "csv", label: "CSV Spreadsheet" },
+          { value: "json", label: "JSON Array" },
+        ];
+      case "xml":
+        return [
+          { value: "json", label: "JSON Object" },
+          { value: "yaml", label: "YAML Document" },
+        ];
+      case "yaml":
+        return [
+          { value: "json", label: "JSON Object" },
+          { value: "csv", label: "CSV Spreadsheet" },
+          { value: "xml", label: "XML Document" },
+        ];
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -36,20 +74,66 @@ export default function DataConverterPage() {
 
     try {
       let result = "";
+      // JSON sources
       if (activeTab === "json" && targetFormat === "csv") {
         result = jsonToCsv(inputText);
         setPreviewRows(JSON.parse(inputText));
-      } else if (activeTab === "csv" && targetFormat === "json") {
-        const parsed = csvToJson(inputText);
-        result = JSON.stringify(parsed, null, 2);
-        setPreviewRows(parsed);
+      } else if (activeTab === "json" && targetFormat === "tsv") {
+        const csv = jsonToCsv(inputText);
+        result = csvToTsv(csv);
+        setPreviewRows(JSON.parse(inputText));
+      } else if (activeTab === "json" && targetFormat === "yaml") {
+        result = jsonToYaml(inputText);
+        setPreviewRows([]);
       } else if (activeTab === "json" && targetFormat === "xml") {
         result = jsonToXml(inputText);
         setPreviewRows([]);
-      } else if (activeTab === "xml" && targetFormat === "json") {
+      }
+      // CSV sources
+      else if (activeTab === "csv" && targetFormat === "json") {
+        const parsed = csvToJson(inputText);
+        result = JSON.stringify(parsed, null, 2);
+        setPreviewRows(parsed);
+      } else if (activeTab === "csv" && targetFormat === "tsv") {
+        result = csvToTsv(inputText);
+        setPreviewRows([]);
+      } else if (activeTab === "csv" && targetFormat === "yaml") {
+        result = csvToYaml(inputText);
+        setPreviewRows([]);
+      }
+      // TSV sources
+      else if (activeTab === "tsv" && targetFormat === "csv") {
+        result = tsvToCsv(inputText);
+        const parsed = csvToJson(result);
+        setPreviewRows(parsed);
+      } else if (activeTab === "tsv" && targetFormat === "json") {
+        const csv = tsvToCsv(inputText);
+        const parsed = csvToJson(csv);
+        result = JSON.stringify(parsed, null, 2);
+        setPreviewRows(parsed);
+      }
+      // XML sources
+      else if (activeTab === "xml" && targetFormat === "json") {
         const parsed = xmlToJson(inputText);
         result = JSON.stringify(parsed, null, 2);
         setPreviewRows(Array.isArray(parsed) ? parsed : [parsed]);
+      } else if (activeTab === "xml" && targetFormat === "yaml") {
+        const parsed = xmlToJson(inputText);
+        result = jsonToYaml(JSON.stringify(parsed));
+        setPreviewRows([]);
+      }
+      // YAML sources
+      else if (activeTab === "yaml" && targetFormat === "json") {
+        result = yamlToJson(inputText);
+        const parsed = JSON.parse(result);
+        setPreviewRows(Array.isArray(parsed) ? parsed : [parsed]);
+      } else if (activeTab === "yaml" && targetFormat === "csv") {
+        result = yamlToCsv(inputText);
+        const parsed = csvToJson(result);
+        setPreviewRows(parsed);
+      } else if (activeTab === "yaml" && targetFormat === "xml") {
+        result = yamlToXml(inputText);
+        setPreviewRows([]);
       } else {
         result = inputText;
       }
@@ -73,8 +157,14 @@ export default function DataConverterPage() {
 
   const handleDownload = () => {
     if (!outputText) return;
-    const mime = targetFormat === "json" ? "application/json" : targetFormat === "csv" ? "text/csv" : "application/xml";
-    const blob = new Blob([outputText], { type: mime });
+    const mimeMap: Record<string, string> = {
+      json: "application/json",
+      csv: "text/csv",
+      tsv: "text/tab-separated-values",
+      xml: "application/xml",
+      yaml: "text/yaml",
+    };
+    const blob = new Blob([outputText], { type: mimeMap[targetFormat] || "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -82,6 +172,8 @@ export default function DataConverterPage() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const targets = getAvailableTargets(activeTab);
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6">
@@ -92,7 +184,7 @@ export default function DataConverterPage() {
           Structured Data Converter
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto">
-          Convert between JSON, CSV, and XML with instant validation and table preview.
+          Convert seamlessly between JSON, CSV, TSV, XML, and YAML with instant validation and table preview.
         </p>
 
         {/* Glassmorphic Pill Tab Switcher */}
@@ -100,16 +192,20 @@ export default function DataConverterPage() {
           <GlassPillTabs
             activeTab={activeTab}
             onChange={(tabId) => {
-              setActiveTab(tabId as "json" | "csv" | "xml");
-              setTargetFormat(tabId === "json" ? "csv" : "json");
+              const newTab = tabId as DataFormat;
+              setActiveTab(newTab);
+              const available = getAvailableTargets(newTab);
+              setTargetFormat(available[0]?.value || "json");
               setOutputText("");
               setPreviewRows([]);
             }}
             layoutId="convertDataTab"
             tabs={[
-              { id: "json", label: "JSON Data" },
-              { id: "csv", label: "CSV Spreadsheet" },
-              { id: "xml", label: "XML Markup" },
+              { id: "json", label: "JSON" },
+              { id: "csv", label: "CSV" },
+              { id: "tsv", label: "TSV" },
+              { id: "xml", label: "XML" },
+              { id: "yaml", label: "YAML" },
             ]}
           />
         </div>
@@ -125,22 +221,11 @@ export default function DataConverterPage() {
               onChange={(e) => setTargetFormat(e.target.value)}
               className="bg-muted px-3 py-1.5 rounded-lg border border-border text-foreground font-mono text-xs uppercase"
             >
-              {activeTab === "json" && (
-                <>
-                  <option value="csv">CSV Spreadsheet</option>
-                  <option value="xml">XML Document</option>
-                </>
-              )}
-              {activeTab === "csv" && (
-                <>
-                  <option value="json">JSON Array</option>
-                </>
-              )}
-              {activeTab === "xml" && (
-                <>
-                  <option value="json">JSON Object</option>
-                </>
-              )}
+              {targets.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
             </select>
           </div>
 

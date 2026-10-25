@@ -41,7 +41,7 @@ export async function imagesToPdf(
         const converted = await heic2any({
           blob: file,
           toType: "image/jpeg",
-          quality: options.quality ?? 0.92,
+          quality: options.quality ?? 1.0,
         });
         imageBlob = Array.isArray(converted) ? converted[0] : converted;
       } catch (heicErr) {
@@ -76,7 +76,7 @@ export async function imagesToPdf(
           const ext = isHeic ? "JPEG" : (file.name.split(".").pop()?.toUpperCase() || "JPEG");
           const format = ext === "PNG" ? "PNG" : ext === "WEBP" ? "WEBP" : "JPEG";
 
-          pdf.addImage(img, format, x, y, renderWidth, renderHeight);
+          pdf.addImage(img, format, x, y, renderWidth, renderHeight, undefined, "NONE");
           if (onProgress) onProgress((i + 1) / files.length);
           resolve();
         };
@@ -186,7 +186,7 @@ export async function pdfToImages(
   options: PdfToImageOptions = {},
   onProgress?: (progress: number, currentPage: number, totalPages: number) => void
 ): Promise<ConvertedPdfPage[]> {
-  const { format = "png", quality = 0.92, scale = 1.5, pageNumbers } = options;
+  const { format = "png", quality = 1.0, scale = 2.0, pageNumbers } = options;
   const pdfjs = await getPdfJs();
   const buffer = await file.arrayBuffer();
   const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });

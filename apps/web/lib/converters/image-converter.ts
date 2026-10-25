@@ -78,7 +78,7 @@ export async function convertImage(
       const converted = await heic2any({
         blob: file,
         toType: options.toFormat.toLowerCase() === "png" ? "image/png" : "image/jpeg",
-        quality: options.quality ?? 0.92,
+        quality: options.quality ?? 1.0,
       });
       sourceBlob = Array.isArray(converted) ? converted[0] : converted;
     } catch (heicErr) {
@@ -118,6 +118,10 @@ export async function convertImage(
           throw new Error("Unable to create 2D canvas context");
         }
 
+        // Enable highest quality image smoothing to prevent interpolation artifacts
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
         // Fill white background for formats that don't support alpha channel (like JPG)
         const formatNormalized = options.toFormat.toLowerCase();
         if (formatNormalized === "jpg" || formatNormalized === "jpeg" || formatNormalized === "bmp") {
@@ -136,7 +140,8 @@ export async function convertImage(
           mimeType = "image/bmp";
         }
 
-        const quality = options.quality ?? 0.92;
+        // Default to 1.0 (100% original quality) without compression degradation
+        const quality = options.quality ?? 1.0;
 
         if (onProgress) onProgress(0.8);
 

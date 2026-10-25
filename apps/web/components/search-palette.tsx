@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, ArrowRight, FileImage, FileText, Music, Video, FileCode, Archive, Minimize2, Layers } from "lucide-react";
+import { Search, X, ArrowRight, FileImage, FileText, Music, Video, FileCode, Archive, Minimize2, Layers, Sparkles } from "lucide-react";
 
 interface SearchItem {
   id: string;
@@ -45,6 +45,21 @@ const SEARCH_ITEMS: SearchItem[] = [
   // Tools & Compression
   { id: "compress", title: "Compress Files", category: "Compression", description: "Reduce image, PDF, audio, and video sizes", href: "/compress", icon: Minimize2 },
   { id: "history", title: "Conversion History", category: "Personal", description: "View recent conversions and redownload files", href: "/history", icon: Layers },
+
+  // New Categories & Tools
+  { id: "subtitles-conv", title: "Subtitle Converter", category: "Media", description: "Convert SRT, WebVTT (VTT), and ASS subtitle files", href: "/convert/subtitles", icon: FileText },
+  { id: "font-conv", title: "Font Converter", category: "Typography", description: "Convert TTF, OTF, and WOFF fonts directly in browser", href: "/convert/fonts", icon: Sparkles },
+  { id: "dev-conv", title: "Developer & Code Converter", category: "Developer", description: "Convert YAML, JSON, Markdown, TOML, and TSV", href: "/convert/programming", icon: FileCode },
+  { id: "ebook-conv", title: "E-Book Converter", category: "Documents", description: "Convert EPUB e-books to PDF, TXT, and HTML", href: "/convert/ebooks", icon: FileText },
+  { id: "json-fmt", title: "JSON Formatter & Validator", category: "Developer", description: "Beautify, validate, and minify JSON data", href: "/tools/json-formatter", icon: FileCode },
+  { id: "yaml-fmt", title: "YAML Formatter", category: "Developer", description: "Format, validate, and clean YAML configurations", href: "/tools/yaml-formatter", icon: FileCode },
+  { id: "xml-fmt", title: "XML Formatter & Beautifier", category: "Developer", description: "Indent and prettify XML documents", href: "/tools/xml-formatter", icon: FileCode },
+  { id: "base64-tool", title: "Base64 Encoder & Decoder", category: "Developer", description: "Encode and decode text and binary files to Base64", href: "/tools/base64", icon: FileCode },
+  { id: "url-tool", title: "URL Encoder & Decoder", category: "Developer", description: "Percent-encode and decode URL parameters", href: "/tools/url-encode", icon: FileCode },
+  { id: "checksum-tool", title: "File Checksum / Hasher", category: "Security", description: "Compute SHA-256, SHA-1, SHA-512 hashes", href: "/tools/checksum", icon: Layers },
+  { id: "qr-tool", title: "QR Code Generator", category: "Tools", description: "Generate custom styled QR codes for links and text", href: "/tools/qr-generator", icon: Sparkles },
+  { id: "csv-clean-tool", title: "CSV Cleanup & Deduplication", category: "Data", description: "Remove duplicate rows and trim spreadsheet whitespace", href: "/tools/csv-cleanup", icon: FileCode },
+  { id: "img-meta-tool", title: "Image Metadata Inspector", category: "Images", description: "Inspect image resolution, aspect ratio, and properties", href: "/tools/image-metadata", icon: FileImage },
 ];
 
 interface Props {

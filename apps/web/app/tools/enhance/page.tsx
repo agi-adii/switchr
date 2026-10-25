@@ -343,19 +343,6 @@ export default function PhotoEnhancerPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Load sample image
-  const handleLoadSample = async (samplePath: string, name: string) => {
-    const toastId = toast.loading(`Loading sample image "${name}"...`);
-    try {
-      const res = await fetch(samplePath);
-      const blob = await res.blob();
-      await handleLoadImage(blob, name);
-      toast.success(`Loaded ${name}`, { id: toastId });
-    } catch (err: any) {
-      console.error(err);
-      toast.error("Failed to load sample image", { id: toastId });
-    }
-  };
 
   return (
     <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6">
@@ -419,62 +406,6 @@ export default function PhotoEnhancerPage() {
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
               Supports JPG, PNG, WebP, Apple HEIC, and BMP. Processed 100% client-side with zero server uploads.
             </p>
-          </div>
-
-          {/* Instant Sample Photos */}
-          <div className="p-6 rounded-3xl border border-border bg-card shadow-xs space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-              <Sparkles className="w-3.5 h-3.5 text-violet-500" />
-              Don&apos;t have a photo? Test with an instant demo sample:
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                onClick={() =>
-                  handleLoadSample("/samples/sample-landscape.svg", "golden-hour-landscape.jpg")
-                }
-                className="flex items-center gap-3 p-3 rounded-2xl border border-border bg-muted/30 hover:bg-muted/60 hover:border-violet-500/40 text-left transition-all cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-neutral-900 border border-border shrink-0 flex items-center justify-center">
-                  <img
-                    src="/samples/sample-landscape.svg"
-                    alt="Landscape sample"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-foreground group-hover:text-violet-500 transition-colors">
-                    Golden Hour Mountain Landscape
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Tests shadow recovery, sky vibrance &amp; contrast
-                  </p>
-                </div>
-              </button>
-
-              <button
-                onClick={() =>
-                  handleLoadSample("/samples/sample-portrait.svg", "studio-portrait.jpg")
-                }
-                className="flex items-center gap-3 p-3 rounded-2xl border border-border bg-muted/30 hover:bg-muted/60 hover:border-violet-500/40 text-left transition-all cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-neutral-900 border border-border shrink-0 flex items-center justify-center">
-                  <img
-                    src="/samples/sample-portrait.svg"
-                    alt="Portrait sample"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-foreground group-hover:text-violet-500 transition-colors">
-                    Studio Lighting Portrait
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Tests skin tone preservation, eye detail &amp; facial clarity
-                  </p>
-                </div>
-              </button>
-            </div>
           </div>
         </div>
       ) : (

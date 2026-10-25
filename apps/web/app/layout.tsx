@@ -3,12 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
-import { GlobalAmbientMotion } from "@/components/global-ambient-motion";
-import { PageMotionWrapper } from "@/components/page-motion-wrapper";
-import Link from "next/link";
-import { Home, Repeat, Wrench, History } from "lucide-react";
 import { PwaProvider } from "@/lib/pwa-context";
 import { PwaInstallBanner } from "@/components/pwa-install-banner";
 
@@ -148,11 +142,11 @@ export default function RootLayout({
         <meta name="google-site-verification" content="tmqaM3yKYddbFFhrHWett8KIfDMxuujgomlHbUN5RL4" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased flex flex-col pb-16 md:pb-0 relative overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground font-sans antialiased m-0 p-0 overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
@@ -160,49 +154,7 @@ export default function RootLayout({
             {/* Structured Data for Search Engine Rich Snippets */}
             <JsonLd />
 
-            {/* Continuous Moving Background Motion on every page */}
-            <GlobalAmbientMotion />
-
-            <Navbar />
-
-            {/* Smooth fluid page transition motion on every route */}
-            <PageMotionWrapper>
-              <main className="flex-1 relative z-10">{children}</main>
-            </PageMotionWrapper>
-
-            <Footer />
-
-            {/* Mobile Bottom Navigation */}
-            <nav aria-label="Mobile Navigation" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#07071299]/95 backdrop-blur-xl border-t border-indigo-500/15 flex items-center justify-around py-3 px-2">
-              <Link
-                href="/"
-                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-              >
-                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Home className="w-3.5 h-3.5" /></span>
-                <span>Home</span>
-              </Link>
-              <Link
-                href="/convert"
-                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-              >
-                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Repeat className="w-3.5 h-3.5" /></span>
-                <span>Convert</span>
-              </Link>
-              <Link
-                href="/tools"
-                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-              >
-                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><Wrench className="w-3.5 h-3.5" /></span>
-                <span>Tools</span>
-              </Link>
-              <Link
-                href="/history"
-                className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-zinc-500 hover:text-indigo-400 transition-colors"
-              >
-                <span className="icon-btn w-8 h-8 rounded-[0.5rem]"><History className="w-3.5 h-3.5" /></span>
-                <span>History</span>
-              </Link>
-            </nav>
+            <main className="w-full min-h-screen m-0 p-0">{children}</main>
 
             {/* PWA Floating Install Banner and Offline Notice */}
             <PwaInstallBanner />

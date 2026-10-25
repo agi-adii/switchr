@@ -130,7 +130,7 @@ export function PdfToolsSection() {
               <div>
                 <h3 className="font-bold text-lg text-foreground">Multi-Image PDF Builder</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Upload multiple photos, reorder pages, and compile them into a single A4 PDF.
+                  Upload multiple photos (HEIC, JPG, PNG, WebP), reorder pages, and compile them into a single A4 PDF.
                 </p>
               </div>
 
@@ -154,7 +154,7 @@ export function PdfToolsSection() {
                   <input
                     type="file"
                     multiple
-                    accept="image/*"
+                    accept="image/*,.heic,.heif"
                     onChange={handleAddImages}
                     className="hidden"
                   />
