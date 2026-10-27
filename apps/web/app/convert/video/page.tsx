@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ConverterTemplate } from "@/components/converter-template";
 import { loadFfmpeg, convertFile } from "@/lib/ffmpeg";
+import { convertVideoToGif } from "@/lib/converters/video-gif-converter";
 
 export default function VideoConverterPage() {
   const [preset, setPreset] = useState("balanced");
@@ -12,6 +13,17 @@ export default function VideoConverterPage() {
     toFormat: string,
     onProgress: (p: number) => void
   ) => {
+    if (toFormat.toLowerCase() === "gif") {
+      const res = await convertVideoToGif(
+        file,
+        {
+          preset: preset === "high" ? "high" : preset === "small" ? "small" : "balanced",
+        },
+        onProgress
+      );
+      return { url: res.url, newSize: res.newSize };
+    }
+
     const ffmpeg = await loadFfmpeg();
     const url = await convertFile(ffmpeg, file, toFormat, onProgress);
     return { url };

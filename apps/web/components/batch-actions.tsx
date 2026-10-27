@@ -2,6 +2,7 @@
 
 import { useConversionStore } from "@/store/conversion-store";
 import { convertFile, loadFfmpeg } from "@/lib/ffmpeg";
+import { convertVideoToGif } from "@/lib/converters/video-gif-converter";
 import { convertImage } from "@/lib/converters/image-converter";
 import { imagesToPdf, textToPdf } from "@/lib/converters/pdf-tools";
 import {
@@ -129,15 +130,25 @@ export function BatchActions() {
             convertedBlob = new Blob([resultText], { type: mimeType });
             outputUrl = URL.createObjectURL(convertedBlob);
           }
-          // 4. FFMPEG ENGINE (Audio / Video)
+          // 4. FFMPEG / VIDEO-TO-GIF ENGINE (Audio / Video / Animated GIF)
           else if (engine === "ffmpeg") {
-            if (!ffmpeg) throw new Error("Audio/Video engine could not be loaded");
-            outputUrl = await convertFile(
-              ffmpeg,
-              item.file,
-              item.toFormat,
-              (progress) => updateFile(item.id, { progress })
-            );
+            if (item.toFormat.toLowerCase() === "gif") {
+              const res = await convertVideoToGif(
+                item.file,
+                {},
+                (progress) => updateFile(item.id, { progress })
+              );
+              outputUrl = res.url;
+              convertedBlob = res.blob;
+            } else {
+              if (!ffmpeg) throw new Error("Audio/Video engine could not be loaded");
+              outputUrl = await convertFile(
+                ffmpeg,
+                item.file,
+                item.toFormat,
+                (progress) => updateFile(item.id, { progress })
+              );
+            }
           } else {
             throw new Error(`Unsupported conversion from ${item.fromFormat} to ${item.toFormat}`);
           }

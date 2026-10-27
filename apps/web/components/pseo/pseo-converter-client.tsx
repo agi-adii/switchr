@@ -13,6 +13,7 @@ import {
 } from "@/lib/converters/presentation-converter";
 import { jsonToCsv, csvToJson } from "@/lib/converters/data-converter";
 import { loadFfmpeg, convertFile } from "@/lib/ffmpeg";
+import { convertVideoToGif } from "@/lib/converters/video-gif-converter";
 import { PseoConversionPair, getRelatedPseoPairs } from "@/lib/pseo-registry";
 import {
   ShieldCheck,
@@ -34,6 +35,9 @@ interface Props {
 
 export function PseoConverterClient({ pair }: Props) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [gifPreset, setGifPreset] = useState<"high" | "balanced" | "small">("balanced");
+  const [gifDuration, setGifDuration] = useState<number>(15);
+  const [gifLoop, setGifLoop] = useState<boolean>(true);
 
   const handleConvert = async (
     file: File,
@@ -159,14 +163,34 @@ export function PseoConverterClient({ pair }: Props) {
       };
     }
 
-    // 6. Video or Audio Conversion via FFmpeg WASM
+    // 6. Video to GIF (Optimized Dual-Engine: FFmpeg WASM + Universal Canvas Fallback)
+    if (
+      toFormat.toLowerCase() === "gif" &&
+      (pair.category === "video" || pair.slug === "video-to-gif" || pair.fromFormat.toLowerCase() === "video")
+    ) {
+      const res = await convertVideoToGif(
+        file,
+        {
+          preset: gifPreset,
+          maxDuration: gifDuration,
+          loop: gifLoop,
+        },
+        onProgress
+      );
+      return {
+        url: res.url,
+        newSize: res.newSize,
+      };
+    }
+
+    // 7. Video or Audio Conversion via FFmpeg WASM
     if (pair.category === "video" || pair.category === "audio") {
       const ffmpeg = await loadFfmpeg();
       const url = await convertFile(ffmpeg, file, toFormat, onProgress);
       return { url };
     }
 
-    // 7. Image Conversion (JPG, PNG, WebP, HEIC, etc.)
+    // 8. Image Conversion (JPG, PNG, WebP, HEIC, etc.)
     const res = await convertImage(
       file,
       {
@@ -184,6 +208,97 @@ export function PseoConverterClient({ pair }: Props) {
   };
 
   const relatedPairs = getRelatedPseoPairs(pair.slug, 6);
+
+  const isVideoToGif = pair.slug === "video-to-gif" || pair.defaultTarget === "gif";
+
+  const videoToGifOptions = isVideoToGif ? (
+    <div className="space-y-4 p-4 rounded-2xl bg-muted/40 border border-border text-xs">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-[11px] font-bold text-foreground">
+            Resolution & Speed Preset:
+          </label>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            {gifPreset === "high"
+              ? "640px • 15 FPS • Sharp"
+              : gifPreset === "small"
+              ? "360px • 10 FPS • Discord / Slack"
+              : "480px • 12 FPS • Balanced"}
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { id: "balanced", label: "Balanced (480p)", desc: "Best compromise" },
+            { id: "high", label: "High (640p)", desc: "Pristine detail" },
+            { id: "small", label: "Small (360p)", desc: "Under 5MB" },
+          ].map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setGifPreset(p.id as any)}
+              className={`py-2 px-2.5 rounded-xl text-left border transition-all ${
+                gifPreset === p.id
+                  ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                  : "bg-background border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              <div className="font-bold text-[11px]">{p.label}</div>
+              <div
+                className={`text-[10px] ${
+                  gifPreset === p.id
+                    ? "text-primary-foreground/80"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {p.desc}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border/50">
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-bold text-foreground">
+            Maximum Duration:
+          </label>
+          <div className="flex items-center gap-1.5">
+            {[5, 10, 15, 20].map((sec) => (
+              <button
+                key={sec}
+                type="button"
+                onClick={() => setGifDuration(sec)}
+                className={`flex-1 py-1.5 rounded-lg text-center font-bold text-[11px] border transition-colors ${
+                  gifDuration === sec
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background border-border text-foreground hover:bg-muted"
+                }`}
+              >
+                {sec}s
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-bold text-foreground">
+            Playback Looping:
+          </label>
+          <button
+            type="button"
+            onClick={() => setGifLoop(!gifLoop)}
+            className={`w-full py-1.5 px-3 rounded-lg text-center font-bold text-[11px] border transition-colors ${
+              gifLoop
+                ? "bg-primary/10 border-primary/30 text-primary"
+                : "bg-muted border-border text-muted-foreground"
+            }`}
+          >
+            {gifLoop ? "Infinite Loop (Autoplay)" : "Play Once"}
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : undefined;
 
   return (
     <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-12">
@@ -238,6 +353,7 @@ export function PseoConverterClient({ pair }: Props) {
           moreFormats={pair.moreFormats}
           defaultTarget={pair.defaultTarget}
           category={pair.category === "data" || pair.category === "pdf" ? "document" : pair.category}
+          advancedOptionsNode={videoToGifOptions}
           onConvert={handleConvert}
         />
       </section>
