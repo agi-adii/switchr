@@ -235,8 +235,8 @@ const ALL_CONVERSIONS_LIST: ConversionCardItem[] = [
   ...PSEO_PAIRS.map((pair) => ({
     id: `pseo-${pair.slug}`,
     title: `${pair.fromFormat} → ${pair.toFormat}`,
-    category: (pair.category === "data" ? "DATA" : pair.category.toUpperCase()) as any,
-    filterCategory: (pair.category === "data" || pair.category === "archive" ? "data" : pair.category) as any,
+    category: ((pair.category as string) === "data" ? "DATA" : pair.category.toUpperCase()) as any,
+    filterCategory: ((pair.category as string) === "data" ? "data" : pair.category) as any,
     subtitle: pair.subtitle,
     href: `/convert/${pair.slug}`,
   })),
