@@ -231,8 +231,36 @@ export interface ConversionCardItem {
 }
 
 const ALL_CONVERSIONS_LIST: ConversionCardItem[] = [
-  /* ── 1. Dedicated PSEO Pairs (Preserves exact first 16 cards from user reference) ── */
-  ...PSEO_PAIRS.map((pair) => ({
+  /* ── 1. Top High-Frequency Converters & PDF Suite ── */
+  ...PSEO_PAIRS.slice(0, 11).map((pair) => ({
+    id: `pseo-${pair.slug}`,
+    title: `${pair.fromFormat} → ${pair.toFormat}`,
+    category: ((pair.category as string) === "data" ? "DATA" : pair.category.toUpperCase()) as any,
+    filterCategory: ((pair.category as string) === "data" ? "data" : pair.category) as any,
+    subtitle: pair.subtitle,
+    href: `/convert/${pair.slug}`,
+  })),
+
+  /* ── Prominent PDF Lock & Unlock Tools ── */
+  {
+    id: "pdf-lock-tool",
+    title: "PDF → Lock PDF",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Password protect and encrypt confidential PDF documents with 128-bit AES security directly on your device.",
+    href: "/pdf-tools?tab=protect",
+  },
+  {
+    id: "pdf-unlock-tool",
+    title: "PDF → Unlock PDF",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Remove password restrictions and decrypt protected PDF documents directly in browser memory.",
+    href: "/pdf-tools?tab=unlock",
+  },
+
+  /* ── Remaining Format Conversions ── */
+  ...PSEO_PAIRS.slice(11).map((pair) => ({
     id: `pseo-${pair.slug}`,
     title: `${pair.fromFormat} → ${pair.toFormat}`,
     category: ((pair.category as string) === "data" ? "DATA" : pair.category.toUpperCase()) as any,
@@ -260,7 +288,7 @@ const ALL_CONVERSIONS_LIST: ConversionCardItem[] = [
   },
   {
     id: "pdf-protect-encrypt",
-    title: "Protect PDF (128-bit AES)",
+    title: "Lock PDF (128-bit AES)",
     category: "PDF",
     filterCategory: "pdf",
     subtitle: "Encrypt and password-protect confidential PDF documents with custom print and copy permissions.",
@@ -268,7 +296,7 @@ const ALL_CONVERSIONS_LIST: ConversionCardItem[] = [
   },
   {
     id: "pdf-unlock-decrypt",
-    title: "Unlock PDF (Decrypt)",
+    title: "Unlock PDF (Decrypt & Open)",
     category: "PDF",
     filterCategory: "pdf",
     subtitle: "Remove password restrictions and decrypt protected PDF files directly inside your browser memory.",
