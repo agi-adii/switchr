@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
@@ -18,15 +18,16 @@ import {
   Lock,
   Unlock,
   History,
+  Search,
 } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 import { PSEO_PAIRS } from "@/lib/pseo-registry";
 
 const smoothEase = [0.16, 1, 0.3, 1] as const;
 
-type ToolCategory = "all" | "image" | "pdf" | "media" | "data" | "archive";
+type SuiteCategory = "all" | "image" | "pdf" | "media" | "data" | "archive";
 
-interface ToolItem {
+interface SuiteToolItem {
   id: string;
   title: string;
   desc: string;
@@ -35,11 +36,11 @@ interface ToolItem {
   accent: string;
   buttonText: string;
   formats: string[];
-  category: ToolCategory;
+  category: SuiteCategory;
   badge?: string;
 }
 
-const ALL_TOOLS: ToolItem[] = [
+const ALL_SUITE_TOOLS: SuiteToolItem[] = [
   {
     id: "image-converter",
     title: "Image Converter",
@@ -219,32 +220,737 @@ const ALL_TOOLS: ToolItem[] = [
   },
 ];
 
+/* ── 1-Click Targeted Conversions & PDF Features Master Directory ── */
+export interface ConversionCardItem {
+  id: string;
+  title: string;
+  category: "PDF" | "IMAGE" | "VIDEO" | "AUDIO" | "DOCUMENT" | "DATA" | "ARCHIVE";
+  filterCategory: "all" | "pdf" | "image" | "video" | "audio" | "document" | "data";
+  subtitle: string;
+  href: string;
+}
+
+const ALL_CONVERSIONS_LIST: ConversionCardItem[] = [
+  /* ── 1. Dedicated PSEO Pairs (Preserves exact first 16 cards from user reference) ── */
+  ...PSEO_PAIRS.map((pair) => ({
+    id: `pseo-${pair.slug}`,
+    title: `${pair.fromFormat} → ${pair.toFormat}`,
+    category: (pair.category === "data" ? "DATA" : pair.category.toUpperCase()) as any,
+    filterCategory: (pair.category === "data" || pair.category === "archive" ? "data" : pair.category) as any,
+    subtitle: pair.subtitle,
+    href: `/convert/${pair.slug}`,
+  })),
+
+  /* ── 2. All PDF Suite Features & Operations ── */
+  {
+    id: "pdf-multi-image",
+    title: "Multi-Image → PDF",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Compile multiple photos, gallery screenshots, and iPhone HEIC files into a single printable PDF document.",
+    href: "/pdf-tools?tab=images",
+  },
+  {
+    id: "pdf-extract-images",
+    title: "PDF → Image Extractor",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Extract individual high-resolution PNG, JPG, or WebP pages from multi-page PDFs with batch ZIP download.",
+    href: "/pdf-tools?tab=pdfToImage",
+  },
+  {
+    id: "pdf-protect-encrypt",
+    title: "Protect PDF (128-bit AES)",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Encrypt and password-protect confidential PDF documents with custom print and copy permissions.",
+    href: "/pdf-tools?tab=protect",
+  },
+  {
+    id: "pdf-unlock-decrypt",
+    title: "Unlock PDF (Decrypt)",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Remove password restrictions and decrypt protected PDF files directly inside your browser memory.",
+    href: "/pdf-tools?tab=unlock",
+  },
+  {
+    id: "pdf-text-formatter",
+    title: "Text → PDF Formatter",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Format plain text, notes, code snippets, or markdown drafts into clean, paginated PDF documents.",
+    href: "/pdf-tools?tab=text",
+  },
+  {
+    id: "pdf-compressor-engine",
+    title: "PDF Compressor",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Shrink heavy PDF documents down to email-friendly file sizes with calibrated quality and real-time size reduction.",
+    href: "/compress",
+  },
+  {
+    id: "pdf-merger-tool",
+    title: "Merge PDF Documents",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Combine two or more PDF documents into a single organized file with full page order preservation.",
+    href: "/convert/merge-pdf",
+  },
+  {
+    id: "pdf-to-webp-export",
+    title: "PDF → WebP Pages",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Render multi-page PDF documents into modern, highly compressed WebP images with transparent background support.",
+    href: "/convert/documents",
+  },
+  {
+    id: "pdf-to-txt-extract",
+    title: "PDF → Text Outline",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Extract readable text content, raw paragraphs, and plain text outlines from PDF documents.",
+    href: "/convert/documents",
+  },
+  {
+    id: "pdf-to-html-doc",
+    title: "PDF → HTML Document",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Render presentation and document pages into readable, responsive HTML web pages.",
+    href: "/convert/documents",
+  },
+  {
+    id: "pdf-csv-to-pdf",
+    title: "CSV → PDF Document",
+    category: "PDF",
+    filterCategory: "pdf",
+    subtitle: "Render tabular CSV spreadsheet rows into a paginated printable PDF document.",
+    href: "/convert/data",
+  },
+
+  /* ── 3. Image Conversions & Studio Tools ── */
+  {
+    id: "img-jpg-to-webp",
+    title: "JPG → WebP",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert standard JPEG photos into modern high-efficiency WebP images with superior compression.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-jpg-to-png",
+    title: "JPG → PNG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert JPEG photos into lossless PNG format with transparent background capability.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-jpg-to-avif",
+    title: "JPG → AVIF",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert standard JPEG photos into next-generation AVIF images with up to 50% smaller size.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-png-to-webp",
+    title: "PNG → WebP",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Compress heavy PNG images into lightweight WebP format while preserving crystal-clear detail.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-png-to-avif",
+    title: "PNG → AVIF",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Transcode transparent PNG graphics into modern AVIF format with state-of-the-art compression.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-webp-to-jpg",
+    title: "WebP → JPG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert modern WebP images into standard JPEG format for legacy applications and print workflows.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-webp-to-avif",
+    title: "WebP → AVIF",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Upgrade WebP graphics to high-efficiency AV1 Image Format for next-gen web speed.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-avif-to-png",
+    title: "AVIF → PNG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert modern AVIF images into universally supported lossless PNG format with alpha support.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-avif-to-jpg",
+    title: "AVIF → JPG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert AVIF graphics into universally compatible JPG photos for legacy software.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-avif-to-webp",
+    title: "AVIF → WebP",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert modern AVIF files into broadly supported Google WebP image format.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-heic-to-webp",
+    title: "HEIC → WebP",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert Apple iPhone HEIC and HEIF photos into lightweight WebP images for the web.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-svg-to-png",
+    title: "SVG → PNG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Rasterize scalable vector graphics (SVG) into high-resolution lossless PNG images with alpha channel.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-svg-to-jpg",
+    title: "SVG → JPG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Rasterize SVG vector illustrations and logos into universally viewable JPG photos.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-svg-to-webp",
+    title: "SVG → WebP",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert vector SVG graphics into modern, high-compression WebP images.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-svg-to-pdf",
+    title: "SVG → PDF",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert vector SVG graphics into clean, high-resolution vector PDF documents.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-gif-to-png",
+    title: "GIF → PNG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Extract clean, high-resolution PNG stills from animated GIF files without visual degradation.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-gif-to-jpg",
+    title: "GIF → JPG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert GIF animation frames into standard JPEG pictures with custom quality presets.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-gif-to-webp",
+    title: "GIF → WebP",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert bulky animated GIF files into modern, lightweight animated WebP images.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-bmp-to-png",
+    title: "BMP → PNG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Compress uncompressed Windows bitmap (BMP) files into lossless, high-efficiency PNG graphics.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-bmp-to-jpg",
+    title: "BMP → JPG",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert heavy BMP bitmaps into compact, universally compatible JPEG photos.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-bmp-to-webp",
+    title: "BMP → WebP",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Convert Windows bitmap BMP graphics into modern high-efficiency WebP images.",
+    href: "/convert/images",
+  },
+  {
+    id: "img-ai-enhancer",
+    title: "AI Photo Enhancer",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Neural super-resolution, dynamic range calibration, exposure, 14 tone sliders, and 2x/4x upscale.",
+    href: "/tools/enhance",
+  },
+  {
+    id: "img-compressor",
+    title: "Image Compressor",
+    category: "IMAGE",
+    filterCategory: "image",
+    subtitle: "Reduce photo and graphic file sizes client-side with smart adaptive quantization and preview.",
+    href: "/compress",
+  },
+
+  /* ── 4. Video Conversions & Tools ── */
+  {
+    id: "vid-webm-to-mp4",
+    title: "WebM → MP4",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Transcode open WebM video clips into universally playable H.264 MP4 videos directly in your browser.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mov-to-webm",
+    title: "MOV → WebM",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Convert Apple QuickTime MOV clips into open WebM format with VP9 video encoding.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mov-to-mp3",
+    title: "MOV → MP3",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Extract audio tracks and voice recordings from Apple QuickTime MOV videos into MP3 files.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mov-to-gif",
+    title: "MOV → GIF",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Turn Apple QuickTime MOV screen recordings into lightweight animated GIFs.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mkv-to-mp4",
+    title: "MKV → MP4",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Transcode Matroska MKV containers into standard MP4 for seamless playback on mobile devices.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mkv-to-webm",
+    title: "MKV → WebM",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Convert heavy MKV video files into modern streaming-ready WebM formats.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mkv-to-mp3",
+    title: "MKV → MP3",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Extract crystal-clear audio tracks and soundtracks from high-definition MKV movie files.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mkv-to-gif",
+    title: "MKV → GIF",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Extract memorable video scenes from MKV files into looping GIF animations.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-avi-to-mp4",
+    title: "AVI → MP4",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Convert legacy AVI video files into modern, streaming-ready MP4 format.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-avi-to-webm",
+    title: "AVI → WebM",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Transcode legacy AVI clips into lightweight, web-native WebM video.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-avi-to-mp3",
+    title: "AVI → MP3",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Extract audio stems and music from legacy AVI video files into standalone MP3 format.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-avi-to-gif",
+    title: "AVI → GIF",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Turn vintage AVI movie clips into modern shareable looping animated GIFs.",
+    href: "/convert/video",
+  },
+  {
+    id: "vid-mp4-to-gif",
+    title: "MP4 → GIF",
+    category: "VIDEO",
+    filterCategory: "video",
+    subtitle: "Convert H.264 MP4 videos into high-fps animated GIF clips for chat and social media.",
+    href: "/convert/video-to-gif",
+  },
+
+  /* ── 5. Audio Conversions ── */
+  {
+    id: "aud-mp3-to-wav",
+    title: "MP3 → WAV",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Decode compressed MP3 files into uncompressed PCM WAV audio for digital audio workstations.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-mp3-to-aac",
+    title: "MP3 → AAC",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Convert MP3 audio tracks into Advanced Audio Coding (AAC) format for Apple devices and streaming.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-mp3-to-m4a",
+    title: "MP3 → M4A",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Transcode MP3 audio into MPEG-4 M4A format with crystal-clear AAC compression.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-mp3-to-ogg",
+    title: "MP3 → OGG",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Convert standard MP3 files into open-source Ogg Vorbis audio tracks for gaming and web.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-wav-to-aac",
+    title: "WAV → AAC",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Encode high-resolution studio WAV masters into compact, efficient AAC audio files.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-wav-to-m4a",
+    title: "WAV → M4A",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Compress studio PCM WAV recordings into lightweight Apple M4A container audio.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-wav-to-ogg",
+    title: "WAV → OGG",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Encode uncompressed WAV stems into royalty-free Ogg Vorbis compressed audio.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-aac-to-mp3",
+    title: "AAC → MP3",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Convert Apple AAC and M4A audio files into universally playable MP3 tracks.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-aac-to-wav",
+    title: "AAC → WAV",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Decode AAC and M4A tracks into uncompressed studio-standard WAV audio streams.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-m4a-to-mp3",
+    title: "M4A → MP3",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Convert Apple voice memos and iTunes M4A tracks into standard MP3 songs.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-m4a-to-wav",
+    title: "M4A → WAV",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Decode voice memos and M4A files into uncompressed 16-bit PCM WAV tracks.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-ogg-to-mp3",
+    title: "OGG → MP3",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Transcode Ogg Vorbis audio tracks into universally compatible MP3 format.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-ogg-to-wav",
+    title: "OGG → WAV",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Decompress Ogg Vorbis tracks into lossless PCM WAV format for editing.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-flac-to-mp3",
+    title: "FLAC → MP3",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Compress studio lossless FLAC recordings into high-bitrate 320kbps MP3 tracks.",
+    href: "/convert/audio",
+  },
+  {
+    id: "aud-flac-to-wav",
+    title: "FLAC → WAV",
+    category: "AUDIO",
+    filterCategory: "audio",
+    subtitle: "Decode FLAC audio into uncompressed studio WAV format with zero quality loss.",
+    href: "/convert/audio",
+  },
+
+  /* ── 6. Document Conversions ── */
+  {
+    id: "doc-docx-to-txt",
+    title: "DOCX → TXT",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Extract clean, unformatted plain text content from Microsoft Word DOCX documents.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-docx-to-html",
+    title: "DOCX → HTML",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Convert formatted Microsoft Word documents into clean, responsive HTML web pages.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-pptx-to-txt",
+    title: "PPTX → TXT",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Extract presentation slide text outlines and speaker presenter notes into plain text.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-pptx-to-html",
+    title: "PPTX → HTML",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Export PowerPoint slides into an interactive, readable HTML presentation outline.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-ppt-to-txt",
+    title: "PPT → TXT",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Extract slide text outlines and presenter notes from legacy PowerPoint presentations.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-txt-to-html",
+    title: "TXT → HTML",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Convert raw text files and markdown notes into formatted, readable HTML web pages.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-txt-to-docx",
+    title: "TXT → DOCX",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Wrap raw text or markdown outlines into an editable Microsoft Word DOCX document.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-html-to-pdf",
+    title: "HTML → PDF",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Render HTML web documents and text files into standard, print-ready PDF files.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-html-to-txt",
+    title: "HTML → TXT",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Strip HTML formatting tags and extract plain text from web documents.",
+    href: "/convert/documents",
+  },
+  {
+    id: "doc-html-to-docx",
+    title: "HTML → DOCX",
+    category: "DOCUMENT",
+    filterCategory: "document",
+    subtitle: "Convert responsive HTML pages into styled, editable Microsoft Word DOCX files.",
+    href: "/convert/documents",
+  },
+
+  /* ── 7. Data & Structured Conversions ── */
+  {
+    id: "dat-json-to-xml",
+    title: "JSON → XML",
+    category: "DATA",
+    filterCategory: "data",
+    subtitle: "Convert JSON objects and arrays into structured, hierarchical XML markup.",
+    href: "/convert/data",
+  },
+  {
+    id: "dat-xml-to-json",
+    title: "XML → JSON",
+    category: "DATA",
+    filterCategory: "data",
+    subtitle: "Parse structured XML documents and tag hierarchies into clean, navigable JSON objects.",
+    href: "/convert/data",
+  },
+  {
+    id: "dat-csv-to-xml",
+    title: "CSV → XML",
+    category: "DATA",
+    filterCategory: "data",
+    subtitle: "Transform CSV spreadsheet rows and columns into structured XML record documents.",
+    href: "/convert/data",
+  },
+  {
+    id: "dat-xml-to-csv",
+    title: "XML → CSV",
+    category: "DATA",
+    filterCategory: "data",
+    subtitle: "Flatten hierarchical XML data records into clean tabular CSV spreadsheets.",
+    href: "/convert/data",
+  },
+  {
+    id: "dat-csv-to-html",
+    title: "CSV → HTML",
+    category: "DATA",
+    filterCategory: "data",
+    subtitle: "Convert CSV datasets into styled, responsive HTML tables for web presentations.",
+    href: "/convert/data",
+  },
+  {
+    id: "dat-json-to-txt",
+    title: "JSON → TXT",
+    category: "DATA",
+    filterCategory: "data",
+    subtitle: "Convert JSON arrays and dictionaries into formatted readable text.",
+    href: "/convert/data",
+  },
+  {
+    id: "dat-xml-to-html",
+    title: "XML → HTML",
+    category: "DATA",
+    filterCategory: "data",
+    subtitle: "Render XML tag trees into formatted, human-readable HTML markup tables.",
+    href: "/convert/data",
+  },
+
+  /* ── 8. Archive & Packaging Tools ── */
+  {
+    id: "arc-create-zip",
+    title: "Create ZIP Bundle",
+    category: "ARCHIVE",
+    filterCategory: "data",
+    subtitle: "Package multiple files, photos, and documents into a clean compressed ZIP archive.",
+    href: "/tools/archive",
+  },
+  {
+    id: "arc-extract-zip",
+    title: "Extract ZIP Archive",
+    category: "ARCHIVE",
+    filterCategory: "data",
+    subtitle: "Unpack, inspect, and extract ZIP archive contents directly in browser memory.",
+    href: "/tools/archive",
+  },
+];
+
 const containerVariants = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.04, delayChildren: 0.05 },
   },
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.42, ease: smoothEase },
+    transition: { duration: 0.38, ease: smoothEase },
   },
 };
 
 export default function ConvertHubPage() {
-  const [selectedCategory, setSelectedCategory] = useState<ToolCategory>("all");
+  const [selectedSuiteCategory, setSelectedSuiteCategory] = useState<SuiteCategory>("all");
+  const [selectedConvCategory, setSelectedConvCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const filteredTools =
-    selectedCategory === "all"
-      ? ALL_TOOLS
-      : ALL_TOOLS.filter((t) => t.category === selectedCategory);
+  const filteredSuiteTools =
+    selectedSuiteCategory === "all"
+      ? ALL_SUITE_TOOLS
+      : ALL_SUITE_TOOLS.filter((t) => t.category === selectedSuiteCategory);
+
+  const filteredConversions = useMemo(() => {
+    return ALL_CONVERSIONS_LIST.filter((conv) => {
+      const matchesCategory =
+        selectedConvCategory === "all" ||
+        conv.filterCategory === selectedConvCategory ||
+        conv.category.toLowerCase() === selectedConvCategory.toLowerCase();
+
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        conv.title.toLowerCase().includes(q) ||
+        conv.subtitle.toLowerCase().includes(q) ||
+        conv.category.toLowerCase().includes(q);
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedConvCategory, searchQuery]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-12">
+    <div className="w-full max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-16">
+      {/* ── Top Section: Master Conversion Suites ── */}
       <div>
         <Breadcrumbs items={[{ label: "Convert" }]} />
 
@@ -252,7 +958,7 @@ export default function ConvertHubPage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.5, ease: smoothEase }}
           className="text-center space-y-3 mb-10"
         >
           <motion.div
@@ -262,23 +968,23 @@ export default function ConvertHubPage() {
             className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold mb-1 backdrop-blur-md shadow-xs"
           >
             <Sparkles className="w-3.5 h-3.5 text-white" />
-            <span>Complete Transformation Suite</span>
+            <span>Dedicated Conversion Suites</span>
           </motion.div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
             Select What You Want to Convert
           </h1>
           <p className="text-xs sm:text-sm text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Every tool runs 100% in your browser using WebAssembly and hardware acceleration. Zero server uploads, zero quotas, and instant downloads.
+            Choose a dedicated suite below, or jump directly into our comprehensive index of targeted 1-click file converters and PDF utilities.
           </p>
 
-          {/* Interactive Category Filter Pills */}
+          {/* Category Filter Pills for Master Suites */}
           <div className="pt-4 flex justify-center">
-            <GlassPillTabs<ToolCategory>
-              activeTab={selectedCategory}
-              onChange={(id) => setSelectedCategory(id)}
-              layoutId="convertFilterTab"
+            <GlassPillTabs<SuiteCategory>
+              activeTab={selectedSuiteCategory}
+              onChange={(id) => setSelectedSuiteCategory(id)}
+              layoutId="convertSuiteTab"
               tabs={[
-                { id: "all", label: `All Tools (${ALL_TOOLS.length})` },
+                { id: "all", label: `All Suites (${ALL_SUITE_TOOLS.length})` },
                 { id: "image", label: "Image & AI" },
                 { id: "pdf", label: "PDF Suite" },
                 { id: "media", label: "Audio & Video" },
@@ -289,15 +995,15 @@ export default function ConvertHubPage() {
           </div>
         </motion.div>
 
-        {/* Full Tools Grid matching Reference Card Design */}
+        {/* Master Suites Cards Grid */}
         <motion.div
-          key={selectedCategory}
+          key={selectedSuiteCategory}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
           variants={containerVariants}
           initial="hidden"
           animate="show"
         >
-          {filteredTools.map((tool) => {
+          {filteredSuiteTools.map((tool) => {
             const Icon = tool.icon;
             return (
               <motion.div
@@ -368,46 +1074,110 @@ export default function ConvertHubPage() {
         </motion.div>
       </div>
 
-      {/* ── Popular Dedicated Converters (pSEO Internal Links) ── */}
-      <section className="pt-8 border-t border-white/15 space-y-6">
-        <div className="text-center space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-white/80">
+      {/* ── Bottom Section: All 1-Click Targeted Conversions & PDF Features Master Directory ── */}
+      <section className="pt-8 border-t border-white/15 space-y-8" id="all-conversions">
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold text-white/90 backdrop-blur-md">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             <span>Targeted 1-Click Converters</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             Popular Conversions
           </h2>
-          <p className="text-xs text-white/65 max-w-lg mx-auto">
+          <p className="text-xs sm:text-sm text-white/70 max-w-xl mx-auto leading-relaxed">
             Direct dedicated tools for high-frequency conversions with instant presets, zero server upload, and rich settings.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
-          {PSEO_PAIRS.map((pair) => (
-            <Link
-              key={pair.slug}
-              href={`/convert/${pair.slug}`}
-              className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 hover:bg-white/15 transition-all group flex flex-col justify-between space-y-2 shadow-xs"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white group-hover:text-amber-200 transition-colors">
-                  {pair.fromFormat} &rarr; {pair.toFormat}
-                </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/15 text-white/80 uppercase">
-                  {pair.category}
-                </span>
-              </div>
-              <p className="text-[11px] text-white/65 line-clamp-2 leading-snug">
-                {pair.subtitle}
-              </p>
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-white/90 group-hover:text-white">
-                <span>Launch Tool</span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-          ))}
+        {/* Filter Controls & Instant Search */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-4xl mx-auto">
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            {[
+              { id: "all", label: `All (${ALL_CONVERSIONS_LIST.length})` },
+              { id: "pdf", label: "PDF Suite" },
+              { id: "image", label: "Images" },
+              { id: "video", label: "Video" },
+              { id: "audio", label: "Audio" },
+              { id: "document", label: "Documents" },
+              { id: "data", label: "Data & ZIP" },
+            ].map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedConvCategory(cat.id)}
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  selectedConvCategory === cat.id
+                    ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                    : "bg-white/10 text-white/70 hover:bg-white/15 hover:text-white border border-white/15"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative w-full sm:w-64">
+            <Search className="w-3.5 h-3.5 text-white/50 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search conversions..."
+              className="w-full pl-8 pr-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white/50 transition-colors backdrop-blur-md"
+            />
+          </div>
         </div>
+
+        {/* Conversions 4-Column Grid: Exact same card styling as in the image */}
+        <motion.div
+          key={`${selectedConvCategory}-${searchQuery}`}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {filteredConversions.map((conv) => (
+            <motion.div key={conv.id} variants={cardVariants}>
+              <Link
+                href={conv.href}
+                className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 hover:bg-white/15 transition-all group flex flex-col justify-between space-y-2.5 shadow-xs h-full"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-white group-hover:text-amber-200 transition-colors truncate">
+                    {conv.title}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white/15 border border-white/20 text-white/80 uppercase shrink-0">
+                    {conv.category}
+                  </span>
+                </div>
+                <p className="text-[11px] text-white/65 line-clamp-2 leading-snug">
+                  {conv.subtitle}
+                </p>
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-white/90 group-hover:text-white">
+                  <span>Launch Tool</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {filteredConversions.length === 0 && (
+          <div className="p-8 text-center bg-white/5 border border-white/15 rounded-3xl text-xs text-white/70 space-y-2">
+            <p className="font-bold text-sm text-white">No conversion tools found for &quot;{searchQuery}&quot;</p>
+            <p>Try searching for a format like PDF, JPG, MP4, WebP, or Clear Filter.</p>
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedConvCategory("all");
+              }}
+              className="mt-2 px-4 py-1.5 rounded-xl bg-white/15 hover:bg-white/20 text-white font-bold text-xs transition-colors cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
