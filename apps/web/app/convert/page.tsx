@@ -1210,8 +1210,8 @@ export default function ConvertHubPage() {
 
   return (
     <div className="w-full max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-16">
-      {/* ── Top Section: Master Conversion Suites ── */}
-      <div>
+      {/* ── Top Section: Popular Conversions (Targeted 1-Click Converters) ── */}
+      <section id="popular-conversions" className="space-y-8">
         <Breadcrumbs items={[{ label: "Convert" }]} />
 
         {/* Page Header */}
@@ -1219,7 +1219,7 @@ export default function ConvertHubPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: smoothEase }}
-          className="text-center space-y-3 mb-10"
+          className="text-center space-y-3 mb-8"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -1227,14 +1227,120 @@ export default function ConvertHubPage() {
             transition={{ duration: 0.4, delay: 0.05 }}
             className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold mb-1 backdrop-blur-md shadow-xs"
           >
-            <Sparkles className="w-3.5 h-3.5 text-white" />
-            <span>Dedicated Conversion Suites</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Targeted 1-Click Converters</span>
           </motion.div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
-            Select What You Want to Convert
+            Popular Conversions
           </h1>
           <p className="text-xs sm:text-sm text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Choose a dedicated suite below, or jump directly into our comprehensive index of targeted 1-click file converters and PDF utilities.
+            Direct dedicated tools for high-frequency conversions with instant presets, zero server upload, and rich settings.
+          </p>
+
+          {/* Filter Controls & Instant Search */}
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-4xl mx-auto">
+            {/* Category Filter Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5">
+              {[
+                { id: "all", label: `All (${ALL_CONVERSIONS_LIST.length})` },
+                { id: "pdf", label: "PDF Suite" },
+                { id: "image", label: "Images" },
+                { id: "video", label: "Video" },
+                { id: "audio", label: "Audio" },
+                { id: "document", label: "Documents" },
+                { id: "data", label: "Data & ZIP" },
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedConvCategory(cat.id)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    selectedConvCategory === cat.id
+                      ? "bg-white text-zinc-950 shadow-md font-extrabold"
+                      : "bg-white/10 text-white/70 hover:bg-white/15 hover:text-white border border-white/15"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative w-full sm:w-64">
+              <Search className="w-3.5 h-3.5 text-white/50 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search conversions..."
+                className="w-full pl-8 pr-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white/50 transition-colors backdrop-blur-md"
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Conversions 4-Column Grid: Exact same card styling as in the image */}
+        <motion.div
+          key={`${selectedConvCategory}-${searchQuery}`}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {filteredConversions.map((conv) => (
+            <motion.div key={conv.id} variants={cardVariants}>
+              <Link
+                href={conv.href}
+                className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 hover:bg-white/15 transition-all group flex flex-col justify-between space-y-2.5 shadow-xs h-full"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-white group-hover:text-amber-200 transition-colors truncate">
+                    {conv.title}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white/15 border border-white/20 text-white/80 uppercase shrink-0">
+                    {conv.category}
+                  </span>
+                </div>
+                <p className="text-[11px] text-white/65 line-clamp-2 leading-snug">
+                  {conv.subtitle}
+                </p>
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-white/90 group-hover:text-white">
+                  <span>Launch Tool</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {filteredConversions.length === 0 && (
+          <div className="p-8 text-center bg-white/5 border border-white/15 rounded-3xl text-xs text-white/70 space-y-2">
+            <p className="font-bold text-sm text-white">No conversion tools found for &quot;{searchQuery}&quot;</p>
+            <p>Try searching for a format like PDF, JPG, MP4, WebP, or Clear Filter.</p>
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedConvCategory("all");
+              }}
+              className="mt-2 px-4 py-1.5 rounded-xl bg-white/15 hover:bg-white/20 text-white font-bold text-xs transition-colors cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* ── Downside Section: Dedicated Conversion Suites ── */}
+      <section className="pt-12 border-t border-white/15 space-y-8" id="conversion-suites">
+        <div className="text-center space-y-3 mb-6">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold mb-1 backdrop-blur-md shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-white" />
+            <span>Dedicated Conversion Suites</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+            Full-Featured Conversion Studios
+          </h2>
+          <p className="text-xs sm:text-sm text-white/70 max-w-2xl mx-auto leading-relaxed">
+            Need comprehensive settings? Launch our dedicated multi-tool suites for batch photo resizing, AI image upscaling, PDF editing, and multi-track audio transcoding.
           </p>
 
           {/* Category Filter Pills for Master Suites */}
@@ -1253,7 +1359,7 @@ export default function ConvertHubPage() {
               ]}
             />
           </div>
-        </motion.div>
+        </div>
 
         {/* Master Suites Cards Grid */}
         <motion.div
@@ -1332,112 +1438,6 @@ export default function ConvertHubPage() {
             );
           })}
         </motion.div>
-      </div>
-
-      {/* ── Bottom Section: All 1-Click Targeted Conversions & PDF Features Master Directory ── */}
-      <section className="pt-8 border-t border-white/15 space-y-8" id="all-conversions">
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold text-white/90 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Targeted 1-Click Converters</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            Popular Conversions
-          </h2>
-          <p className="text-xs sm:text-sm text-white/70 max-w-xl mx-auto leading-relaxed">
-            Direct dedicated tools for high-frequency conversions with instant presets, zero server upload, and rich settings.
-          </p>
-        </div>
-
-        {/* Filter Controls & Instant Search */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-4xl mx-auto">
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-1.5">
-            {[
-              { id: "all", label: `All (${ALL_CONVERSIONS_LIST.length})` },
-              { id: "pdf", label: "PDF Suite" },
-              { id: "image", label: "Images" },
-              { id: "video", label: "Video" },
-              { id: "audio", label: "Audio" },
-              { id: "document", label: "Documents" },
-              { id: "data", label: "Data & ZIP" },
-            ].map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedConvCategory(cat.id)}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  selectedConvCategory === cat.id
-                    ? "bg-white text-zinc-950 shadow-md font-extrabold"
-                    : "bg-white/10 text-white/70 hover:bg-white/15 hover:text-white border border-white/15"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 text-white/50 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search conversions..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-white/50 transition-colors backdrop-blur-md"
-            />
-          </div>
-        </div>
-
-        {/* Conversions 4-Column Grid: Exact same card styling as in the image */}
-        <motion.div
-          key={`${selectedConvCategory}-${searchQuery}`}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
-          {filteredConversions.map((conv) => (
-            <motion.div key={conv.id} variants={cardVariants}>
-              <Link
-                href={conv.href}
-                className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-white/40 hover:bg-white/15 transition-all group flex flex-col justify-between space-y-2.5 shadow-xs h-full"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-white group-hover:text-amber-200 transition-colors truncate">
-                    {conv.title}
-                  </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white/15 border border-white/20 text-white/80 uppercase shrink-0">
-                    {conv.category}
-                  </span>
-                </div>
-                <p className="text-[11px] text-white/65 line-clamp-2 leading-snug">
-                  {conv.subtitle}
-                </p>
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-white/90 group-hover:text-white">
-                  <span>Launch Tool</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {filteredConversions.length === 0 && (
-          <div className="p-8 text-center bg-white/5 border border-white/15 rounded-3xl text-xs text-white/70 space-y-2">
-            <p className="font-bold text-sm text-white">No conversion tools found for &quot;{searchQuery}&quot;</p>
-            <p>Try searching for a format like PDF, JPG, MP4, WebP, or Clear Filter.</p>
-            <button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedConvCategory("all");
-              }}
-              className="mt-2 px-4 py-1.5 rounded-xl bg-white/15 hover:bg-white/20 text-white font-bold text-xs transition-colors cursor-pointer"
-            >
-              Reset Filters
-            </button>
-          </div>
-        )}
       </section>
     </div>
   );
