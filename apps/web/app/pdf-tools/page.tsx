@@ -648,35 +648,36 @@ export default function PdfToolsPage() {
 
       {/* Tab 1: Images to PDF */}
       {activeTab === "images" && (
-        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-6 overflow-hidden">
+          <div className="glass-specular" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-4">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-foreground">Multi-Image &amp; HEIC to PDF Builder</h3>
-                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-extrabold border border-blue-500/20">
+                <h3 className="font-bold text-base text-white">Multi-Image &amp; HEIC to PDF Builder</h3>
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-extrabold border border-blue-400/30">
                   HEIC / HEIF
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-white/70 mt-1">
                 Upload iPhone/Apple photos (.HEIC), JPG, PNG, or WEBP, arrange page sequence, and export as a unified A4 PDF document.
               </p>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5 text-xs text-white/70">
                 <span>Layout:</span>
                 <select
                   value={orientation}
                   onChange={(e) => setOrientation(e.target.value as any)}
-                  className="bg-muted px-2.5 py-1 rounded-lg border border-border text-foreground font-medium text-xs cursor-pointer"
+                  className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 text-white font-medium text-xs cursor-pointer focus:outline-none"
                 >
-                  <option value="auto">Auto-Fit</option>
-                  <option value="portrait">Portrait</option>
-                  <option value="landscape">Landscape</option>
+                  <option value="auto" className="bg-[#0d0d14] text-white">Auto-Fit</option>
+                  <option value="portrait" className="bg-[#0d0d14] text-white">Portrait</option>
+                  <option value="landscape" className="bg-[#0d0d14] text-white">Landscape</option>
                 </select>
               </div>
 
-              <label className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl cursor-pointer hover:bg-primary/90 transition-colors shadow-sm">
+              <label className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl cursor-pointer hover:bg-primary/90 transition-all shadow-md hover:shadow-primary/25">
                 <FilePlus2 className="w-4 h-4" />
                 Add Photos / HEIC
                 <input
@@ -700,19 +701,19 @@ export default function PdfToolsPage() {
                   return (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/30 text-xs"
+                      className="flex items-center justify-between p-3 rounded-xl border border-white/15 bg-white/10 backdrop-blur-md text-xs text-white shadow-sm"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center shrink-0">
+                        <span className="w-5 h-5 rounded-full bg-white/20 text-white font-bold text-[10px] flex items-center justify-center shrink-0">
                           {idx + 1}
                         </span>
-                        <span className="font-medium truncate text-foreground">{imgFile.name}</span>
+                        <span className="font-medium truncate text-white">{imgFile.name}</span>
                         {isHeic && (
-                          <span className="px-1.5 py-0.2 rounded bg-blue-500/15 text-blue-500 text-[9px] font-extrabold border border-blue-500/20 shrink-0">
+                          <span className="px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 text-[9px] font-extrabold border border-blue-400/30 shrink-0">
                             Apple HEIC
                           </span>
                         )}
-                        <span className="text-muted-foreground font-mono shrink-0">
+                        <span className="text-white/60 font-mono shrink-0">
                           ({formatFileSize(imgFile.size)})
                         </span>
                       </div>
@@ -721,14 +722,14 @@ export default function PdfToolsPage() {
                         <button
                           disabled={idx === 0}
                           onClick={() => moveImage(idx, "up")}
-                          className="p-1 rounded hover:bg-muted text-muted-foreground disabled:opacity-30 cursor-pointer"
+                          className="p-1 rounded hover:bg-white/15 text-white/70 disabled:opacity-30 cursor-pointer transition-colors"
                           title="Move up"
                         >
                           <ArrowUpDown className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => removeImage(idx)}
-                          className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive cursor-pointer"
+                          className="p-1 rounded hover:bg-destructive/20 text-white/70 hover:text-red-400 cursor-pointer transition-colors"
                           title="Remove"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -739,17 +740,17 @@ export default function PdfToolsPage() {
                 })}
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/15">
                 <button
                   onClick={() => setImages([])}
-                  className="px-4 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-white/70 hover:text-white cursor-pointer transition-colors"
                 >
                   Clear All
                 </button>
                 <button
                   onClick={handleGenerateImagesPdf}
                   disabled={isBuildingPdf}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:shadow-red-500/25 disabled:opacity-50 cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                   {isBuildingPdf ? "Compiling PDF..." : `Create PDF (${images.length} Pages)`}
@@ -757,10 +758,10 @@ export default function PdfToolsPage() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground space-y-2">
-              <ImageIcon className="w-10 h-10 mx-auto opacity-30" />
-              <p className="text-xs font-medium">No images uploaded yet</p>
-              <p className="text-[11px]">Click &ldquo;Add Photos / HEIC&rdquo; above to compile your PDF.</p>
+            <div className="text-center py-14 text-white/60 space-y-2">
+              <ImageIcon className="w-12 h-12 mx-auto opacity-40 text-white/50" />
+              <p className="text-sm font-semibold text-white/80">No images uploaded yet</p>
+              <p className="text-xs text-white/50">Click &ldquo;Add Photos / HEIC&rdquo; above to compile your PDF.</p>
             </div>
           )}
 
@@ -784,19 +785,20 @@ export default function PdfToolsPage() {
 
       {/* Tab 2: PDF to Image */}
       {activeTab === "pdfToImage" && (
-        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-border pb-4">
+        <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-6 overflow-hidden">
+          <div className="glass-specular" />
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-white/15 pb-4">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-foreground">PDF to High-Res Image Extractor</h3>
-                <span className="px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-[10px] font-extrabold border border-red-500/20">
+                <h3 className="font-bold text-base text-white">PDF to High-Res Image Extractor</h3>
+                <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 text-[10px] font-extrabold border border-red-400/30">
                   PNG / JPG / WebP
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-extrabold border border-emerald-500/20">
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold border border-emerald-400/30">
                   Batch ZIP
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-white/70 mt-1">
                 Convert PDF pages into crystal-clear images with full client-side privacy. Download single pages or the entire document as a ZIP.
               </p>
             </div>
@@ -804,7 +806,7 @@ export default function PdfToolsPage() {
             {pdfFile && (
               <button
                 onClick={resetPdfToImage}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground rounded-lg border border-border bg-muted/40 transition-colors shrink-0 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-white/80 hover:text-white rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 transition-all shrink-0 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Choose Another PDF
@@ -828,12 +830,11 @@ export default function PdfToolsPage() {
                 }
               }}
               onClick={() => pdfInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-3xl p-10 sm:p-14 text-center cursor-pointer transition-all ${
-                isDraggingPdf
-                  ? "border-red-500 bg-red-500/5 scale-[0.99]"
-                  : "border-border hover:border-red-500/50 hover:bg-muted/30"
+              className={`glass-dropzone rounded-3xl p-10 sm:p-14 text-center cursor-pointer transition-all ${
+                isDraggingPdf ? "glass-dropzone-active" : ""
               }`}
             >
+              <div className="glass-specular" />
               <input
                 ref={pdfInputRef}
                 type="file"
@@ -1150,23 +1151,24 @@ export default function PdfToolsPage() {
 
       {/* Tab 3: Protect PDF */}
       {activeTab === "protect" && (
-        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-6 overflow-hidden">
+          <div className="glass-specular" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-4">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-foreground">Password Protect &amp; Encrypt PDF</h3>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-extrabold border border-emerald-500/20">
+                <h3 className="font-bold text-base text-white">Password Protect &amp; Encrypt PDF</h3>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold border border-emerald-400/30">
                   100% Private
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-white/70 mt-1">
                 Encrypt any PDF with user password protection and custom security permissions right in your browser.
               </p>
             </div>
             {protectFile && (
               <button
                 onClick={resetProtectPdf}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-muted/50 hover:bg-muted text-xs font-bold text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Change File
@@ -1177,8 +1179,9 @@ export default function PdfToolsPage() {
           {!protectFile ? (
             <div
               onClick={() => protectFileInputRef.current?.click()}
-              className="border-2 border-dashed border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/40 rounded-3xl p-8 text-center transition-all cursor-pointer group"
+              className="glass-dropzone rounded-3xl p-8 text-center cursor-pointer group"
             >
+              <div className="glass-specular" />
               <input
                 ref={protectFileInputRef}
                 type="file"
@@ -1362,23 +1365,24 @@ export default function PdfToolsPage() {
 
       {/* Tab 4: Unlock PDF */}
       {activeTab === "unlock" && (
-        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-6 overflow-hidden">
+          <div className="glass-specular" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-4">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-foreground">Unlock Password Protected PDF</h3>
-                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-extrabold border border-blue-500/20">
+                <h3 className="font-bold text-base text-white">Unlock Password Protected PDF</h3>
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-extrabold border border-blue-400/30">
                   Instant Decrypt
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-white/70 mt-1">
                 Remove passwords and security restrictions from encrypted PDF files directly on your local device.
               </p>
             </div>
             {unlockFile && (
               <button
                 onClick={resetUnlockPdf}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-muted/50 hover:bg-muted text-xs font-bold text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Change File
@@ -1389,8 +1393,9 @@ export default function PdfToolsPage() {
           {!unlockFile ? (
             <div
               onClick={() => unlockFileInputRef.current?.click()}
-              className="border-2 border-dashed border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/40 rounded-3xl p-8 text-center transition-all cursor-pointer group"
+              className="glass-dropzone rounded-3xl p-8 text-center cursor-pointer group"
             >
+              <div className="glass-specular" />
               <input
                 ref={unlockFileInputRef}
                 type="file"
@@ -1531,22 +1536,23 @@ export default function PdfToolsPage() {
 
       {/* Tab 5: Text to PDF */}
       {activeTab === "text" && (
-        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+        <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-4 overflow-hidden">
+          <div className="glass-specular" />
           <div>
-            <label className="block text-xs font-semibold text-foreground mb-1">
+            <label className="block text-xs font-semibold text-white mb-1.5">
               Document Title
             </label>
             <input
               type="text"
               value={textTitle}
               onChange={(e) => setTextTitle(e.target.value)}
-              className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary/40 backdrop-blur-md"
               placeholder="Enter document title (e.g. Project Notes)"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-foreground mb-1">
+            <label className="block text-xs font-semibold text-white mb-1.5">
               Text Content
             </label>
             <textarea
@@ -1554,7 +1560,7 @@ export default function PdfToolsPage() {
               value={textContent}
               onChange={(e) => setTextContent(e.target.value)}
               placeholder="Paste or type notes, plain text, or document paragraphs here..."
-              className="w-full bg-muted/40 border border-border rounded-xl p-4 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded-xl p-4 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/40 backdrop-blur-md"
             />
           </div>
 
@@ -1562,7 +1568,7 @@ export default function PdfToolsPage() {
             <button
               onClick={handleGenerateTextPdf}
               disabled={isBuildingPdf || !textContent.trim()}
-              className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:shadow-red-500/25 disabled:opacity-50 cursor-pointer"
             >
               <Download className="w-4 h-4" />
               Generate &amp; Download PDF
@@ -1570,15 +1576,15 @@ export default function PdfToolsPage() {
           </div>
 
           {generatedPdfUrl && (
-            <div className="p-4 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-green-600 text-xs font-bold">
+            <div className="p-4 rounded-2xl bg-green-500/15 border border-green-500/30 flex items-center justify-between backdrop-blur-md">
+              <div className="flex items-center gap-2 text-green-300 text-xs font-bold">
                 <FileText className="w-4 h-4" />
                 Your text PDF has been generated!
               </div>
               <a
                 href={generatedPdfUrl}
                 download="switchr-document.pdf"
-                className="py-2 px-4 bg-green-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-green-700 transition-colors"
+                className="py-2 px-4 bg-green-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-green-700 transition-colors shadow-sm"
               >
                 Download PDF
               </a>
@@ -1589,10 +1595,11 @@ export default function PdfToolsPage() {
 
       {/* Tab 4: PDF Page Manager */}
       {activeTab === "pages" && (
-        <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-6 overflow-hidden">
+          <div className="glass-specular" />
           <div>
-            <h3 className="font-bold text-sm text-foreground">Interactive Page Manager</h3>
-            <p className="text-xs text-muted-foreground">
+            <h3 className="font-bold text-base text-white">Interactive Page Manager</h3>
+            <p className="text-xs text-white/70 mt-0.5">
               Select, rotate, reorder, and remove individual pages from your PDF document.
             </p>
           </div>
