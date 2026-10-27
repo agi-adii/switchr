@@ -526,4 +526,71 @@ export async function unlockPdf(
   return pdf.output("blob");
 }
 
+export async function compressPdf(
+  file: File,
+  quality = 0.7,
+  onProgress?: (progress: number) => void
+): Promise<Blob> {
+  const pdfjs = await getPdfJs();
+  const buffer = await file.arrayBuffer();
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
+  const pdfDoc = await loadingTask.promise;
+  const totalPages = pdfDoc.numPages;
+
+  if (totalPages === 0) {
+    throw new Error("The PDF document contains no pages.");
+  }
+
+  let pdf: jsPDF | null = null;
+  const renderScale = quality < 0.6 ? 1.2 : 1.5;
+
+  for (let i = 1; i <= totalPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const unscaledViewport = page.getViewport({ scale: 1.0 });
+    const ptWidth = unscaledViewport.width;
+    const ptHeight = unscaledViewport.height;
+    const orientation: "l" | "p" = ptWidth > ptHeight ? "l" : "p";
+
+    const renderViewport = page.getViewport({ scale: renderScale });
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas context initialization failed");
+
+    canvas.width = Math.floor(renderViewport.width);
+    canvas.height = Math.floor(renderViewport.height);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({
+      canvasContext: ctx,
+      viewport: renderViewport,
+    }).promise;
+
+    const imgData = canvas.toDataURL("image/jpeg", quality);
+
+    if (i === 1) {
+      pdf = new jsPDF({
+        orientation,
+        unit: "pt",
+        format: [ptWidth, ptHeight],
+      });
+      pdf.addImage(imgData, "JPEG", 0, 0, ptWidth, ptHeight);
+    } else if (pdf) {
+      pdf.addPage([ptWidth, ptHeight], orientation);
+      pdf.addImage(imgData, "JPEG", 0, 0, ptWidth, ptHeight);
+    }
+
+    canvas.width = 0;
+    canvas.height = 0;
+
+    if (onProgress) onProgress((i / totalPages));
+  }
+
+  if (!pdf) throw new Error("Failed to compress PDF document.");
+
+  return pdf.output("blob");
+}
+
+
 

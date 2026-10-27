@@ -379,7 +379,7 @@ export const PSEO_PAIRS: PseoConversionPair[] = [
       { question: "Can I convert JSON with nested objects?", answer: "Yes. Nested objects and arrays are cleanly serialized into formatted strings, preserving data structure without breaking CSV rows." },
       { question: "Is my proprietary data kept private?", answer: "100%. Data parsing and CSV generation run entirely in client-side JavaScript. Not a single byte is sent over the network." },
       { question: "Does the CSV handle special characters and commas?", answer: "Yes. All cells containing commas, line breaks, or quotation marks are properly escaped according to RFC 4180." },
-      { question: "Is there a row count limit?", answer: "There are no server limits. You can convert tens of thousands of rows depending on your browser memory." },
+      { question: "Is there a row count limit?", answer: "There are no server limits. You can convert large datasets depending on your device's available browser memory." },
     ],
     benefits: [
       { title: "Instant Spreadsheet Ready", desc: "Generates standard CSV files compatible with Excel, Apple Numbers, and SQL importers." },

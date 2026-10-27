@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free PDF Tools - Merge, Split, Compress & Convert PDF Online",
+  title: "Free PDF Tools - Multi-Image to PDF, Extract, Protect & Unlock",
   description:
-    "Free in-browser PDF tools. Merge PDFs, split pages, compress files, and convert PDF to images with 100% privacy and zero server uploads.",
+    "Free in-browser PDF tools. Convert photos to PDF, extract high-res images, password-protect & encrypt PDFs, and unlock protected documents with 100% privacy and zero server uploads.",
   keywords: [
     "pdf tools",
-    "merge pdf",
-    "split pdf",
-    "compress pdf",
-    "pdf to image",
     "image to pdf",
+    "pdf to image",
+    "protect pdf",
+    "encrypt pdf",
+    "unlock pdf",
+    "text to pdf",
     "free pdf editor",
     "switchr pdf",
-    "combine pdfs free",
   ],
   alternates: {
     canonical: "https://switchrx.vercel.app/pdf-tools",
   },
   openGraph: {
     title: "Free In-Browser PDF Tools Suite | Switchr",
-    description: "Merge, compress, split, and convert PDF files directly in your browser. 100% free and private.",
+    description: "Convert photos to PDF, extract images, protect & unlock PDF files directly in your browser. 100% free and private.",
     url: "https://switchrx.vercel.app/pdf-tools",
     images: [
       {

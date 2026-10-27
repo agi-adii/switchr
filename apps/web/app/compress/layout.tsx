@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free File Compressor - Reduce Size of Images, Videos & PDFs",
+  title: "Free File Compressor - Reduce Size of Images & PDFs",
   description:
-    "Compress images, videos, and PDFs right in your browser. Shrink file sizes dramatically without sacrificing visual quality or privacy.",
+    "Compress images and PDF documents directly in your browser. Shrink file sizes with client-side quality calibration and complete privacy.",
   keywords: [
     "file compressor",
     "compress image",
-    "compress video",
     "reduce file size",
     "shrink pdf free",
-    "compress mp4",
     "compress png",
     "compress jpeg",
+    "compress webp",
   ],
   alternates: {
     canonical: "https://switchrx.vercel.app/compress",
   },
   openGraph: {
     title: "Free Client-Side File Compressor | Switchr",
-    description: "Shrink image, video, and PDF file sizes directly in your browser with optimized compression algorithms.",
+    description: "Shrink image and PDF file sizes directly in your browser with optimized compression algorithms.",
     url: "https://switchrx.vercel.app/compress",
     images: [
       {

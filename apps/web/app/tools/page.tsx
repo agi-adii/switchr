@@ -33,11 +33,12 @@ const TOOL_GROUPS = [
     category: "PDF Tools",
     badge: "Documents",
     tools: [
-      { name: "PDF to Image", desc: "Extract high-resolution PNG, JPG, or WebP images", href: "/pdf-tools?tab=pdf-to-image", icon: FileImage },
-      { name: "Image to PDF", desc: "Compile single or multiple photos into PDF", href: "/pdf-tools", icon: FileText },
-      { name: "Merge & Organize PDF", desc: "Combine multiple pages or reorder sequence", href: "/pdf-tools", icon: FileText },
-      { name: "Text to PDF", desc: "Create clean PDF documents from plain text", href: "/pdf-tools", icon: FileText },
-      { name: "Compress PDF", desc: "Reduce PDF document filesize", href: "/compress", icon: FileText },
+      { name: "PDF to Image", desc: "Extract high-resolution PNG, JPG, or WebP images", href: "/pdf-tools?tab=pdfToImage", icon: FileImage },
+      { name: "Multi-Image to PDF", desc: "Compile photos and HEIC scans into a polished PDF", href: "/pdf-tools?tab=images", icon: FileText },
+      { name: "Password Protect PDF", desc: "Encrypt and secure PDF documents with custom passwords", href: "/pdf-tools?tab=protect", icon: FileText },
+      { name: "Unlock PDF", desc: "Remove passwords and security restrictions from PDFs", href: "/pdf-tools?tab=unlock", icon: FileText },
+      { name: "Text to PDF", desc: "Create clean PDF documents from plain text", href: "/pdf-tools?tab=text", icon: FileText },
+      { name: "Compress PDF", desc: "Reduce PDF document file size with calibrated quality", href: "/compress", icon: FileText },
     ],
   },
   {

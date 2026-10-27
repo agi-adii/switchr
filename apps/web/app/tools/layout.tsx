@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "All In-Browser File Tools & Utilities",
   description:
-    "Explore Switchr's suite of free, client-side tools: photo enhancer, PDF editor, smart compression, and 200+ file format converters.",
+    "Explore Switchr's suite of free, client-side tools: photo enhancer, PDF editor, smart compression, and multi-format converters.",
   keywords: [
     "web tools",
     "browser utilities",

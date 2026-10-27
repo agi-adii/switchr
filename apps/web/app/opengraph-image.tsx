@@ -89,7 +89,7 @@ export default async function Image() {
         <div style={{ display: "flex", gap: "32px", fontSize: "16px", color: "#cbd5e1" }}>
           <span>🔒 0 Server Bytes</span>
           <span>⚡ WebAssembly Fast</span>
-          <span>📄 200+ Formats Supported</span>
+          <span>📄 25+ Formats Supported</span>
           <span>🌐 Offline Capable</span>
         </div>
       </div>

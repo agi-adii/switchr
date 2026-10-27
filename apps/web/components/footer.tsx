@@ -52,7 +52,7 @@ export function Footer() {
               <li><Link href="/convert/mp4-to-webm" className="hover:text-foreground hover:underline">MP4 to WebM</Link></li>
               <li><Link href="/convert/mov-to-mp4" className="hover:text-foreground hover:underline">MOV to MP4</Link></li>
               <li><Link href="/convert/merge-pdf" className="hover:text-foreground hover:underline">Merge PDF Online</Link></li>
-              <li><Link href="/convert" className="hover:text-foreground hover:underline font-bold text-primary">All 200+ Formats &rarr;</Link></li>
+              <li><Link href="/convert" className="hover:text-foreground hover:underline font-bold text-primary">All Supported Formats &rarr;</Link></li>
             </ul>
           </div>
 

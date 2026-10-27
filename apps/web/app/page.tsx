@@ -282,7 +282,7 @@ export default function HomePage() {
               href="/tools"
               className="inline-flex items-center gap-2 rounded-xl border border-border bg-card/70 px-4 py-3.5 text-sm font-bold text-foreground hover:border-primary/40 hover:bg-muted/60 hover:-translate-y-0.5 active:translate-y-0 transition-all"
             >
-              <span>Explore tools (30+)</span>
+              <span>Explore All Tools</span>
             </Link>
           </motion.div>
 
@@ -318,7 +318,7 @@ export default function HomePage() {
       >
         <div className="flex items-center justify-center gap-2">
           <p className="text-center text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
-            200+ formats supported — Click any format to start
+            25+ popular formats supported — Click any format to start
           </p>
         </div>
         <div className="marquee-container relative overflow-hidden">
@@ -349,8 +349,8 @@ export default function HomePage() {
         className="grid grid-cols-2 sm:grid-cols-4 gap-3.5"
       >
         {([
-          { label: "File Formats",  value: "200+", href: "/convert", desc: "Images, video, audio & docs", icon: FileCode,     color: "text-violet-500", bg: "bg-violet-500/10", border: "hover:border-violet-500/40" },
-          { label: "Offline Tools", value: "30+",  href: "/tools",   desc: "Enhance, compress & merge",    icon: Settings2,    color: "text-blue-500",   bg: "bg-blue-500/10",   border: "hover:border-blue-500/40"   },
+          { label: "File Formats",  value: "25+",   href: "/convert", desc: "Images, video, audio & docs", icon: FileCode,     color: "text-violet-500", bg: "bg-violet-500/10", border: "hover:border-violet-500/40" },
+          { label: "Offline Tools", value: "Full Suite", href: "/tools", desc: "Enhance, compress & merge", icon: Settings2,  color: "text-blue-500",   bg: "bg-blue-500/10",   border: "hover:border-blue-500/40"   },
           { label: "Always Free",   value: "100%", href: "/about",   desc: "No caps, paywalls or quotas",  icon: CheckCircle2, color: "text-emerald-500",bg: "bg-emerald-500/10",border: "hover:border-emerald-500/40"},
           { label: "Zero Tracking", value: "0%",   href: "/about",   desc: "Files stay on your machine",   icon: ShieldCheck,  color: "text-amber-500",  bg: "bg-amber-500/10",  border: "hover:border-amber-500/40"  },
         ] as const).map((stat) => {
@@ -432,7 +432,7 @@ export default function HomePage() {
             href="/tools"
             className="text-xs font-bold text-primary hover:underline flex items-center gap-1 group"
           >
-            <span>View all 30+ tools</span>
+            <span>View all tools</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -659,7 +659,7 @@ export default function HomePage() {
         <div className="relative grid sm:grid-cols-3 gap-4">
           {[
             { step: "01", title: "Drop your file",     desc: "Drag & drop or click to select. Format and metadata are detected instantly.", icon: Upload,    color: "text-blue-500",    bg: "from-blue-500/15 to-blue-600/5",      border: "border-blue-500/20", action: "upload" as const },
-            { step: "02", title: "Choose output",      desc: "Pick from 200+ supported formats or use one of 30+ precision presets.",     icon: Settings2, color: "text-violet-500",  bg: "from-violet-500/15 to-violet-600/5",  border: "border-violet-500/20", href: "/convert" },
+            { step: "02", title: "Choose output",      desc: "Pick from supported formats or use one of our precision presets.",     icon: Settings2, color: "text-violet-500",  bg: "from-violet-500/15 to-violet-600/5",  border: "border-violet-500/20", href: "/convert" },
             { step: "03", title: "Download instantly", desc: "Converted right in browser memory. No queue wait, no tracking, no limits.", icon: Download,  color: "text-emerald-500", bg: "from-emerald-500/15 to-emerald-600/5", border: "border-emerald-500/20", href: "/history" },
           ].map((item, i) => {
             const Icon = item.icon;
@@ -930,7 +930,7 @@ export default function HomePage() {
           </h2>
 
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Join thousands of users converting photos, documents, and media locally in their browsers with zero software installation and complete privacy.
+            Transform photos, documents, and media locally in your browser with zero software installation and complete privacy.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
@@ -954,7 +954,7 @@ export default function HomePage() {
               href="/tools"
               className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-bold text-foreground hover:bg-muted transition-all"
             >
-              <span>Explore All 30+ Tools</span>
+              <span>Explore All Tools</span>
             </Link>
           </div>
         </div>

@@ -94,7 +94,6 @@ export const metadata: Metadata = {
     description:
       "Convert images, videos, audio, documents, and PDFs right in your browser. 100% free, private, zero server uploads.",
     images: ["/api/og"],
-    creator: "@switchrapp",
   },
   robots: {
     index: true,

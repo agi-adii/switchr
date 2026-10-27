@@ -1,26 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
 import { convertImage } from "@/lib/converters/image-converter";
+import { compressPdf } from "@/lib/converters/pdf-tools";
 import { formatFileSize } from "@/lib/registry";
 import {
   Minimize2,
   Image as ImageIcon,
   FileText,
-  Video,
-  Music,
   Download,
   Sliders,
   CheckCircle2,
   UploadCloud,
+  Music,
+  Video,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { saveHistoryItem } from "@/lib/history-store";
 
 export default function CompressPage() {
-  const [activeType, setActiveType] = useState<"image" | "pdf" | "video" | "audio">("image");
+  const [activeType, setActiveType] = useState<"image" | "pdf">("image");
   const [file, setFile] = useState<File | null>(null);
   const [quality, setQuality] = useState(70);
   const [isCompressing, setIsCompressing] = useState(false);
@@ -36,7 +40,7 @@ export default function CompressPage() {
   const handleCompress = async () => {
     if (!file) return;
     setIsCompressing(true);
-    const toastId = toast.loading("Compressing file...");
+    const toastId = toast.loading("Compressing file in browser...");
 
     try {
       if (activeType === "image") {
@@ -63,22 +67,37 @@ export default function CompressPage() {
           category: "compress",
         });
 
-        toast.success(`Compressed! Saved ${saved}%`, { id: toastId });
+        toast.success(
+          saved > 0 ? `Compressed! Saved ${saved}%` : "Processed! Image is already at maximum efficiency.",
+          { id: toastId }
+        );
       } else {
-        // Simulated high efficiency compression for other media types
-        await new Promise((r) => setTimeout(r, 1200));
-        const estimatedNewSize = Math.round(file.size * (quality / 100));
-        const blob = new Blob([await file.arrayBuffer()], { type: file.type });
-        const url = URL.createObjectURL(blob);
-        const saved = 100 - quality;
+        // Genuine Client-Side PDF Compression
+        const compressedPdfBlob = await compressPdf(file, quality / 100);
+        const url = URL.createObjectURL(compressedPdfBlob);
+        const newSize = compressedPdfBlob.size;
+        const saved = Math.max(0, Math.round(((file.size - newSize) / file.size) * 100));
 
         setResult({
           url,
-          newSize: estimatedNewSize,
+          newSize,
           saved,
         });
 
-        toast.success(`Compressed! Saved ${saved}%`, { id: toastId });
+        saveHistoryItem({
+          fileName: `compressed-${file.name}`,
+          fromFormat: "pdf",
+          toFormat: "pdf",
+          originalSize: file.size,
+          convertedSize: newSize,
+          downloadUrl: url,
+          category: "compress",
+        });
+
+        toast.success(
+          saved > 0 ? `Compressed! Saved ${saved}%` : "Processed! PDF is already at optimal size.",
+          { id: toastId }
+        );
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to compress file", { id: toastId });
@@ -100,7 +119,7 @@ export default function CompressPage() {
           Reduce File Size
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto">
-          Compress images, PDFs, videos, and audio without sacrificing essential quality.
+          Compress photos and PDF documents directly in your browser without sacrificing essential visual clarity.
         </p>
 
         {/* Glassmorphic Pill Tab Switcher */}
@@ -108,16 +127,14 @@ export default function CompressPage() {
           <GlassPillTabs
             activeTab={activeType}
             onChange={(tabId) => {
-              setActiveType(tabId as any);
+              setActiveType(tabId as "image" | "pdf");
               setFile(null);
               setResult(null);
             }}
             layoutId="compressPageTab"
             tabs={[
-              { id: "image", label: "Image", icon: <ImageIcon className="w-4 h-4 text-blue-500" /> },
+              { id: "image", label: "Photos & Images", icon: <ImageIcon className="w-4 h-4 text-blue-500" /> },
               { id: "pdf", label: "PDF Document", icon: <FileText className="w-4 h-4 text-red-500" /> },
-              { id: "video", label: "Video Clip", icon: <Video className="w-4 h-4 text-purple-500" /> },
-              { id: "audio", label: "Audio Track", icon: <Music className="w-4 h-4 text-emerald-500" /> },
             ]}
           />
         </div>
@@ -131,15 +148,7 @@ export default function CompressPage() {
             <div className="glass-specular" />
             <input
               type="file"
-              accept={
-                activeType === "image"
-                  ? "image/*"
-                  : activeType === "pdf"
-                  ? ".pdf"
-                  : activeType === "video"
-                  ? "video/*"
-                  : "audio/*"
-              }
+              accept={activeType === "image" ? "image/*" : ".pdf,application/pdf"}
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -147,7 +156,7 @@ export default function CompressPage() {
               <UploadCloud className="w-7 h-7" />
             </div>
             <p className="text-sm sm:text-base font-bold text-white">
-              Drop your {activeType.toUpperCase()} file here
+              Drop your {activeType === "image" ? "IMAGE" : "PDF"} file here
             </p>
             <p className="text-xs text-white/70 mt-1">
               or <span className="text-primary font-semibold underline underline-offset-2">browse</span> to compress
@@ -179,7 +188,7 @@ export default function CompressPage() {
                 <span className="text-white/80 flex items-center gap-1.5">
                   <Sliders className="w-3.5 h-3.5" /> Compression Level:
                 </span>
-                <span className="font-mono text-primary font-bold">{100 - quality}% Reduction</span>
+                <span className="font-mono text-primary font-bold">{100 - quality}% Target Reduction</span>
               </div>
               <input
                 type="range"
@@ -246,6 +255,54 @@ export default function CompressPage() {
             )}
           </div>
         )}
+      </div>
+
+      {/* Media Transcoding Info Cards */}
+      <div className="mt-8 space-y-3">
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          Looking to optimize Audio or Video?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <Link
+            href="/convert/audio"
+            className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/25 hover:bg-white/10 transition-all flex items-center justify-between group block"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                <Music className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">
+                  Audio Bitrate Optimizer
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  Transcode MP3, WAV, AAC with custom bitrates
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+
+          <Link
+            href="/convert/video"
+            className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/25 hover:bg-white/10 transition-all flex items-center justify-between group block"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center">
+                <Video className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">
+                  Video Converter &amp; WebM
+                </h4>
+                <p className="text-[11px] text-muted-foreground">
+                  Re-encode heavy clips to lightweight web formats
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
       </div>
     </div>
   );

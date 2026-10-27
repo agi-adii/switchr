@@ -75,7 +75,6 @@ export async function generateMetadata({
       images: [
         `/api/og?title=${encodeURIComponent(config.h1)}&subtitle=${encodeURIComponent(config.subtitle)}`,
       ],
-      creator: "@switchrapp",
     },
   };
 }

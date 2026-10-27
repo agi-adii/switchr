@@ -55,7 +55,7 @@ const FAQ_ITEMS = [
     questions: [
       {
         q: "Which file formats does Switchr support?",
-        a: "Switchr supports over 200 formats across images (WebP, PNG, JPG, AVIF, HEIC, SVG, BMP), video (MP4, WebM, MOV, GIF, AVI), audio (MP3, WAV, FLAC, AAC, OGG), documents (PDF, DOCX, PPTX, PPT, TXT, HTML), and data (JSON, CSV, XML).",
+        a: "Switchr supports 25+ popular formats across images (WebP, PNG, JPG, AVIF, HEIC, SVG, BMP), video (MP4, WebM, MOV, GIF, AVI), audio (MP3, WAV, FLAC, AAC, OGG), documents (PDF, DOCX, PPTX, PPT, TXT, HTML), and data (JSON, CSV, XML).",
       },
       {
         q: "How does Apple HEIC conversion work on Windows?",

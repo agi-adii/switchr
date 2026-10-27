@@ -157,15 +157,7 @@ export default function PdfToolsPage() {
   const [textContent, setTextContent] = useState("");
   const [textTitle, setTextTitle] = useState("");
 
-  // -------------------------------------------------------------
-  // Tab 6: Page Manager simulated state
-  // -------------------------------------------------------------
-  const [mockPages, setMockPages] = useState<{ id: number; rotation: number }[]>([
-    { id: 1, rotation: 0 },
-    { id: 2, rotation: 0 },
-    { id: 3, rotation: 0 },
-    { id: 4, rotation: 0 },
-  ]);
+
 
   // Handlers for Tab 1 (Images to PDF)
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -567,18 +559,7 @@ export default function PdfToolsPage() {
     }
   };
 
-  // Handlers for Tab 4 (Page Manager)
-  const rotatePage = (id: number) => {
-    setMockPages((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, rotation: (p.rotation + 90) % 360 } : p))
-    );
-    toast.success(`Rotated page ${id}`);
-  };
 
-  const deletePage = (id: number) => {
-    setMockPages((prev) => prev.filter((p) => p.id !== id));
-    toast.success(`Removed page ${id}`);
-  };
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6">
@@ -593,7 +574,7 @@ export default function PdfToolsPage() {
           PDF Management Suite
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto">
-          Compile multiple images, extract high-quality images, password-protect &amp; encrypt PDFs, unlock protected PDFs, and manage pages.
+          Compile multiple images, extract high-quality images, password-protect &amp; encrypt PDFs, and unlock protected PDFs.
         </p>
 
         {/* Glassmorphic Pill Tab Switcher */}
@@ -635,11 +616,6 @@ export default function PdfToolsPage() {
                 id: "text",
                 label: "Text to PDF",
                 icon: <FileText className="w-4 h-4 text-purple-500" />,
-              },
-              {
-                id: "pages",
-                label: "Page Manager",
-                icon: <Layers className="w-4 h-4 text-indigo-500" />,
               },
             ]}
           />
@@ -1593,61 +1569,6 @@ export default function PdfToolsPage() {
         </div>
       )}
 
-      {/* Tab 4: PDF Page Manager */}
-      {activeTab === "pages" && (
-        <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-6 overflow-hidden">
-          <div className="glass-specular" />
-          <div>
-            <h3 className="font-bold text-base text-white">Interactive Page Manager</h3>
-            <p className="text-xs text-white/70 mt-0.5">
-              Select, rotate, reorder, and remove individual pages from your PDF document.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {mockPages.map((page) => (
-              <div
-                key={page.id}
-                className="flex flex-col items-center p-4 bg-muted/30 border border-border rounded-2xl space-y-3 relative group"
-              >
-                <div
-                  style={{ transform: `rotate(${page.rotation}deg)` }}
-                  className="w-24 h-32 bg-card border border-border rounded-lg shadow-sm flex flex-col items-center justify-center transition-transform duration-200"
-                >
-                  <FileText className="w-8 h-8 text-muted-foreground/50 mb-1" />
-                  <span className="text-xs font-bold text-foreground">Page {page.id}</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => rotatePage(page.id)}
-                    className="p-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-xs cursor-pointer"
-                    title="Rotate 90°"
-                  >
-                    <RotateCw className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => deletePage(page.id)}
-                    className="p-1.5 rounded-lg bg-muted hover:bg-destructive/10 text-muted-foreground hover:text-destructive text-xs cursor-pointer"
-                    title="Delete page"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-end pt-4 border-t border-border">
-            <button
-              onClick={() => toast.success("Exported updated PDF structure!")}
-              className="px-6 py-2.5 bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-primary/90 transition-all shadow-sm cursor-pointer"
-            >
-              Export PDF
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Full Size Preview Modal */}
       {previewModalIndex !== null && convertedPages[previewModalIndex] && (
