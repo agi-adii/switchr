@@ -76,19 +76,20 @@ export function Dropzone() {
 
   return (
     <motion.div
-      className="relative w-full aspect-[2.4/1] sm:aspect-[3.2/1] max-w-4xl mx-auto rounded-3xl border-2 border-dashed flex flex-col items-center justify-center p-8 overflow-hidden cursor-pointer transition-all duration-300 shadow-sm"
+      className="glass-dropzone relative w-full aspect-[2.4/1] sm:aspect-[3.2/1] max-w-4xl mx-auto rounded-3xl flex flex-col items-center justify-center p-8 cursor-pointer transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       animate={{
-        borderColor: isDragging || isHovered ? "var(--color-primary)" : "var(--color-border)",
-        backgroundColor: isDragging || isHovered ? "var(--color-muted)" : "var(--color-card)",
+        borderColor: isDragging || isHovered ? "rgba(168, 85, 247, 0.7)" : "rgba(255, 255, 255, 0.18)",
+        backgroundColor: isDragging || isHovered ? "rgba(139, 92, 246, 0.12)" : "rgba(255, 255, 255, 0.035)",
         scale: isDragging ? 1.01 : 1,
       }}
       transition={{ duration: 0.2, ease: "easeOut" }}
     >
+      <div className="glass-specular" />
       <input
         type="file"
         multiple

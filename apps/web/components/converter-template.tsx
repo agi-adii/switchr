@@ -172,12 +172,11 @@ export function ConverterTemplate({
             }}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`relative w-full aspect-[2.6/1] sm:aspect-[3.2/1] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-6 cursor-pointer transition-all duration-200 ${
-              isDragging
-                ? "border-primary bg-primary/5 scale-[1.01]"
-                : "border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/40"
+            className={`glass-dropzone rounded-2xl w-full aspect-[2.6/1] sm:aspect-[3.2/1] flex flex-col items-center justify-center p-6 cursor-pointer ${
+              isDragging ? "glass-dropzone-active" : ""
             }`}
           >
+            <div className="glass-specular" />
             <input
               ref={fileInputRef}
               type="file"

@@ -68,7 +68,8 @@ export function ImageToolsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="glass-surface relative grid grid-cols-1 md:grid-cols-2 gap-8 rounded-3xl p-6 sm:p-8 overflow-hidden">
+          <div className="glass-specular" />
           {/* Controls Column */}
           <div className="space-y-6">
             <div>
@@ -144,7 +145,8 @@ export function ImageToolsSection() {
           </div>
 
           {/* Preview & Results Column */}
-          <div className="flex flex-col justify-center items-center p-6 bg-muted/30 rounded-2xl border border-dashed border-border min-h-[300px]">
+          <div className="glass-dropzone flex flex-col justify-center items-center p-6 rounded-2xl min-h-[300px]">
+            <div className="glass-specular" />
             {result ? (
               <div className="w-full flex flex-col items-center space-y-4">
                 <div className="relative w-full max-h-56 flex justify-center">

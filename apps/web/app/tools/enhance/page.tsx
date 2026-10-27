@@ -392,12 +392,12 @@ export default function PhotoEnhancerPage() {
               }
             }}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-3xl p-12 sm:p-16 text-center cursor-pointer transition-all ${
-              isDragging
-                ? "border-violet-500 bg-violet-500/5 scale-[0.99]"
-                : "border-border bg-card hover:border-violet-500/50 hover:bg-muted/30"
+            className={`glass-dropzone rounded-3xl p-12 sm:p-16 text-center cursor-pointer group ${
+              isDragging ? "glass-dropzone-active" : ""
             }`}
           >
+            <div className="glass-specular" />
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-48 bg-violet-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-violet-500/30 transition-all duration-500" />
             <input
               ref={fileInputRef}
               type="file"
@@ -409,12 +409,12 @@ export default function PhotoEnhancerPage() {
                 }
               }}
             />
-            <div className="w-16 h-16 rounded-2xl bg-violet-500/10 text-violet-500 flex items-center justify-center mx-auto mb-4 shadow-inner">
+            <div className="relative w-16 h-16 rounded-2xl bg-violet-500/15 border border-violet-400/30 text-violet-400 flex items-center justify-center mx-auto mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(139,92,246,0.2)] backdrop-blur-md group-hover:scale-105 group-hover:border-violet-400/50 transition-all duration-300">
               <UploadCloud className="w-8 h-8" />
             </div>
             <h3 className="text-base font-bold text-foreground mb-1">
               Drop your photo here, or{" "}
-              <span className="text-violet-500 underline underline-offset-2">browse files</span>
+              <span className="text-violet-400 underline underline-offset-2">browse files</span>
             </h3>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
               Supports JPG, PNG, WebP, Apple HEIC, and BMP. Processed 100% client-side with zero server uploads.
@@ -422,9 +422,10 @@ export default function PhotoEnhancerPage() {
           </div>
 
           {/* Instant Sample Photos */}
-          <div className="p-6 rounded-3xl border border-border bg-card shadow-xs space-y-3">
+          <div className="glass-surface relative p-6 rounded-3xl space-y-3 overflow-hidden">
+            <div className="glass-specular" />
             <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-              <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
               Don&apos;t have a photo? Test with an instant demo sample:
             </div>
 
@@ -433,9 +434,9 @@ export default function PhotoEnhancerPage() {
                 onClick={() =>
                   handleLoadSample("/samples/sample-landscape.svg", "golden-hour-landscape.jpg")
                 }
-                className="flex items-center gap-3 p-3 rounded-2xl border border-border bg-muted/30 hover:bg-muted/60 hover:border-violet-500/40 text-left transition-all cursor-pointer group"
+                className="glass-card flex items-center gap-3.5 p-3.5 rounded-2xl text-left cursor-pointer group hover:-translate-y-0.5"
               >
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-neutral-900 border border-border shrink-0 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/15 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
                   <img
                     src="/samples/sample-landscape.svg"
                     alt="Landscape sample"
@@ -443,7 +444,7 @@ export default function PhotoEnhancerPage() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-foreground group-hover:text-violet-500 transition-colors">
+                  <p className="text-xs font-bold text-foreground group-hover:text-violet-400 transition-colors">
                     Golden Hour Mountain Landscape
                   </p>
                   <p className="text-[11px] text-muted-foreground">
@@ -456,9 +457,9 @@ export default function PhotoEnhancerPage() {
                 onClick={() =>
                   handleLoadSample("/samples/sample-portrait.svg", "studio-portrait.jpg")
                 }
-                className="flex items-center gap-3 p-3 rounded-2xl border border-border bg-muted/30 hover:bg-muted/60 hover:border-violet-500/40 text-left transition-all cursor-pointer group"
+                className="glass-card flex items-center gap-3.5 p-3.5 rounded-2xl text-left cursor-pointer group hover:-translate-y-0.5"
               >
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-neutral-900 border border-border shrink-0 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/15 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
                   <img
                     src="/samples/sample-portrait.svg"
                     alt="Portrait sample"
@@ -466,7 +467,7 @@ export default function PhotoEnhancerPage() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-foreground group-hover:text-violet-500 transition-colors">
+                  <p className="text-xs font-bold text-foreground group-hover:text-violet-400 transition-colors">
                     Studio Lighting Portrait
                   </p>
                   <p className="text-[11px] text-muted-foreground">
@@ -481,16 +482,17 @@ export default function PhotoEnhancerPage() {
         /* Active Workspace View */
         <div className="space-y-6">
           {/* Top Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border shadow-xs">
+          <div className="glass-surface relative flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl overflow-hidden">
+            <div className="glass-specular" />
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-500 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/15 border border-violet-400/30 text-violet-400 flex items-center justify-center shrink-0 shadow-inner">
                 <ImageIcon className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-xs font-bold text-foreground truncate">{fileName}</p>
                   {isHeicSource && (
-                    <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 text-[10px] font-extrabold border border-blue-500/20 shrink-0">
+                    <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 text-[10px] font-extrabold border border-blue-400/30 shrink-0">
                       Apple HEIC
                     </span>
                   )}
@@ -507,7 +509,7 @@ export default function PhotoEnhancerPage() {
               <button
                 onClick={handleAutoCalibrate}
                 disabled={isProcessing}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold shadow-md shadow-violet-600/20 transition-all cursor-pointer disabled:opacity-50"
                 title="Automatically scan image histogram and dial in exact optimal parameters"
               >
                 <Sparkles className="w-3.5 h-3.5" />
@@ -515,7 +517,7 @@ export default function PhotoEnhancerPage() {
               </button>
 
               {isProcessing && (
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 text-violet-500 text-xs font-bold animate-pulse max-w-[280px] truncate">
+                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/15 text-violet-300 text-xs font-bold animate-pulse max-w-[280px] truncate border border-violet-400/30">
                   <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
                   <span className="truncate">{statusMessage || `${Math.round(progress * 100)}%`}</span>
                 </span>
@@ -523,7 +525,7 @@ export default function PhotoEnhancerPage() {
 
               <button
                 onClick={handleReset}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground rounded-xl border border-border bg-muted/40 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Change Photo
@@ -532,7 +534,8 @@ export default function PhotoEnhancerPage() {
           </div>
 
           {/* Interactive Before / After Split Slider */}
-          <div className="bg-card border border-border rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
+          <div className="glass-surface relative rounded-3xl p-4 sm:p-6 space-y-4 overflow-hidden">
+            <div className="glass-specular" />
             {originalUrl && enhancedUrl ? (
               <BeforeAfterSlider
                 originalSrc={originalUrl}
@@ -543,8 +546,8 @@ export default function PhotoEnhancerPage() {
                 enhancedHeight={enhancedHeight}
               />
             ) : (
-              <div className="aspect-[16/10] w-full rounded-2xl bg-muted/30 flex items-center justify-center text-muted-foreground">
-                <Loader2 className="w-6 h-6 animate-spin text-violet-500" />
+              <div className="aspect-[16/10] w-full rounded-2xl bg-white/[0.02] border border-white/10 flex items-center justify-center text-muted-foreground">
+                <Loader2 className="w-6 h-6 animate-spin text-violet-400" />
               </div>
             )}
 
@@ -552,7 +555,7 @@ export default function PhotoEnhancerPage() {
             <ImageHistogram data={histogramData} />
 
             {/* 1-Click Smart Presets */}
-            <div className="space-y-2 pt-2 border-t border-border">
+            <div className="space-y-2 pt-2 border-t border-white/10">
               <div className="flex items-center justify-between">
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   1-Click AI Presets
@@ -575,10 +578,10 @@ export default function PhotoEnhancerPage() {
                     <button
                       key={p.id}
                       onClick={() => handleSelectPreset(p.id)}
-                      className={`relative flex flex-col p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                      className={`relative flex flex-col p-3 rounded-2xl border text-left transition-all cursor-pointer backdrop-blur-md ${
                         isActive
-                          ? "border-violet-500 bg-violet-500/10 shadow-xs scale-[1.02]"
-                          : "border-border bg-muted/30 hover:bg-muted/60 hover:border-violet-500/30"
+                          ? "border-violet-400/80 bg-violet-500/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_4px_16px_rgba(139,92,246,0.25)] scale-[1.02]"
+                          : "border-white/10 bg-white/[0.03] hover:bg-white/[0.08] hover:border-violet-400/40"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
@@ -659,7 +662,7 @@ export default function PhotoEnhancerPage() {
 
               {/* Tab 1: Tone & Light Components */}
               {activeTab === "tone" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-5 rounded-2xl bg-muted/20 border border-border animate-in fade-in duration-150">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-5 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] animate-in fade-in duration-150">
                   {/* Exposure */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-[11px] font-bold">
@@ -790,7 +793,7 @@ export default function PhotoEnhancerPage() {
 
               {/* Tab 2: Color & White Balance Components */}
               {activeTab === "color" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-muted/20 border border-border animate-in fade-in duration-150">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] animate-in fade-in duration-150">
                   {/* Temperature */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-[11px] font-bold">
@@ -879,7 +882,7 @@ export default function PhotoEnhancerPage() {
 
               {/* Tab 3: Detail & Denoise Components */}
               {activeTab === "detail" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-muted/20 border border-border animate-in fade-in duration-150">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] animate-in fade-in duration-150">
                   {/* Clarity */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-[11px] font-bold">
@@ -962,20 +965,20 @@ export default function PhotoEnhancerPage() {
             </div>
 
             {/* Export & Super-Resolution Bar */}
-            <div className="flex flex-col gap-4 pt-4 border-t border-border">
+            <div className="flex flex-col gap-4 pt-4 border-t border-white/10">
               <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
                 {/* Resolution Scale & Model Engine */}
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold text-muted-foreground">Upscale:</span>
-                    <div className="flex bg-muted/60 p-1 rounded-xl border border-border">
+                    <div className="flex bg-white/[0.04] backdrop-blur-md p-1 rounded-xl border border-white/10">
                       {([1, 2, 4] as const).map((sc) => (
                         <button
                           key={sc}
                           onClick={() => handleScaleChange(sc)}
                           className={`px-3 py-1 font-bold text-[11px] rounded-lg transition-all cursor-pointer ${
                             exportScale === sc
-                              ? "bg-card text-foreground shadow-xs border border-border"
+                              ? "bg-white/15 text-foreground shadow-xs border border-white/20"
                               : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
@@ -988,7 +991,7 @@ export default function PhotoEnhancerPage() {
                   {exportScale > 1 && (
                     <div className="flex items-center gap-1.5">
                       <span className="font-bold text-muted-foreground">Engine:</span>
-                      <div className="flex bg-muted/60 p-1 rounded-xl border border-border">
+                      <div className="flex bg-white/[0.04] backdrop-blur-md p-1 rounded-xl border border-white/10">
                         <button
                           onClick={() => handleMethodChange("real-esrgan")}
                           className={`flex items-center gap-1.5 px-2.5 py-1 font-bold text-[11px] rounded-lg transition-all cursor-pointer ${
@@ -1005,7 +1008,7 @@ export default function PhotoEnhancerPage() {
                           onClick={() => handleMethodChange("bicubic")}
                           className={`flex items-center gap-1.5 px-2.5 py-1 font-bold text-[11px] rounded-lg transition-all cursor-pointer ${
                             upscaleMethod === "bicubic"
-                              ? "bg-card text-foreground shadow-xs border border-border"
+                              ? "bg-white/15 text-foreground shadow-xs border border-white/20"
                               : "text-muted-foreground hover:text-foreground"
                           }`}
                           title="Instant high-order bicubic interpolation with directional edge sharpening"
@@ -1024,11 +1027,11 @@ export default function PhotoEnhancerPage() {
                   <select
                     value={exportFormat}
                     onChange={(e) => setExportFormat(e.target.value as any)}
-                    className="bg-muted px-2.5 py-1 rounded-lg border border-border text-foreground font-semibold text-xs cursor-pointer"
+                    className="bg-white/[0.04] backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-foreground font-semibold text-xs cursor-pointer"
                   >
-                    <option value="jpg">JPEG Photo</option>
-                    <option value="png">Lossless PNG</option>
-                    <option value="webp">WebP Next-Gen</option>
+                    <option value="jpg" className="bg-[#0d0d14] text-foreground">JPEG Photo</option>
+                    <option value="png" className="bg-[#0d0d14] text-foreground">Lossless PNG</option>
+                    <option value="webp" className="bg-[#0d0d14] text-foreground">WebP Next-Gen</option>
                   </select>
                 </div>
               </div>
