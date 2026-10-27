@@ -123,10 +123,12 @@ export default function CompressPage() {
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="glass-surface relative rounded-3xl p-6 sm:p-8 space-y-6 overflow-hidden">
+        <div className="glass-specular" />
         {/* File Select Area */}
         {!file ? (
-          <label className="w-full aspect-[2.6/1] sm:aspect-[3.2/1] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-muted/20 hover:bg-muted/40 flex flex-col items-center justify-center p-6 cursor-pointer transition-colors">
+          <label className="glass-dropzone rounded-2xl w-full aspect-[2.6/1] sm:aspect-[3.2/1] flex flex-col items-center justify-center p-6 cursor-pointer group">
+            <div className="glass-specular" />
             <input
               type="file"
               accept={
@@ -141,22 +143,22 @@ export default function CompressPage() {
               onChange={handleFileSelect}
               className="hidden"
             />
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-3">
-              <UploadCloud className="w-6 h-6" />
+            <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 text-primary flex items-center justify-center mb-3 backdrop-blur-sm shadow-sm group-hover:scale-105 transition-transform">
+              <UploadCloud className="w-7 h-7" />
             </div>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-sm sm:text-base font-bold text-white">
               Drop your {activeType.toUpperCase()} file here
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              or <span className="text-primary font-semibold underline">browse</span> to compress
+            <p className="text-xs text-white/70 mt-1">
+              or <span className="text-primary font-semibold underline underline-offset-2">browse</span> to compress
             </p>
           </label>
         ) : (
           <div className="space-y-6">
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/40 border border-border text-xs">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-xs text-white">
               <div>
-                <p className="font-bold text-foreground truncate max-w-xs">{file.name}</p>
-                <p className="text-muted-foreground font-mono mt-0.5">
+                <p className="font-bold text-white truncate max-w-xs">{file.name}</p>
+                <p className="text-white/70 font-mono mt-0.5">
                   Original: {formatFileSize(file.size)}
                 </p>
               </div>
@@ -165,7 +167,7 @@ export default function CompressPage() {
                   setFile(null);
                   setResult(null);
                 }}
-                className="text-xs font-semibold text-muted-foreground hover:text-destructive"
+                className="text-xs font-semibold text-white/70 hover:text-white cursor-pointer transition-colors"
               >
                 Change File
               </button>
@@ -174,10 +176,10 @@ export default function CompressPage() {
             {/* Quality Slider */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-semibold">
-                <span className="text-muted-foreground flex items-center gap-1.5">
+                <span className="text-white/80 flex items-center gap-1.5">
                   <Sliders className="w-3.5 h-3.5" /> Compression Level:
                 </span>
-                <span className="font-mono text-primary">{100 - quality}% Reduction</span>
+                <span className="font-mono text-primary font-bold">{100 - quality}% Reduction</span>
               </div>
               <input
                 type="range"
@@ -187,7 +189,7 @@ export default function CompressPage() {
                 onChange={(e) => setQuality(Number(e.target.value))}
                 className="w-full accent-primary cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-muted-foreground">
+              <div className="flex justify-between text-[10px] text-white/60">
                 <span>Maximum Compression</span>
                 <span>Balanced</span>
                 <span>Best Quality</span>
@@ -205,28 +207,28 @@ export default function CompressPage() {
 
             {/* Results Comparison */}
             {result && (
-              <div className="p-6 rounded-2xl bg-green-500/10 border border-green-500/20 text-center space-y-4">
-                <div className="flex items-center justify-center gap-2 text-green-600 font-bold text-sm">
+              <div className="p-6 rounded-2xl bg-green-500/15 border border-green-500/30 text-center space-y-4 backdrop-blur-md">
+                <div className="flex items-center justify-center gap-2 text-green-300 font-bold text-sm">
                   <CheckCircle2 className="w-5 h-5" />
                   <span>Compression Finished!</span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 py-3 bg-card rounded-xl border border-border text-xs">
+                <div className="grid grid-cols-3 gap-2 py-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-xs text-white">
                   <div>
-                    <span className="text-[10px] text-muted-foreground block">Original</span>
-                    <span className="font-mono font-bold text-foreground">
+                    <span className="text-[10px] text-white/60 block">Original</span>
+                    <span className="font-mono font-bold text-white">
                       {formatFileSize(file.size)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-muted-foreground block">Compressed</span>
+                    <span className="text-[10px] text-white/60 block">Compressed</span>
                     <span className="font-mono font-bold text-primary">
                       {formatFileSize(result.newSize)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-muted-foreground block">Saved</span>
-                    <span className="font-mono font-bold text-green-600">
+                    <span className="text-[10px] text-white/60 block">Saved</span>
+                    <span className="font-mono font-bold text-green-400">
                       {result.saved}%
                     </span>
                   </div>

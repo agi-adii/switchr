@@ -846,13 +846,13 @@ export default function PdfToolsPage() {
                   }
                 }}
               />
-              <div className="w-16 h-16 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 text-red-300 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm shadow-sm group-hover:scale-105 transition-transform">
                 <UploadCloud className="w-8 h-8" />
               </div>
-              <h4 className="text-base font-bold text-foreground mb-1">
-                Drop your PDF file here, or <span className="text-red-500 underline underline-offset-2">browse</span>
+              <h4 className="text-base sm:text-lg font-bold text-white mb-1.5">
+                Drop your PDF file here, or <span className="text-red-400 underline underline-offset-2">browse</span>
               </h4>
-              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+              <p className="text-xs text-white/70 max-w-sm mx-auto leading-relaxed">
                 Supports single or multi-page documents. Rendered 100% locally in your browser.
               </p>
             </div>
