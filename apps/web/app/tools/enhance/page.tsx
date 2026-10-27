@@ -409,14 +409,14 @@ export default function PhotoEnhancerPage() {
                 }
               }}
             />
-            <div className="relative w-16 h-16 rounded-2xl bg-violet-500/15 border border-violet-400/30 text-violet-400 flex items-center justify-center mx-auto mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(139,92,246,0.2)] backdrop-blur-md group-hover:scale-105 group-hover:border-violet-400/50 transition-all duration-300">
+            <div className="relative w-16 h-16 rounded-2xl bg-white/10 border border-white/20 text-violet-300 flex items-center justify-center mx-auto mb-4 shadow-sm backdrop-blur-sm group-hover:scale-105 group-hover:border-violet-400/50 transition-all duration-300">
               <UploadCloud className="w-8 h-8" />
             </div>
-            <h3 className="text-base font-bold text-foreground mb-1">
+            <h3 className="text-base sm:text-lg font-bold text-white mb-1.5">
               Drop your photo here, or{" "}
               <span className="text-violet-400 underline underline-offset-2">browse files</span>
             </h3>
-            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+            <p className="text-xs text-white/70 max-w-sm mx-auto leading-relaxed">
               Supports JPG, PNG, WebP, Apple HEIC, and BMP. Processed 100% client-side with zero server uploads.
             </p>
           </div>
@@ -424,19 +424,19 @@ export default function PhotoEnhancerPage() {
           {/* Instant Sample Photos */}
           <div className="glass-surface relative p-6 rounded-3xl space-y-3 overflow-hidden">
             <div className="glass-specular" />
-            <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+            <div className="flex items-center gap-2 text-xs font-bold text-white">
               <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-              Don&apos;t have a photo? Test with an instant demo sample:
+              <span>Don&apos;t have a photo? Test with an instant demo sample:</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <button
                 onClick={() =>
                   handleLoadSample("/samples/sample-landscape.svg", "golden-hour-landscape.jpg")
                 }
                 className="glass-card flex items-center gap-3.5 p-3.5 rounded-2xl text-left cursor-pointer group hover:-translate-y-0.5"
               >
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/15 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
+                <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/10 border border-white/20 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
                   <img
                     src="/samples/sample-landscape.svg"
                     alt="Landscape sample"
@@ -444,10 +444,10 @@ export default function PhotoEnhancerPage() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-foreground group-hover:text-violet-400 transition-colors">
+                  <p className="text-xs font-bold text-white group-hover:text-violet-300 transition-colors">
                     Golden Hour Mountain Landscape
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-white/60 mt-0.5">
                     Tests shadow recovery, sky vibrance &amp; contrast
                   </p>
                 </div>
@@ -459,7 +459,7 @@ export default function PhotoEnhancerPage() {
                 }
                 className="glass-card flex items-center gap-3.5 p-3.5 rounded-2xl text-left cursor-pointer group hover:-translate-y-0.5"
               >
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/15 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
+                <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/10 border border-white/20 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-200">
                   <img
                     src="/samples/sample-portrait.svg"
                     alt="Portrait sample"
@@ -467,10 +467,10 @@ export default function PhotoEnhancerPage() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-foreground group-hover:text-violet-400 transition-colors">
+                  <p className="text-xs font-bold text-white group-hover:text-violet-300 transition-colors">
                     Studio Lighting Portrait
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-white/60 mt-0.5">
                     Tests skin tone preservation, eye detail &amp; facial clarity
                   </p>
                 </div>
