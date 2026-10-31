@@ -1,3 +1,5 @@
+import { ToolJsonLd } from "@/components/seo/json-ld";
+import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 "use client";
 
 import { useState } from "react";
@@ -7,6 +9,45 @@ import { jsonToCsv, csvToJson, jsonToXml, xmlToJson } from "@/lib/converters/dat
 import { FileCode, Download, Eye, UploadCloud, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveHistoryItem } from "@/lib/history-store";
+
+
+const DATA_HOW_TO_STEPS = [
+  {
+    name: "Paste or Upload Data",
+    text: "Upload your .json, .csv, or .xml data file or paste raw text records into the source editor.",
+  },
+  {
+    name: "Select Target Data Format",
+    text: "Choose CSV for Excel spreadsheets, JSON for REST APIs, or XML for legacy database schemas.",
+  },
+  {
+    name: "Download Formatted Dataset",
+    text: "Inspect the live parsed table preview and download your clean, formatted data file immediately.",
+  },
+];
+
+const DATA_FAQS = [
+  {
+    question: "Can I convert JSON with nested objects to CSV?",
+    answer: "Yes! Switchr scans all objects in your JSON dataset to build a comprehensive header list, serializing nested objects and arrays cleanly without corrupting CSV row alignment.",
+  },
+  {
+    question: "Does the CSV parser handle commas, quotes, and newlines inside cells?",
+    answer: "Yes. Our parser strictly adheres to RFC 4180 specifications, correctly handling escaped delimiters, quotation marks, and multiline text.",
+  },
+  {
+    question: "Is confidential customer data or financial records safe?",
+    answer: "100% confidential. All parsing and formatting execute strictly inside your local browser memory. Zero bytes are ever transmitted over the network.",
+  },
+  {
+    question: "Can I convert large datasets with thousands of rows?",
+    answer: "Yes! Modern JavaScript engines parse tens of thousands of rows in milliseconds using your local device memory.",
+  },
+  {
+    question: "Is this data converter free with no row caps?",
+    answer: "Yes, 100% free with no row limits, credit paywalls, or account registrations.",
+  },
+];
 
 export default function DataConverterPage() {
   const [activeTab, setActiveTab] = useState<"json" | "csv" | "xml">("json");
@@ -233,6 +274,50 @@ export default function DataConverterPage() {
           </div>
         )}
       </div>
+
+      {/* ── Search Engine Rich Snippet JSON-LD & High-Authority SEO Content ── */}
+      <ToolJsonLd
+        name="Free Online Data Converter"
+        description="Convert structured data formats between JSON, CSV, and XML in your browser with RFC 4180 parsing and 100% privacy."
+        url="/convert/data"
+        category="DeveloperApplication"
+        features={[
+          "JSON to CSV table transformation",
+          "CSV to JSON object array serialization",
+          "XML to JSON and JSON to XML conversion",
+          "RFC 4180 compliant escaping",
+          "Interactive live table preview",
+          "100% In-Browser execution with zero server uploads",
+        ]}
+        howTo={DATA_HOW_TO_STEPS}
+        faqs={DATA_FAQS}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Convert", url: "/convert" },
+          { name: "Data", url: "/convert/data" },
+        ]}
+      />
+
+      <ToolSeoContent
+        toolName="Switchr Data Converter"
+        badge="100% In-Browser & Private"
+        heading="Free Online Data Converter – JSON to CSV, CSV to JSON & XML"
+        subheading="Transform structured datasets and spreadsheet tables in seconds with RFC 4180 compliance and zero data leaks."
+        overviewParagraphs={[
+          "Switchr's Data Converter is built for developers, analysts, and business professionals who need to convert datasets between hierarchical and tabular formats. Convert complex JSON API payloads into spreadsheet-ready CSV tables for Excel or transform spreadsheet exports into clean JSON object arrays.",
+          "Because every record is parsed locally in your browser sandbox, proprietary customer databases, revenue logs, and sensitive API payloads never touch any external server. Enjoy instantaneous data manipulation with zero size quotas and total privacy.",
+        ]}
+        steps={DATA_HOW_TO_STEPS}
+        faqs={DATA_FAQS}
+        relatedLinks={[
+          { label: "Convert JSON to CSV", href: "/convert/json-to-csv", desc: "Turn API responses into Excel tables.", badge: "Popular" },
+          { label: "Convert CSV to JSON", href: "/convert/csv-to-json", desc: "Serialize spreadsheet tables to JSON arrays.", badge: "Dev" },
+          { label: "Document Converter", href: "/convert/documents", desc: "Convert Word, PowerPoint, and text files." },
+          { label: "PDF Tools Suite", href: "/pdf-tools", desc: "Merge, split, protect, and compress PDFs." },
+          { label: "Archive Studio", href: "/tools/archive", desc: "Extract and create ZIP archives." },
+          { label: "All Tools", href: "/tools", desc: "Browse all free client-side utilities." },
+        ]}
+      />
     </div>
   );
 }

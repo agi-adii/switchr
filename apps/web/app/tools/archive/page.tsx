@@ -1,3 +1,5 @@
+import { ToolJsonLd } from "@/components/seo/json-ld";
+import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 "use client";
 
 import { useState } from "react";
@@ -7,6 +9,49 @@ import { createZip, extractZip, ZipEntry } from "@/lib/converters/archive-tools"
 import { Archive, Download, FilePlus2, Trash2, FolderOpen, FileCheck } from "lucide-react";
 import { toast } from "sonner";
 import { formatFileSize } from "@/lib/registry";
+
+
+const ARCHIVE_HOW_TO_STEPS = [
+  {
+    name: "Choose Create or Extract Tab",
+    text: "Select 'Create ZIP' to package multiple files into a clean archive, or 'Extract ZIP' to inspect and download files from an existing .zip archive.",
+  },
+  {
+    name: "Select Your Files or Archive",
+    text: "Drop single or multiple documents, images, or code files to compress, or upload an existing .zip archive to inspect its directory structure.",
+  },
+  {
+    name: "Download Extracted or Compressed Archive",
+    text: "Click download to unpack individual files or export your standardized ZIP archive instantly with zero software installation.",
+  },
+];
+
+const ARCHIVE_FAQS = [
+  {
+    question: "Can I open and extract ZIP files on mobile or Chromebook without WinRAR or 7-Zip?",
+    answer: "Yes! Switchr unpacks ZIP files directly in your web browser using client-side JSZip WebAssembly. You do not need to install WinRAR, 7-Zip, or any third-party software.",
+  },
+  {
+    question: "Are my archived files uploaded to any cloud server?",
+    answer: "Never. All archive extraction and compression execute 100% locally in your browser memory sandbox. Not a single byte is ever transmitted across the internet.",
+  },
+  {
+    question: "Can I bundle mixed file types (PDFs, Word docs, photos) into a single ZIP?",
+    answer: "Yes! You can bundle any combination of files into a clean, organized ZIP archive for convenient email attachments or project backups.",
+  },
+  {
+    question: "Is there a limit on file size or archive capacity?",
+    answer: "There are no cloud limits, subscriptions, or daily caps. Capacity is determined solely by your computer or phone's available RAM memory.",
+  },
+  {
+    question: "Will the created ZIP open natively on Windows and Mac?",
+    answer: "Yes! Switchr creates standard Deflate PKZIP archives that open out-of-the-box in Windows File Explorer, macOS Archive Utility, and Linux without issues.",
+  },
+  {
+    question: "Is this online archive tool completely free?",
+    answer: "Yes, 100% free with no watermarks, no sign-ups, and no advertising delays.",
+  },
+];
 
 export default function ArchiveToolsPage() {
   const [activeTab, setActiveTab] = useState<"create" | "extract">("create");
@@ -258,6 +303,50 @@ export default function ArchiveToolsPage() {
           )}
         </div>
       )}
+
+      {/* ── Search Engine Rich Snippet JSON-LD & High-Authority SEO Content ── */}
+      <ToolJsonLd
+        name="Free Online ZIP & Archive Studio"
+        description="Extract, inspect, and create ZIP and TAR archives directly in your browser with 100% privacy and zero server uploads."
+        url="/tools/archive"
+        category="UtilitiesApplication"
+        features={[
+          "ZIP archive extractor and inspector",
+          "Multi-file ZIP bundle creator",
+          "Standard Deflate PKZIP compression level 6",
+          "Zero software installation required",
+          "100% In-Browser client-side processing",
+          "Zero file uploads to cloud servers",
+        ]}
+        howTo={ARCHIVE_HOW_TO_STEPS}
+        faqs={ARCHIVE_FAQS}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Tools", url: "/tools" },
+          { name: "Archive Studio", url: "/tools/archive" },
+        ]}
+      />
+
+      <ToolSeoContent
+        toolName="Switchr Archive Studio"
+        badge="100% In-Browser & Private"
+        heading="Free Online ZIP Tool – Extract, Unzip & Create ZIP Archives"
+        subheading="Open, inspect, and package files into compressed ZIP archives right in your browser. No WinRAR or 7-Zip required."
+        overviewParagraphs={[
+          "Switchr's Archive Studio provides a lightweight, instant alternative to heavy desktop archivers. Whether you need to inspect the contents of a ZIP file received on a mobile phone or bundle 20 work documents into a single tidy archive for email, everything happens inside your browser tab.",
+          "Because compression and extraction run locally via client-side WebAssembly, your confidential files never leave your computer. Enjoy blazing fast archive management with zero privacy risks, no file quotas, and no subscription paywalls.",
+        ]}
+        steps={ARCHIVE_HOW_TO_STEPS}
+        faqs={ARCHIVE_FAQS}
+        relatedLinks={[
+          { label: "Extract ZIP Online", href: "/convert/extract-zip", desc: "Unpack and download files from ZIP archives.", badge: "Fast" },
+          { label: "Create ZIP Online", href: "/convert/create-zip", desc: "Package multiple files into a clean archive." },
+          { label: "Smart File Compressor", href: "/compress", desc: "Reduce image and PDF file sizes by up to 80%." },
+          { label: "PDF Tools Suite", href: "/pdf-tools", desc: "Merge, split, protect, and convert PDF documents." },
+          { label: "Image Converter", href: "/convert/images", desc: "Convert JPG, PNG, WebP, and HEIC photos." },
+          { label: "All File Tools", href: "/tools", desc: "Browse the complete directory of free web utilities." },
+        ]}
+      />
     </div>
   );
 }

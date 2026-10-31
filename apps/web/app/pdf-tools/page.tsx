@@ -1,3 +1,5 @@
+import { ToolJsonLd } from "@/components/seo/json-ld";
+import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -75,6 +77,49 @@ function parsePageRange(input: string, totalPages: number): number[] {
   }
   return Array.from(pages).sort((a, b) => a - b);
 }
+
+
+const PDF_HOW_TO_STEPS = [
+  {
+    name: "Select Your PDF Tool",
+    text: "Choose the action you need: Multi-Image to PDF, PDF to Image extraction, Password Protection, PDF Unlocking, or Text to PDF.",
+  },
+  {
+    name: "Upload Your Document or Photos",
+    text: "Drag and drop your PDF or image files into the upload box. Arrange page sequence or customize resolution as needed.",
+  },
+  {
+    name: "Execute and Download Instantly",
+    text: "Click convert or process. Switchr executes the transformation 100% locally with WebAssembly and downloads your finished file immediately.",
+  },
+];
+
+const PDF_FAQS = [
+  {
+    question: "Are my confidential contracts and financial records uploaded to a server?",
+    answer: "Never. Switchr processes all PDF operations 100% client-side in your local browser sandbox using pdf-lib and Mozilla pdf.js WebAssembly. Not a single byte of your document is ever sent to any remote server or cloud queue.",
+  },
+  {
+    question: "How do I convert photos or smartphone scans into a single PDF document?",
+    answer: "Select the 'Images to PDF' tab, drop multiple JPG, PNG, WebP, or iPhone HEIC photos into the tool, rearrange them into your desired order, and click 'Create PDF Document' to download a clean, multi-page PDF.",
+  },
+  {
+    question: "What resolution does the PDF to Image extractor produce?",
+    answer: "The extractor renders pages at up to 300 DPI Ultra-HD resolution using HTML5 Canvas, ensuring crisp text, diagrams, and fine details. You can download pages individually or save the full set in a single clean ZIP archive.",
+  },
+  {
+    question: "How secure is the Password Protect PDF feature?",
+    answer: "Switchr applies standard 128-bit AES encryption compliant with Adobe Acrobat standards. The document cannot be opened, printed, or copied without entering the correct master password.",
+  },
+  {
+    question: "Can I remove passwords and restrictions from locked PDFs?",
+    answer: "Yes! Use the 'Unlock PDF' tab, enter the current password once to decrypt the internal security stream, and download a clean, unlocked PDF that opens freely anywhere without further prompts.",
+  },
+  {
+    question: "Is there any file size limit or daily usage cap?",
+    answer: "No. Unlike cloud-based converters that restrict users to 15MB or 2 files per day, Switchr is 100% free with no caps. Processing capacity is governed only by your device's available browser memory.",
+  },
+];
 
 export default function PdfToolsPage() {
   const [activeTab, setActiveTab] = useState<"images" | "pdfToImage" | "protect" | "unlock" | "text" | "pages">("images");
@@ -1641,6 +1686,52 @@ export default function PdfToolsPage() {
           </div>
         </div>
       )}
+
+      {/* ── Search Engine Rich Snippet JSON-LD & High-Authority SEO Content ── */}
+      <ToolJsonLd
+        name="Free In-Browser PDF Tools Suite"
+        description="Comprehensive free PDF tools: convert photos to PDF, extract high-res PNG/JPG images, password protect, unlock, and compress PDFs with 100% privacy and zero uploads."
+        url="/pdf-tools"
+        category="BusinessApplication"
+        features={[
+          "Multi-Image to PDF compiler",
+          "High-DPI PDF to PNG/JPG extractor with ZIP download",
+          "128-bit AES password encryption",
+          "PDF password and restriction remover",
+          "Text and notes to PDF generator",
+          "100% In-Browser WebAssembly privacy",
+        ]}
+        howTo={PDF_HOW_TO_STEPS}
+        faqs={PDF_FAQS}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Tools", url: "/tools" },
+          { name: "PDF Tools", url: "/pdf-tools" },
+        ]}
+      />
+
+      <ToolSeoContent
+        toolName="Switchr PDF Tools"
+        badge="100% In-Browser & Private"
+        heading="Complete Free PDF Suite – Convert, Protect & Extract"
+        subheading="Professional document tools running directly on your CPU with WebAssembly. No cloud queues, no file caps, and complete data confidentiality."
+        overviewParagraphs={[
+          "Switchr's PDF Tools suite replaces complex desktop software and risky cloud converters with high-performance in-browser WebAssembly. Whether you need to compile receipt photos into a single PDF, extract high-resolution images from report slides, protect sensitive contracts with 128-bit AES encryption, or unlock password-restricted documents, everything runs locally inside your browser memory sandbox.",
+          "Because no document bytes ever leave your device, Switchr is 100% compliant with strict enterprise privacy standards, GDPR, and confidential legal requirements. Enjoy infinite document processing without daily caps, paywalls, or annoying watermarks.",
+        ]}
+        steps={PDF_HOW_TO_STEPS}
+        faqs={PDF_FAQS}
+        relatedLinks={[
+          { label: "Merge PDF", href: "/convert/merge-pdf", desc: "Combine multiple PDF documents into one continuous file.", badge: "Popular" },
+          { label: "Compress PDF", href: "/convert/compress-pdf", desc: "Shrink heavy PDF documents for email & web portals.", badge: "Fast" },
+          { label: "PDF to JPG", href: "/convert/pdf-to-jpg", desc: "Render PDF pages into crystal-clear JPG photos." },
+          { label: "PDF to PNG", href: "/convert/pdf-to-png", desc: "Extract lossless PNG images with crisp vector text." },
+          { label: "JPG to PDF", href: "/convert/jpg-to-pdf", desc: "Convert photos and gallery scans into a clean PDF." },
+          { label: "Split PDF", href: "/convert/split-pdf", desc: "Extract specific page ranges into new documents." },
+          { label: "Protect PDF", href: "/convert/protect-pdf", desc: "Encrypt PDF files with custom master passwords." },
+          { label: "Unlock PDF", href: "/convert/unlock-pdf", desc: "Remove passwords and printing restrictions." },
+        ]}
+      />
     </div>
   );
 }

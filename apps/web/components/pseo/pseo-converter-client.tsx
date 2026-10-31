@@ -106,6 +106,61 @@ export function PseoConverterClient({ pair }: Props) {
       };
     }
 
+    if (pair.slug === "split-pdf" && ext === "pdf") {
+      onProgress(0.3);
+      const { PDFDocument } = await import("pdf-lib");
+      const bytes = await file.arrayBuffer();
+      const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+      const newDoc = await PDFDocument.create();
+      const copiedPages = await newDoc.copyPages(doc, [0]);
+      newDoc.addPage(copiedPages[0]);
+      onProgress(0.8);
+      const pdfBytes = await newDoc.save({ useObjectStreams: true });
+      onProgress(1.0);
+      const blob = new Blob([pdfBytes as any], { type: "application/pdf" });
+      return {
+        url: URL.createObjectURL(blob),
+        newSize: blob.size,
+      };
+    }
+
+    if (pair.slug === "text-to-pdf" || (ext === "txt" && toFormat.toLowerCase() === "pdf")) {
+      const { textToPdf } = await import("@/lib/converters/pdf-tools");
+      onProgress(0.3);
+      const text = await file.text();
+      onProgress(0.7);
+      const pdfBlob = await textToPdf(text, file.name.replace(/\.[^/.]+$/, ""));
+      onProgress(1.0);
+      return {
+        url: URL.createObjectURL(pdfBlob),
+        newSize: pdfBlob.size,
+      };
+    }
+
+    if (pair.slug === "extract-zip" && ext === "zip") {
+      const { extractZip } = await import("@/lib/converters/archive-tools");
+      onProgress(0.4);
+      const entries = await extractZip(file);
+      onProgress(1.0);
+      if (entries.length > 0) {
+        return {
+          url: URL.createObjectURL(entries[0].blob),
+          newSize: entries[0].size,
+        };
+      }
+    }
+
+    if (pair.slug === "create-zip") {
+      const { createZip } = await import("@/lib/converters/archive-tools");
+      onProgress(0.4);
+      const zipBlob = await createZip([{ name: file.name, file }]);
+      onProgress(1.0);
+      return {
+        url: URL.createObjectURL(zipBlob),
+        newSize: zipBlob.size,
+      };
+    }
+
     // 3. PDF to Images (pdf-to-jpg, pdf-to-png)
     if (
       ext === "pdf" &&

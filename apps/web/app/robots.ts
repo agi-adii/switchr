@@ -7,18 +7,18 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
-        disallow: ["/account", "/history", "/api/"],
+        allow: ["/", "/api/og"],
+        disallow: ["/account", "/history"],
       },
       {
         userAgent: "Googlebot",
-        allow: "/",
-        disallow: ["/account", "/history", "/api/"],
+        allow: ["/", "/api/og"],
+        disallow: ["/account", "/history"],
       },
       {
         userAgent: "Bingbot",
-        allow: "/",
-        disallow: ["/account", "/history", "/api/"],
+        allow: ["/", "/api/og"],
+        disallow: ["/account", "/history"],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,

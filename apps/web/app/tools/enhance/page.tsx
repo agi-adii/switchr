@@ -1,3 +1,5 @@
+import { ToolJsonLd } from "@/components/seo/json-ld";
+import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
@@ -75,6 +77,49 @@ const PRESET_LIST = [
 ];
 
 type ComponentTab = "tone" | "color" | "detail";
+
+
+const ENHANCE_HOW_TO_STEPS = [
+  {
+    name: "Upload Your Photo",
+    text: "Drag and drop your JPG, PNG, WebP, or iPhone HEIC picture into the photo enhancer workspace.",
+  },
+  {
+    name: "Choose Preset or Upscale Factor",
+    text: "Select one-click presets like Magic Auto, Portrait Pro, or HDR Landscape, or enable 2x/4x Real-ESRGAN neural super-resolution.",
+  },
+  {
+    name: "Download Pristine 4K Photo",
+    text: "Compare before-and-after results with the interactive slider and download your crystal-clear enhanced photo immediately.",
+  },
+];
+
+const ENHANCE_FAQS = [
+  {
+    question: "How does the Real-ESRGAN neural network run directly in the browser?",
+    answer: "Switchr compiles the state-of-the-art Real-ESRGAN deep convolutional neural network to ONNX Runtime with WebGPU and WebAssembly acceleration. The neural network computes directly on your device GPU/CPU without needing cloud servers.",
+  },
+  {
+    question: "Can this AI upscaler unblur out-of-focus photos and restore faces?",
+    answer: "Yes! Real-ESRGAN is trained specifically to hallucinate and reconstruct realistic high-frequency micro-textures, skin details, hair strands, and sharp edges that were lost in low-resolution or compressed images.",
+  },
+  {
+    question: "Are my family photos or personal selfies uploaded to any external server?",
+    answer: "Never. All AI inference and pixel processing execute 100% locally in your browser tab. Your images never touch any remote cloud server, providing complete biometric and photographic privacy.",
+  },
+  {
+    question: "Does the enhancer support Apple iPhone HEIC photos directly?",
+    answer: "Yes! Switchr features a built-in WebAssembly HEIC decoder that directly ingests iPhone camera photos without requiring conversion beforehand.",
+  },
+  {
+    question: "What is the difference between AI neural upscaling and traditional bicubic sharpening?",
+    answer: "Traditional bicubic scaling simply duplicates or averages adjacent pixels, making blurry photos look blocky. Real-ESRGAN uses deep machine learning to synthesize realistic sharp details and eliminate JPEG compression artifacts.",
+  },
+  {
+    question: "Is there any cost, credit token, or subscription fee?",
+    answer: "No. Unlike other AI upscalers that charge subscription fees or limit you to 3 free credits, Switchr is 100% free with unlimited usage.",
+  },
+];
 
 export default function PhotoEnhancerPage() {
   const [selectedFile, setSelectedFile] = useState<File | Blob | null>(null);
@@ -1000,6 +1045,50 @@ export default function PhotoEnhancerPage() {
           </div>
         </div>
       )}
+
+      {/* ── Search Engine Rich Snippet JSON-LD & High-Authority SEO Content ── */}
+      <ToolJsonLd
+        name="Free AI Photo Enhancer & 4K Upscaler"
+        description="Upscale image resolution to 4K, unblur photos, and restore fine details online with Real-ESRGAN neural networks and zero cloud uploads."
+        url="/tools/enhance"
+        category="MultimediaApplication"
+        features={[
+          "Real-ESRGAN General x4v3 neural network execution",
+          "WebGPU and WebAssembly client-side AI acceleration",
+          "2x and 4x Super-Resolution upscaling",
+          "Magic Auto, Portrait Pro, HDR Landscape, and Night Recovery presets",
+          "14 manual tone, color, and acuity adjustment sliders",
+          "100% In-Browser execution with zero server uploads",
+        ]}
+        howTo={ENHANCE_HOW_TO_STEPS}
+        faqs={ENHANCE_FAQS}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Tools", url: "/tools" },
+          { name: "AI Photo Enhancer", url: "/tools/enhance" },
+        ]}
+      />
+
+      <ToolSeoContent
+        toolName="Switchr AI Photo Enhancer"
+        badge="Real-ESRGAN AI • Zero Cloud Uploads"
+        heading="Free AI Photo Enhancer – 4K Upscaling & Clarity Restoration"
+        subheading="Breathe new life into blurry, low-res, or vintage photos with state-of-the-art neural super-resolution running 100% locally on your device GPU."
+        overviewParagraphs={[
+          "Switchr's AI Photo Enhancer brings cutting-edge computer vision directly into your browser. Using the Real-ESRGAN neural network model compiled to WebGPU and WebAssembly, you can upscale low-resolution photos to 4K, sharpen blurry edges, recover shadow details from night shots, and enhance portrait skin tones without uploading a single photo to the cloud.",
+          "Most commercial AI tools lock high-resolution downloads behind expensive monthly subscriptions or credit paywalls. Switchr is completely free, unlimited, and runs locally inside your browser sandbox, keeping your private family memories and creative assets 100% confidential.",
+        ]}
+        steps={ENHANCE_HOW_TO_STEPS}
+        faqs={ENHANCE_FAQS}
+        relatedLinks={[
+          { label: "Image Converter", href: "/convert/images", desc: "Convert WebP, PNG, JPG, and HEIC photos.", badge: "Universal" },
+          { label: "Smart File Compressor", href: "/compress", desc: "Reduce photo file sizes by up to 80%." },
+          { label: "Convert HEIC to JPG", href: "/convert/heic-to-jpg", desc: "Convert iPhone camera photos for universal viewing." },
+          { label: "Convert WebP to PNG", href: "/convert/webp-to-png", desc: "Export lossless PNG with full transparency." },
+          { label: "Multi-Image to PDF", href: "/pdf-tools?tab=images", desc: "Compile enhanced photos into a clean PDF document." },
+          { label: "All File Tools", href: "/tools", desc: "Explore the full suite of in-browser productivity utilities." },
+        ]}
+      />
     </div>
   );
 }

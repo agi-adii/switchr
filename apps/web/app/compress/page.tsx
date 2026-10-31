@@ -1,3 +1,5 @@
+import { ToolJsonLd } from "@/components/seo/json-ld";
+import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 "use client";
 
 import { useState } from "react";
@@ -22,6 +24,49 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { saveHistoryItem } from "@/lib/history-store";
+
+
+const COMPRESS_HOW_TO_STEPS = [
+  {
+    name: "Upload Image or PDF",
+    text: "Select whether you want to compress an image or PDF document, then drag and drop your file into the compressor box.",
+  },
+  {
+    name: "Calibrate Compression Quality",
+    text: "Adjust the interactive slider between Maximum Compression (smallest size), Balanced (recommended), or Maximum Quality.",
+  },
+  {
+    name: "Download Your Compressed File",
+    text: "Click Start Compression. Switchr executes smart adaptive quantization in your browser and displays exact byte savings immediately.",
+  },
+];
+
+const COMPRESS_FAQS = [
+  {
+    question: "How does in-browser file compression work without server uploads?",
+    answer: "Switchr uses HTML5 Canvas image quantization and pdf-lib WebAssembly object-stream compaction directly inside your browser memory. Your files never travel across the internet, guaranteeing total privacy and instant processing.",
+  },
+  {
+    question: "Does compressing photos reduce visual clarity?",
+    answer: "Our balanced compression algorithm applies perceptual quantization that removes high-frequency color redundancies imperceptible to the human eye, preserving crisp edges and vibrant colors while cutting file weight by 50% to 80%.",
+  },
+  {
+    question: "How does PDF compression reduce file size without making text blurry?",
+    answer: "Text and typographic fonts inside PDFs are vector curves. Switchr optimizes internal binary streams, removes duplicate font definitions, and compacts metadata dictionaries, so text remains 100% vector-sharp at any zoom level.",
+  },
+  {
+    question: "Are my confidential legal documents and personal photos safe?",
+    answer: "Completely safe. Unlike cloud-based file compressors that store your documents on remote servers, Switchr processes 100% of data locally within your browser tab sandbox.",
+  },
+  {
+    question: "How much file size reduction can I expect?",
+    answer: "Uncompressed PNG photos and large multi-page scanned PDFs typically see 40% to 75% size reductions. JPEGs and already-compressed files typically save 20% to 50%.",
+  },
+  {
+    question: "Is there a file size limit or daily usage cap?",
+    answer: "No. Switchr has no daily quotas, credits, or file size limits. You can compress as many files as your device memory can handle.",
+  },
+];
 
 export default function CompressPage() {
   const [activeType, setActiveType] = useState<"image" | "pdf">("image");
@@ -304,6 +349,50 @@ export default function CompressPage() {
           </Link>
         </div>
       </div>
+
+      {/* ── Search Engine Rich Snippet JSON-LD & High-Authority SEO Content ── */}
+      <ToolJsonLd
+        name="Free In-Browser File Compressor"
+        description="Shrink image and PDF document file sizes by up to 80% with smart adaptive quantization, zero uploads, and 100% privacy."
+        url="/compress"
+        category="UtilitiesApplication"
+        features={[
+          "Adaptive JPEG, PNG, and WebP compression",
+          "Lossless PDF object-stream compaction",
+          "Interactive compression quality calibration",
+          "Real-time original vs compressed byte metrics",
+          "100% In-Browser WebAssembly execution",
+          "Zero file uploads to external servers",
+        ]}
+        howTo={COMPRESS_HOW_TO_STEPS}
+        faqs={COMPRESS_FAQS}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Tools", url: "/tools" },
+          { name: "Compress", url: "/compress" },
+        ]}
+      />
+
+      <ToolSeoContent
+        toolName="Switchr File Compressor"
+        badge="100% In-Browser & Private"
+        heading="Free File Compressor – Shrink Images & PDFs Without Quality Loss"
+        subheading="Reduce heavy file sizes by up to 80% directly in your browser. Perfect for email attachments, government portals, and Google PageSpeed."
+        overviewParagraphs={[
+          "Switchr's File Compressor delivers powerful client-side compression without uploading your confidential files to third-party cloud servers. Whether you are submitting a PDF to a portal with strict 5MB upload limits, reducing photos for faster website load times, or freeing up mobile storage, our adaptive quantization algorithms shrink file weights while protecting visual clarity.",
+          "Because every byte is processed locally using WebAssembly and HTML5 Canvas, you bypass server queues, upload delays, and privacy risks. Enjoy unlimited, watermark-free compression for JPG, PNG, WebP, and PDF documents forever.",
+        ]}
+        steps={COMPRESS_HOW_TO_STEPS}
+        faqs={COMPRESS_FAQS}
+        relatedLinks={[
+          { label: "Compress PDF", href: "/convert/compress-pdf", desc: "Shrink PDF documents for email & web portals.", badge: "Fast" },
+          { label: "JPG to WebP", href: "/convert/jpg-to-webp", desc: "Convert photos to high-efficiency WebP format." },
+          { label: "PNG to WebP", href: "/convert/png-to-webp", desc: "Save up to 80% file size on transparent PNGs." },
+          { label: "AI Photo Enhancer", href: "/tools/enhance", desc: "Neural super-resolution and clarity upscaling.", badge: "AI" },
+          { label: "PDF Tools Suite", href: "/pdf-tools", desc: "Merge, split, protect, and extract PDF documents." },
+          { label: "Audio Bitrate Optimizer", href: "/convert/audio", desc: "Transcode MP3 and WAV with custom bitrates." },
+        ]}
+      />
     </div>
   );
 }

@@ -68,6 +68,9 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  alternates: {
+    canonical: siteUrl,
+  },
   verification: {
     google: "tmqaM3yKYddbFFhrHWett8KIfDMxuujgomlHbUN5RL4",
   },

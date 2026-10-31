@@ -1,33 +1,49 @@
 import type { Metadata } from "next";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://switchrx.vercel.app";
+
 export const metadata: Metadata = {
-  title: "AI Photo Enhancer & Upscaler - Enhance Image Quality Online",
+  title: "AI Photo Enhancer & 4K Upscaler Online Free (Real-ESRGAN)",
   description:
-    "Enhance photos, upscale resolution, reduce noise, and sharpen details in your browser with hardware-accelerated shaders and AI.",
+    "Enhance photo quality, unblur images, reduce noise, and upscale resolution to 4K online. 100% private in-browser AI with Real-ESRGAN & WebGPU, zero uploads.",
   keywords: [
-    "photo enhancer",
-    "ai image upscaler",
-    "upscale photo free",
-    "image quality enhancer",
-    "enhance resolution",
-    "unblur image online",
-    "sharpen photo free",
+    "ai photo enhancer",
+    "ai image upscaler free",
+    "upscale image 4k online",
+    "unblur image free",
+    "enhance photo quality online",
+    "real esrgan online",
+    "super resolution ai",
+    "sharpen image online",
+    "photo quality enhancer free",
+    "restore old photos ai",
+    "denoise photo online",
+    "switchr ai enhancer",
   ],
   alternates: {
-    canonical: "https://switchrx.vercel.app/tools/enhance",
+    canonical: `${siteUrl}/tools/enhance`,
   },
   openGraph: {
-    title: "AI Photo Enhancer & Neural Upscaler | Switchr",
-    description: "Upscale images and enhance quality right in your browser with Real-ESRGAN and zero uploads.",
-    url: "https://switchrx.vercel.app/tools/enhance",
+    title: "AI Photo Enhancer & 4K Upscaler Online Free | Switchr",
+    description:
+      "Upscale images to 4K, sharpen blurry photos, and calibrate tone locally with Real-ESRGAN neural networks and zero cloud uploads.",
+    url: `${siteUrl}/tools/enhance`,
+    siteName: "Switchr",
+    type: "website",
     images: [
       {
-        url: "/api/og?title=AI%20Photo%20Enhancer&badge=Real-ESRGAN%20%2B%20WebGPU",
+        url: "/api/og?title=AI%20Photo%20Enhancer%20%26%204K%20Upscaler&subtitle=Real-ESRGAN%20Neural%20Super-Resolution%20Directly%20in%20Your%20Browser",
         width: 1200,
         height: 630,
-        alt: "Switchr AI Photo Enhancer",
+        alt: "Switchr AI Photo Enhancer - Free In-Browser AI Upscaling",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Photo Enhancer & 4K Upscaler Online Free | Switchr",
+    description: "Upscale resolution, unblur photos, and enhance details in-browser with Real-ESRGAN AI and zero uploads.",
+    images: ["/api/og?title=AI%20Photo%20Enhancer%20%26%204K%20Upscaler&subtitle=Real-ESRGAN%20Neural%20Super-Resolution%20Directly%20in%20Your%20Browser"],
   },
 };
 

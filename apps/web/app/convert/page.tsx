@@ -1,3 +1,5 @@
+import { ToolJsonLd } from "@/components/seo/json-ld";
+import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 "use client";
 
 import { useState, useMemo } from "react";
@@ -1208,6 +1210,45 @@ const cardVariants: Variants = {
   },
 };
 
+
+const CONVERT_HOW_TO_STEPS = [
+  {
+    name: "Select File Category or Dedicated Tool",
+    text: "Choose from Images, Video, Audio, Documents, Data, PDF Suite, or search directly for your input format.",
+  },
+  {
+    name: "Upload Files",
+    text: "Drag and drop single or multiple files. Our local detection engine automatically identifies MIME types and codecs.",
+  },
+  {
+    name: "Convert & Download Locally",
+    text: "Select your desired output container and download immediately. Processed 100% in-browser with zero uploads.",
+  },
+];
+
+const CONVERT_FAQS = [
+  {
+    question: "How does Switchr convert files directly in the browser?",
+    answer: "Switchr compiles industry-standard native conversion engines (such as FFmpeg, libheif, pdf-lib, jsPDF, and JSZip) into WebAssembly (WASM). Your computer or phone's CPU executes the transformation locally with zero network uploads.",
+  },
+  {
+    question: "Are my files uploaded or stored on any server?",
+    answer: "Never. All file transformations execute strictly in your local browser sandbox memory. Switchr has no backend file storage and never transmits your data.",
+  },
+  {
+    question: "Is there any limit on how many files I can convert?",
+    answer: "No. Switchr is a 100% free public utility with no daily limits, quotas, subscriptions, or wait queues.",
+  },
+  {
+    question: "Can I use Switchr offline?",
+    answer: "Yes! Switchr operates as an installable Progressive Web App (PWA). Once cached in your browser, core converter engines run completely offline.",
+  },
+  {
+    question: "What formats can I convert?",
+    answer: "Switchr supports over 200 format combinations across images (WebP, PNG, JPG, AVIF, HEIC, SVG), video (MP4, WebM, MOV, MKV, GIF), audio (MP3, WAV, FLAC, OGG), documents (PDF, DOCX, PPTX), and data (JSON, CSV, XML).",
+  },
+];
+
 export default function ConvertHubPage() {
   const [selectedSuiteCategory, setSelectedSuiteCategory] = useState<SuiteCategory>("all");
   const [selectedConvCategory, setSelectedConvCategory] = useState<string>("all");
@@ -1467,6 +1508,50 @@ export default function ConvertHubPage() {
           })}
         </motion.div>
       </section>
+
+      {/* ── Search Engine Rich Snippet JSON-LD & High-Authority SEO Content ── */}
+      <ToolJsonLd
+        name="Free Universal In-Browser File Converter"
+        description="Batch convert files online directly in your browser. Fast, 100% free format transformation with complete privacy and zero server uploads."
+        url="/convert"
+        category="UtilitiesApplication"
+        features={[
+          "Images: WebP, PNG, JPG, AVIF, HEIC, SVG",
+          "Video: MP4, WebM, MOV, MKV, animated GIF",
+          "Audio: MP3, WAV, FLAC, OGG, AAC",
+          "Documents: PDF, DOCX, PPTX, TXT",
+          "Data: JSON, CSV, XML",
+          "100% In-Browser WebAssembly execution",
+          "Zero file uploads to external cloud servers",
+        ]}
+        howTo={CONVERT_HOW_TO_STEPS}
+        faqs={CONVERT_FAQS}
+        breadcrumbs={[
+          { name: "Home", url: "/" },
+          { name: "Convert", url: "/convert" },
+        ]}
+      />
+
+      <ToolSeoContent
+        toolName="Switchr Universal Converter"
+        badge="100% In-Browser & Private"
+        heading="Free Online File Converter – Images, Videos, Audio, Documents & PDFs"
+        subheading="Transform hundreds of file formats instantly on your device. Powered by WebAssembly with zero server queues, zero file caps, and complete data privacy."
+        overviewParagraphs={[
+          "Switchr's Universal Converter replaces bloated desktop software and risky cloud converters with high-performance in-browser WebAssembly. Whether you need to convert Apple HEIC photos for Windows, extract MP3 audio from a recorded lecture, transcode heavy video clips to lightweight WebM streams, or serialize JSON into spreadsheet CSV tables, everything runs locally inside your browser memory.",
+          "Because no document bytes ever leave your device, Switchr is 100% compliant with strict enterprise privacy standards, GDPR, and confidential legal requirements. Enjoy infinite file conversion without daily caps, paywalls, or annoying watermarks.",
+        ]}
+        steps={CONVERT_HOW_TO_STEPS}
+        faqs={CONVERT_FAQS}
+        relatedLinks={[
+          { label: "Convert WebP to PNG", href: "/convert/webp-to-png", desc: "Turn WebP into lossless PNG with transparency.", badge: "Popular" },
+          { label: "Convert HEIC to JPG", href: "/convert/heic-to-jpg", desc: "Convert iPhone camera photos for universal viewing.", badge: "Top" },
+          { label: "Convert MP4 to WebM", href: "/convert/mp4-to-webm", desc: "Encode lightweight HTML5 streaming video." },
+          { label: "Convert WAV to MP3", href: "/convert/wav-to-mp3", desc: "Compress uncompressed audio tracks by 90%." },
+          { label: "Convert PPTX to PDF", href: "/convert/pptx-to-pdf", desc: "Turn PowerPoint slides into printable PDFs." },
+          { label: "PDF Tools Suite", href: "/pdf-tools", desc: "Merge, split, protect, and extract PDF documents.", badge: "Suite" },
+        ]}
+      />
     </div>
   );
 }
