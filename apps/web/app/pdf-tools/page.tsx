@@ -1,7 +1,7 @@
-import { ToolJsonLd } from "@/components/seo/json-ld";
-import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 "use client";
 
+import { ToolJsonLd } from "@/components/seo/json-ld";
+import { ToolSeoContent } from "@/components/seo/tool-seo-content";
 import { useState, useEffect, useRef } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { GlassPillTabs } from "@/components/ui/glass-pill-tabs";
